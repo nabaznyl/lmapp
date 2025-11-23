@@ -48,7 +48,7 @@ That's lmapp.
 At its core: **A terminal-first local AI assistant in 30 seconds.**
 
 ```bash
-pip install lmapp
+pipx install lmapp
 lmapp chat
 ```
 
@@ -202,7 +202,7 @@ Well-tested code is easier to understand, maintain, and extend. The codebase is 
 
 ```bash
 # Simple pip install
-pip install lmapp
+pipx install lmapp
 
 # Or develop locally
 git clone https://github.com/nabaznyl/lmapp

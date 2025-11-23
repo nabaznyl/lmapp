@@ -101,7 +101,7 @@ Architecture Highlights:
 
 Get Started:
 
-pip install lmapp
+pipx install lmapp
 lmapp chat
 
 Try commands like /help, /stats, /clear

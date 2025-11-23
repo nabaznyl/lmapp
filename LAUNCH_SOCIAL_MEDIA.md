@@ -14,7 +14,7 @@ Local AI in your terminal. 30-second setup.
 ✅ Multi-backend support
 ✅ Enterprise error recovery
 
-pip install lmapp
+pipx install lmapp
 lmapp chat
 
 https://github.com/nabaznyl/lmapp
@@ -45,7 +45,7 @@ Instead of cryptic errors, you get:
 
 That's what "production-ready" means.
 
-Try it: pip install lmapp
+Try it: pipx install lmapp
 
 https://github.com/nabaznyl/lmapp
 #python
@@ -273,7 +273,7 @@ Let me know if you have questions!
 
 **Quick Start:**
 ```
-pip install lmapp
+pipx install lmapp
 lmapp chat
 ```
 

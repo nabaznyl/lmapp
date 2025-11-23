@@ -21,7 +21,7 @@ I just released lmapp v0.1.0, a local AI assistant tool that I've been working o
 
 The idea is simple - one command, full privacy, zero setup complexity.
 
-pip install lmapp
+pipx install lmapp
 lmapp chat
 
 That's it. You're chatting with a local LLM.
@@ -49,10 +49,12 @@ Most "hello world" projects have 80% test coverage. This has 100%. Most ignore e
 
 Get Started
 
-pip install lmapp
+pipx install lmapp
 lmapp chat
 
 Then try /help, /stats, /clear for commands.
+
+(Note: On Debian/Ubuntu, use `pipx install lmapp` or `python3 -m venv ~/.venv-lmapp && ~/.venv-lmapp/bin/pip install lmapp`)
 
 I'm the creator and would love feedback from this community on what matters for local LLM tools!
 
@@ -102,7 +104,7 @@ lmapp takes a different approach:
 - Comprehensive logging
 
 2. User Experience
-- 30-second setup: pip install lmapp && lmapp chat
+- 30-second setup: `pipx install lmapp && lmapp chat` (or `pip install lmapp` on non-Debian systems)
 - Friendly error messages with recovery suggestions
 - Sensible defaults, easy to customize
 
@@ -128,7 +130,7 @@ Code Quality Highlights
 
 Get Started
 
-pip install lmapp
+pipx install lmapp
 
 Then:
 lmapp chat
@@ -196,8 +198,10 @@ Project Stats
 
 Get Started
 
-pip install lmapp
+pipx install lmapp
 lmapp chat
+
+(Or `pip install lmapp` on non-Debian systems)
 
 If interested in contributing, I can share details in the comments about good-first-issues and how to get started.
 
@@ -273,7 +277,7 @@ Tested and Reliable
 
 Try It
 
-pip install lmapp
+pipx install lmapp
 lmapp chat
 
 Then explore:

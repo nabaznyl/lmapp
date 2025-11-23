@@ -336,13 +336,13 @@ requirements-dev.txt       # Development tools
 ### Installation Modes
 ```bash
 # Minimal install (PROJECT 1 only)
-pip install lmapp
+pipx install lmapp
 
 # With web support (PROJECT 1 + 2)
-pip install lmapp[web]
+pipx install lmapp[web]
 
 # Full install (all features)
-pip install lmapp[full]
+pipx install lmapp[full]
 ```
 
 ---
