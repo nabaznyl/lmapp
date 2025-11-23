@@ -4,6 +4,7 @@
 > One tool to download. One command to run. Works on any device.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI Version](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/)
 [![Python: 3.8+](https://img.shields.io/badge/Python-3.8+-green.svg)]()
 [![Test Coverage: 100%](https://img.shields.io/badge/Tests-100%25%20passing-brightgreen.svg)]()
 [![Code Quality: 95/100](https://img.shields.io/badge/Code%20Quality-95%2F100-brightgreen.svg)]()
