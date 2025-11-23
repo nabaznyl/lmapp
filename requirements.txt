@@ -1,0 +1,28 @@
+# lmapp - Python Dependencies
+
+# Core utilities
+requests>=2.31.0
+click>=8.1.0
+rich>=13.7.0
+pyyaml>=6.0.1
+
+# TUI/CLI
+inquirer>=3.1.0
+prompt-toolkit>=3.0.43
+
+# System utilities
+psutil>=5.9.0
+distro>=1.8.0
+
+# Configuration
+python-dotenv>=1.0.0
+
+# Logging
+loguru>=0.7.2
+
+# Testing (development)
+pytest>=7.4.0
+pytest-cov>=4.1.0
+black>=23.12.0
+flake8>=7.0.0
+mypy>=1.8.0
