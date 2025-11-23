@@ -1,4 +1,4 @@
-name: Publish to PyPI
+name: Publish to PyPI & GitHub Releases
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - 'v*'  # Trigger on version tags like v0.1.0
 
 permissions:
-  contents: read
+  contents: write  # Required for creating releases
   id-token: write  # Required for OIDC token
 
 jobs:
@@ -34,3 +34,46 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           verbose: true
+      
+      - name: Get version from tag
+        id: tag_name
+        run: |
+          echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      
+      - name: Create GitHub Release with Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "lmapp ${{ steps.tag_name.outputs.version }}"
+          body: |
+            ## 📦 Installation
+            
+            ### From PyPI (Recommended)
+            ```bash
+            pip install lmapp
+            ```
+            
+            ### Direct Downloads
+            Download the package directly from this release:
+            - **Wheel (`.whl`)** - Fastest installation for most users
+            - **Source (`.tar.gz`)** - For custom installations
+            
+            ### From Source
+            ```bash
+            tar -xzf lmapp-${{ steps.tag_name.outputs.version }}.tar.gz
+            cd lmapp-${{ steps.tag_name.outputs.version }}
+            pip install .
+            ```
+            
+            ## 🚀 Quick Start
+            ```bash
+            lmapp
+            ```
+            
+            See [README](https://github.com/anonmaly/lmapp/blob/main/README.md) for more details.
+          files: |
+            dist/lmapp-${{ steps.tag_name.outputs.version }}-py3-none-any.whl
+            dist/lmapp-${{ steps.tag_name.outputs.version }}.tar.gz
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
