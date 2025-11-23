@@ -8,9 +8,10 @@
 
 ## Current Status
 
-**Version**: 0.1.0-dev  
+**Version**: 0.1.0 ✅ Production Ready  
 **Phase**: Foundation Complete ✓  
-**Platform**: Debian-based Linux
+**Status**: Available on PyPI - Globally Installable
+**Platform**: Debian-based Linux (tested), macOS/Windows compatible
 
 ### What Works Now
 - ✅ System requirement checks
@@ -26,7 +27,27 @@
 
 ---
 
-## Quick Start (Development)
+## Quick Start (30 Seconds)
+
+### 1. Install
+```bash
+pip install lmapp
+```
+
+### 2. Run
+```bash
+lmapp --help
+lmapp status
+```
+
+### 3. Start Using
+```bash
+lmapp chat
+```
+
+---
+
+## Setup for Development
 
 ### 1. Prerequisites
 ```bash
@@ -34,10 +55,11 @@ sudo apt update
 sudo apt install -y python3 python3-pip python3-venv git curl wget
 ```
 
-### 2. Setup
+### 2. Clone & Install
 ```bash
-cd /home/anonmaly/projects/lmapp
-source .venv/bin/activate  # Virtual environment already created
+git clone https://github.com/nabaznyl/lmapp.git
+cd lmapp
+pip install -e ".[dev]"
 ```
 
 ### 3. Available Commands

@@ -6,7 +6,7 @@ Thank you for your interest in contributing to lmapp!
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/lmapp.git
+git clone https://github.com/nabaznyl/lmapp.git
 cd lmapp
 ```
 
@@ -16,14 +16,9 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-3. Install dependencies:
+3. Install dependencies and development tools:
 ```bash
-pip install -r requirements.txt
-```
-
-4. Install in development mode:
-```bash
-pip install -e .
+pip install -e ".[dev]"
 ```
 
 ## Code Style

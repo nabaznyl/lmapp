@@ -14,7 +14,7 @@
 ## 🚀 Quick Start (30 seconds)
 
 ```bash
-# Install
+# Install (available on PyPI!)
 pip install lmapp
 
 # Run
@@ -23,7 +23,8 @@ lmapp chat
 # Start chatting with AI instantly
 ```
 
-**That's it.** No setup. No configuration. No complexity.
+**That's it.** No setup. No configuration. No complexity.  
+✅ **v0.1.0 Now Available** - [Install from PyPI](https://pypi.org/project/lmapp/)
 
 ---
 
