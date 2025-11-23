@@ -4,6 +4,10 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  actions: write
+  contents: write
+
 jobs:
   cleanup:
     runs-on: ubuntu-latest
@@ -14,14 +18,15 @@ jobs:
       - name: Clean up old artifacts
         run: |
           # Remove old workflow run artifacts (keep last 7 days)
-          gh run list --repo ${{ github.repository }} --limit 100 --json databaseId -q '.[].databaseId' | while read -r id; do
-            gh run delete $id --repo ${{ github.repository }} --confirm 2>/dev/null || true
+          gh run list --repo ${{ github.repository }} --limit 100 --json databaseId -q '.[].databaseId' 2>/dev/null | while read -r id; do
+            gh run delete "$id" --repo ${{ github.repository }} --confirm 2>/dev/null || true
           done
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
       
       - name: Remove stale branches
         run: |
-          # List and remove branches older than 30 days (optional)
+          # Fetch with prune to remove deleted remote branches
           git fetch --prune
         continue-on-error: true
