@@ -41,3 +41,14 @@ repos:
     hooks:
       - id: bandit
         args: ['-c', 'pyproject.toml', '--quiet']
+
+  # Version sync (local hook)
+  - repo: local
+    hooks:
+      - id: version-sync
+        name: Sync version across files
+        entry: bash scripts/version-sync.sh
+        language: script
+        files: ^VERSION$
+        stages: [commit]
+        pass_filenames: false
