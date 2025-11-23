@@ -271,7 +271,7 @@ Create/verify labels in Issues > Labels:
 
 ```bash
 # Verify repository is public
-curl -I https://github.com/yourusername/lmapp
+curl -I https://github.com/nabaznyl/lmapp
 
 # List current topics
 # (Currently done via GitHub web UI)

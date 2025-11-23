@@ -72,7 +72,7 @@ Use **LAUNCH_GITHUB_CHECKLIST.md**:
 - [ ] Review **LAUNCH_REDDIT_POSTS.md** - pick best post per community
 - [ ] Review **LAUNCH_DEVTO_ARTICLE.md** - customize intro/outro
 - [ ] Review **LAUNCH_SOCIAL_MEDIA.md** - pick 2-3 social snippets
-- [ ] Replace all `yourusername` with your actual GitHub username
+- [ ] Replace all `nabaznyl` with your actual GitHub username
 - [ ] Add any personal touches (your story, why you built this)
 - [ ] Test all links work correctly
 - [ ] Copy Reddit posts to draft (save for Day 1)

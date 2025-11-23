@@ -17,7 +17,7 @@ Local AI in your terminal. 30-second setup.
 pip install lmapp
 lmapp chat
 
-https://github.com/yourusername/lmapp
+https://github.com/nabaznyl/lmapp
 #python #llm #opensource
 ```
 
@@ -30,7 +30,7 @@ Excited to announce lmapp v0.1.0 - built with the community in mind 🎉
 ✨ Comprehensive documentation
 ✨ Welcome contributors!
 
-Get started: https://github.com/yourusername/lmapp
+Get started: https://github.com/nabaznyl/lmapp
 #opensource #python #ai
 ```
 
@@ -47,7 +47,7 @@ That's what "production-ready" means.
 
 Try it: pip install lmapp
 
-https://github.com/yourusername/lmapp
+https://github.com/nabaznyl/lmapp
 #python
 ```
 
@@ -64,7 +64,7 @@ lmapp has:
 
 Production-ready Python done right.
 
-https://github.com/yourusername/lmapp
+https://github.com/nabaznyl/lmapp
 #python #softwarequality
 ```
 
@@ -80,7 +80,7 @@ lmapp runs 100% locally:
 
 Control your AI.
 
-https://github.com/yourusername/lmapp
+https://github.com/nabaznyl/lmapp
 #privacy #python #opensource
 ```
 
@@ -269,7 +269,7 @@ Let me know if you have questions!
 
 ## 🔗 Useful Links to Share
 
-**GitHub:** https://github.com/yourusername/lmapp
+**GitHub:** https://github.com/nabaznyl/lmapp
 
 **Quick Start:**
 ```
