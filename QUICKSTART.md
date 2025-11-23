@@ -30,14 +30,28 @@
 ## Quick Start (30 Seconds)
 
 ### 1. Install
+
+**On macOS / Windows / Non-Debian Linux:**
 ```bash
 pip install lmapp
+```
+
+**On Debian / Ubuntu:**
+```bash
+# Recommended: Use pipx
+pipx install lmapp
+
+# Or use a virtual environment
+python3 -m venv ~/.venv-lmapp
+~/.venv-lmapp/bin/pip install lmapp
+alias lmapp='~/.venv-lmapp/bin/lmapp'
 ```
 
 ### 2. Run
 ```bash
 lmapp --help
 lmapp status
+lmapp chat
 ```
 
 ### 3. Start Using

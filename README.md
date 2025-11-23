@@ -13,18 +13,28 @@
 
 ## 🚀 Quick Start (30 seconds)
 
+### Installation
+
+**On macOS / Windows / Non-Debian Linux:**
 ```bash
-# Install (available on PyPI!)
 pip install lmapp
-
-# Run
 lmapp chat
-
-# Start chatting with AI instantly
 ```
 
-**That's it.** No setup. No configuration. No complexity.  
-✅ **v0.1.0 Now Available** - [Install from PyPI](https://pypi.org/project/lmapp/)
+**On Debian / Ubuntu (due to PEP 668):**
+```bash
+# Option 1: Use pipx (recommended for CLI tools)
+pipx install lmapp
+lmapp chat
+
+# Option 2: Use a virtual environment
+python3 -m venv ~/.venv-lmapp
+~/.venv-lmapp/bin/pip install lmapp
+~/.venv-lmapp/bin/lmapp chat
+```
+
+✅ **v0.1.0 Now Available** - [Install from PyPI](https://pypi.org/project/lmapp/)  
+📦 **Available on:** PyPI, PyPI (all platforms)
 
 ---
 

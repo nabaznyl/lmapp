@@ -2,6 +2,47 @@
 
 Common issues and solutions for lmapp.
 
+---
+
+## 📦 Installation Issues
+
+### "externally-managed-environment" Error (Debian/Ubuntu)
+
+**Error:**
+```
+error: externally-managed-environment
+
+× This environment is externally managed
+```
+
+**Cause:** Debian/Ubuntu blocks system-wide pip installs (PEP 668)
+
+**Solutions:**
+
+**Option 1: Use pipx (recommended for CLI tools)**
+```bash
+sudo apt install pipx
+pipx install lmapp
+lmapp --help
+```
+
+**Option 2: Use a virtual environment**
+```bash
+python3 -m venv ~/.venv-lmapp
+~/.venv-lmapp/bin/pip install lmapp
+~/.venv-lmapp/bin/lmapp --help
+
+# Make it easier (add to ~/.bashrc or ~/.zshrc):
+alias lmapp='~/.venv-lmapp/bin/lmapp'
+```
+
+**Option 3: Use --break-system-packages (not recommended)**
+```bash
+pip install --break-system-packages lmapp
+```
+
+---
+
 ## 🔴 Chat Not Starting
 
 ### "Backend is not running"
