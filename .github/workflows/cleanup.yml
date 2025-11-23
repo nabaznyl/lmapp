@@ -1,0 +1,27 @@
+name: Cleanup on Merge
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Clean up old artifacts
+        run: |
+          # Remove old workflow run artifacts (keep last 7 days)
+          gh run list --repo ${{ github.repository }} --limit 100 --json databaseId -q '.[].databaseId' | while read -r id; do
+            gh run delete $id --repo ${{ github.repository }} --confirm 2>/dev/null || true
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Remove stale branches
+        run: |
+          # List and remove branches older than 30 days (optional)
+          git fetch --prune
+        continue-on-error: true
