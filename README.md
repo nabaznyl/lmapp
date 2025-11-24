@@ -412,6 +412,15 @@ See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for more help.
 
 ---
 
+## 🤝 Community
+
+- **Contributing?** See [CONTRIBUTING.md](./CONTRIBUTING.md)
+- **Code of Conduct?** See [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
+- **Security Issue?** See [SECURITY.md](./SECURITY.md)
+- **Developer Guide?** See [DEVELOPMENT.md](./DEVELOPMENT.md)
+
+---
+
 ## 📄 License
 
 MIT License - [See LICENSE file](LICENSE)
