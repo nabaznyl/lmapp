@@ -16,38 +16,14 @@
 ## 🚀 Quick Start (30 seconds)
 
 ### Installation
-
-**On macOS / Windows / Non-Debian Linux:**
 ```bash
 pip install lmapp
 lmapp chat
 ```
 
-**On Debian / Ubuntu (due to PEP 668):**
-```bash
-# Option 1: Use pipx (recommended for CLI tools)
-pipx install lmapp
-lmapp chat
+✅ **v0.1.0 Now Available** - [Install from PyPI](https://pypi.org/project/lmapp/)
 
-# Option 2: Use a virtual environment
-python3 -m venv ~/.venv-lmapp
-~/.venv-lmapp/bin/pip install lmapp
-~/.venv-lmapp/bin/lmapp chat
-```
 
-**⚡ Important: Always use `pip install lmapp` (no version pin)**
-
-The simple command `pip install lmapp` automatically installs the **latest stable version**. Future updates are as simple as:
-```bash
-pip install --upgrade lmapp
-```
-
-No need to remember version numbers—just run the same command. That's the whole point.
-
-✅ **v0.1.0 Now Available** - [Install from PyPI](https://pypi.org/project/lmapp/)  
-📦 **Available on:** PyPI, PyPI (all platforms)
-
----
 
 ## 💡 Who Is This For?
 
@@ -256,18 +232,15 @@ tail -f ~/.local/share/lmapp/logs/lmapp.log
 
 ## 📚 Documentation
 
-Start here based on your needs:
-
 | I Want To... | Read This |
 |---|---|
-| Get started in 5 minutes (User) | [Quick Start Guide](QUICK_START.md) |
-| Get started in 5 minutes (Contributor) | [Getting Started Guide](GETTING_STARTED.md) |
-| Understand the config options | [Configuration Guide](docs/CONFIGURATION.md) |
-| Troubleshoot problems | [Troubleshooting Guide](TROUBLESHOOTING.md) |
-| Learn more about using lmapp | [User Guide](docs/user-guide.md) |
-| Understand the code | [Architecture Guide](ARCHITECTURE.md) |
+| Get started in 5 minutes | [Contributing Guide](CONTRIBUTING.md) |
+| Understand configuration | [Configuration Guide](docs/CONFIGURATION.md) |
+| Troubleshoot issues | [Troubleshooting Guide](TROUBLESHOOTING.md) |
+| Learn about the code | [Architecture Guide](ARCHITECTURE.md) |
 | Contribute or modify | [Contributing Guide](CONTRIBUTING.md) |
-| See what's coming next | [Roadmap](ROADMAP.md) |
+| See what's next | [Roadmap](ROADMAP.md) |
+
 
 ---
 
@@ -329,97 +302,38 @@ All contributions welcome:
 
 ---
 
-## 💬 Support & Community
+## 💬 Support
 
-- **Questions?** Check [FAQ](docs/faq.md) or [Troubleshooting](TROUBLESHOOTING.md)
-- **Found a bug?** Open an [Issue](https://github.com/yourusername/lmapp/issues)
-- **Want to discuss?** Use [Discussions](https://github.com/yourusername/lmapp/discussions)
-- **Email**: support@lmapp.dev (coming soon)
+- **Found a bug?** Open an [Issue](https://github.com/nabaznyl/lmapp/issues)
+- **Questions?** See [Troubleshooting Guide](TROUBLESHOOTING.md)
+- **Discussions?** Use [GitHub Discussions](https://github.com/nabaznyl/lmapp/discussions)
 
 ---
 
 ## ❓ FAQ
 
-### Installation & Updates
+**Q: How do I install?**  
+`pip install lmapp`
 
-**Q: Should I use `pip install lmapp==0.1.0` or just `pip install lmapp`?**
+**Q: How do I update?**  
+`pip install --upgrade lmapp`
 
-A: **Always use `pip install lmapp`** (no version). This way:
-- First install: Gets the latest stable version automatically
-- Updates: `pip install --upgrade lmapp` works without memorizing version numbers
-- Simplicity: One command works forever, even after new releases
+**Q: Can I use commercially?**  
+Yes! MIT License allows it. See [LICENSE](LICENSE).
 
-Example workflow:
-```bash
-# Day 1: Install latest
-pip install lmapp
+**Q: Does it collect data?**  
+No. 100% local, no telemetry.
 
-# Month later: Update to new version
-pip install --upgrade lmapp
-# That's it! No need to figure out the new version number.
-```
-
-### Interactive Features
-
-**Q: Why does `lmapp install` fail when I pipe input to it?**
-
-A: The installation wizard needs an interactive terminal (requires `stdin`, `stdout`, `stderr` directly). This is by design—it shows you an interactive menu to choose your backend.
-
-**This is NOT a limitation:**
-- ✅ Works perfectly when you run it directly: `lmapp install`
-- ✅ Users will run it interactively (not in scripts)
-- ✅ Automated CI/CD uses test mode (no interactive wizards)
-
-**When does this matter?**
-- ❌ Testing with piped input: `echo "n" | lmapp install` (expected to fail)
-- ✅ Normal user usage: `lmapp install` (works perfectly)
-
-### Licensing & Legal
-
-**Q: Can I use lmapp commercially?**
-
-A: Yes! MIT License allows commercial use, modification, and distribution. See [LEGAL_NOTICE.md](./LEGAL_NOTICE.md) for details.
-
-**Q: What about GPL? Will using Ollama/llamafile contaminate my code?**
-
-A: No. Ollama (MIT) and llamafile (Apache 2.0) are runtime tools—not bundled with lmapp. Your MIT license is completely safe.
-
-### Troubleshooting
-
-**Q: `pip install lmapp` says "command not found" or not in PATH?**
-
-A: On Linux (Debian/Ubuntu), use `pipx` instead:
-```bash
-sudo apt install pipx
-pipx install lmapp
-```
-
-**Q: How do I update to the latest version?**
-
-A: Simply run:
-```bash
-pip install --upgrade lmapp
-```
-
-**Q: Can I uninstall and reinstall?**
-
-A: Yes:
-```bash
-pip uninstall lmapp
-pip install lmapp
-```
-
-See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for more help.
+More questions? See [Troubleshooting Guide](TROUBLESHOOTING.md).
 
 ---
 
-## 🤝 Community
+## 🔗 Resources
 
-- **Contributing?** See [CONTRIBUTING.md](./CONTRIBUTING.md)
-- **Code of Conduct?** See [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
-- **Security Issue?** See [SECURITY.md](./SECURITY.md)
-- **Developer Guide?** See [DEVELOPMENT.md](./DEVELOPMENT.md)
-- **Development Automation?** See [AUTOMATION_FRAMEWORK.md](./AUTOMATION_FRAMEWORK.md)
+- [Contributing Guidelines](./CONTRIBUTING.md)
+- [Code of Conduct](./CODE_OF_CONDUCT.md)
+- [Security Policy](./SECURITY.md)
+- [Architecture](./ARCHITECTURE.md)
 
 ---
 

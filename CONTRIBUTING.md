@@ -2,12 +2,40 @@
 
 Thank you for your interest in contributing to lmapp! This document covers everything you need to know to get started.
 
-> **👉 New contributor?** Start with [GETTING_STARTED.md](./GETTING_STARTED.md) for a quick 5-minute setup guide!
+---
+
+## 🚀 Quick Start for Contributors (5 Minutes)
+
+**First Time Setup:**
+```bash
+git clone https://github.com/nabaznyl/lmapp.git
+cd lmapp
+bash scripts/dev-utils.sh setup && bash scripts/dev-utils.sh ready
+```
+
+**Daily Workflow:**
+```bash
+make format        # Auto-format code
+make test          # Run tests
+git add .
+git commit -m "Your message"    # Pre-commit hook validates automatically
+```
+
+**Before Submitting PR:**
+```bash
+make all           # Format, lint, test all at once
+bash scripts/dev-utils.sh deps-audit    # Security check
+git push origin feature/your-feature
+```
+
+See [full workflow below](#development-workflow) for details.
+
+---
 
 ## Table of Contents
 
-1. [Code of Conduct](#code-of-conduct)
-2. [Getting Started](#getting-started)
+1. [Quick Start](#quick-start-for-contributors-5-minutes)
+2. [Code of Conduct](#code-of-conduct)
 3. [Development Workflow](#development-workflow)
 4. [Making Changes](#making-changes)
 5. [Testing & Quality](#testing--quality)
@@ -40,112 +68,44 @@ We are committed to providing a welcoming and inspiring community for all. We as
 
 ---
 
-## Getting Started
-
-### Prerequisites
-
-- Python 3.8+ (we test 3.8, 3.9, 3.10, 3.11, 3.12)
-- git
-- pip or pipx
-- Basic familiarity with command line
-
-### One-Time Setup
-
-**Option 1: Using Makefile (Recommended)**
-
-```bash
-git clone https://github.com/nabaznyl/lmapp.git
-cd lmapp
-make dev              # Install dev deps + pre-commit hooks
-make hooks            # Setup pre-commit hooks
-make test             # Verify everything works
-```
-
-**Option 2: Using Bootstrap Script**
-
-```bash
-git clone https://github.com/nabaznyl/lmapp.git
-cd lmapp
-./scripts/bootstrap_dev_env.sh   # Automated setup
-source .venv/bin/activate         # Activate environment
-make test                         # Run tests
-```
-
-**Option 3: Manual Setup**
-
-```bash
-git clone https://github.com/nabaznyl/lmapp.git
-cd lmapp
-
-# Create virtual environment
-python3 -m venv .venv
-source .venv/bin/activate     # On Windows: .venv\Scripts\activate
-
-# Install dev dependencies
-pip install -e ".[dev]"
-
-# Install pre-commit hooks
-pre-commit install
-
-# Run tests to verify
-pytest tests/ -v
-```
-
-**Verify Setup:**
-
-```bash
-make help             # Shows available commands
-make version          # Should show 0.1.0
-make test             # All tests should pass (128 tests)
-make check            # Full code quality check
-```
-
-**Environment Verification:**
-
-```bash
-# Check that .venv is active
-./scripts/check_env.sh
-
-# Run tests with venv-aware wrapper
-./scripts/run_tests.sh
-```
-
----
-
 ## Development Workflow
 
-### The Standard Workflow (Quick Version)
+### Standard Workflow (Quick Version)
 
+**Step 1: Setup (first time only)**
 ```bash
-# Step 1: Setup (first time only)
 bash scripts/dev-utils.sh setup && bash scripts/dev-utils.sh ready
-
-# Step 2: Create a branch and make your changes
-git checkout -b feature/your-feature-name
-# ... make your changes ...
-
-# Step 3: Validate before committing
-make format          # Auto-format your code
-make test            # Run all tests
-git add .
-git commit -m "description"    # Pre-commit hook validates automatically
-
-# Step 4: Before pushing
-make all             # Full validation (format + lint + test)
-bash scripts/dev-utils.sh deps-audit    # Security check
-git push origin feature/your-feature-name
-
-# Step 5: Submit pull request
-# Go to GitHub and open a PR with description
 ```
 
-**That's it!** The git hooks protect you automatically.
+**Step 2: Create feature branch**
+```bash
+git checkout -b feature/your-feature-name
+# Make your changes...
+```
+
+**Step 3: Validate before committing**
+```bash
+make format          # Auto-format
+make test            # Run tests
+git add .
+git commit -m "description"    # Pre-commit hook validates automatically
+```
+
+**Step 4: Before pushing**
+```bash
+make all             # Full validation
+bash scripts/dev-utils.sh deps-audit    # Security check
+git push origin feature/your-feature-name
+```
+
+**Step 5: Open PR on GitHub**
+
+The git hooks protect you automatically.
 
 ### Finding Something to Work On
 
 **Good first issues** - Perfect for new contributors:
-```bash
-# Filter on GitHub by label: "good-first-issue"
+```
 https://github.com/nabaznyl/lmapp/labels/good-first-issue
 ```
 
@@ -165,7 +125,7 @@ git checkout -b feature/your-feature-name
 **Naming conventions:**
 - `feature/` - New feature
 - `fix/` - Bug fix
-- `docs/` - Documentation update
+- `docs/` - Documentation
 - `refactor/` - Code improvements
 - `test/` - Test additions
 
