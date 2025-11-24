@@ -456,6 +456,41 @@ black src/ tests/
 
 ---
 
+## Documentation Guide
+
+### Quick Navigation
+
+**"Where do I start?"**
+→ [README.md](./README.md) - Project overview and quick start
+
+**"How do I install lmapp?"**
+→ [INSTALL.md](./INSTALL.md) - Installation methods
+
+**"How do I contribute?"**
+→ [CONTRIBUTING.md](./CONTRIBUTING.md) - Contribution guidelines
+
+**"What are the design decisions?"**
+→ [ROADMAP.md](./ROADMAP.md) - Architecture and roadmap
+
+**"I'm stuck, where do I look?"**
+→ [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) - Common issues and solutions
+
+### For Users
+- **[README.md](./README.md)** - Overview, features, use cases
+- **[INSTALL.md](./INSTALL.md)** - Installation instructions
+- **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** - FAQ and common issues
+- **[ROADMAP.md](./ROADMAP.md)** - Feature roadmap and future plans
+
+### For Contributors
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - How to contribute
+- **[DEVELOPMENT.md](./DEVELOPMENT.md)** - This file (dev setup, workflows)
+- **[LEGAL_NOTICE.md](./LEGAL_NOTICE.md)** - License and dependency info
+
+### For Maintainers
+- **[MULTI_LANGUAGE_STRATEGY.md](./MULTI_LANGUAGE_STRATEGY.md)** - Long-term architecture vision
+
+---
+
 ## Resources
 
 - **Python 3.8+ Docs**: https://docs.python.org/3.8/
@@ -469,7 +504,7 @@ black src/ tests/
 
 ## Getting Help
 
-- **Questions?** Check `TROUBLESHOOTING.md` or open a Discussion
+- **Questions?** Check [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) or open a Discussion
 - **Found a bug?** Open an Issue with reproduction steps
 - **Want feedback?** Create a Draft PR and ask for review
 - **Stuck?** Comment on an issue and ask for help
