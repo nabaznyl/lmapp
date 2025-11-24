@@ -15,38 +15,18 @@ from lmapp.utils.logging import logger
 
 class LMAppConfig(BaseModel):
     """Configuration schema for lmapp"""
-    
-    model_config = ConfigDict(case_sensitive=False, validate_assignment=True)
-    
-    backend: str = Field(
-        default="auto",
-        description="LLM backend: auto|ollama|llamafile|mock"
-    )
-    model: str = Field(
-        default="tinyllama",
-        description="Model name to use"
-    )
-    temperature: float = Field(
-        default=0.7,
-        ge=0.0,
-        le=1.0,
-        description="Temperature (0.0-1.0)"
-    )
-    debug: bool = Field(
-        default=False,
-        description="Enable debug logging"
-    )
-    
+
+    model_config = ConfigDict(validate_assignment=True)
+
+    backend: str = Field(default="auto", description="LLM backend: auto|ollama|llamafile|mock")
+    model: str = Field(default="tinyllama", description="Model name to use")
+    temperature: float = Field(default=0.7, ge=0.0, le=1.0, description="Temperature (0.0-1.0)")
+    debug: bool = Field(default=False, description="Enable debug logging")
+
     # Advanced settings (future)
-    max_tokens: Optional[int] = Field(
-        default=None,
-        description="Maximum tokens in response"
-    )
-    timeout: int = Field(
-        default=300,
-        description="Request timeout in seconds"
-    )
-    
+    max_tokens: Optional[int] = Field(default=None, description="Maximum tokens in response")
+    timeout: int = Field(default=300, description="Request timeout in seconds")
+
     @field_validator("backend")
     @classmethod
     def validate_backend(cls, v):
@@ -55,7 +35,7 @@ class LMAppConfig(BaseModel):
         if v not in valid:
             raise ValueError(f"Backend must be one of {valid}")
         return v
-    
+
     @field_validator("model")
     @classmethod
     def validate_model(cls, v):
@@ -67,20 +47,20 @@ class LMAppConfig(BaseModel):
 
 class ConfigManager:
     """Manages configuration persistence"""
-    
+
     CONFIG_DIR = Path.home() / ".config" / "lmapp"
     CONFIG_FILE = CONFIG_DIR / "config.json"
-    
+
     def __init__(self):
         """Initialize config manager"""
         self.config_dir = self.CONFIG_DIR
         self.config_file = self.CONFIG_FILE
         self._config: Optional[LMAppConfig] = None
-    
+
     def load(self) -> LMAppConfig:
         """Load configuration from file or environment"""
         logger.debug(f"Loading configuration from {self.config_file}")
-        
+
         # Try to load from file first
         if self.config_file.exists():
             try:
@@ -94,18 +74,18 @@ class ConfigManager:
         else:
             # Load from environment
             self._config = self._from_env()
-        
+
         return self._config
-    
+
     def save(self, config: Optional[LMAppConfig] = None) -> bool:
         """Save configuration to file"""
         if config:
             self._config = config
-        
+
         if not self._config:
             logger.error("No configuration to save")
             return False
-        
+
         try:
             self.config_dir.mkdir(parents=True, exist_ok=True)
             with open(self.config_file, "w") as f:
@@ -115,57 +95,63 @@ class ConfigManager:
         except Exception as e:
             logger.error(f"Failed to save config: {e}")
             return False
-    
+
     def _from_env(self) -> LMAppConfig:
         """Load configuration from environment variables"""
         logger.debug("Loading configuration from environment variables")
-        
+
         return LMAppConfig(
             backend=os.getenv("LMAPP_BACKEND", "auto"),
             model=os.getenv("LMAPP_MODEL", "tinyllama"),
             temperature=float(os.getenv("LMAPP_TEMP", "0.7")),
             debug=os.getenv("LMAPP_DEBUG", "0") == "1",
         )
-    
+
     def get(self) -> LMAppConfig:
-        """Get current configuration"""
+        """Get current configuration (never returns None)"""
         if not self._config:
-            self.load()
+            try:
+                self.load()
+            except Exception:
+                # Fallback to default config if loading fails
+                self._config = LMAppConfig()
+        if not self._config:
+            self._config = LMAppConfig()
         return self._config
-    
+
     def update(self, **kwargs) -> bool:
         """Update configuration and save"""
         if not self._config:
             self.load()
-        
+
         try:
             if not self._config:
                 raise RuntimeError("Config not loaded")
-            
+
             # Update fields
             for key, value in kwargs.items():
                 if hasattr(self._config, key):
                     setattr(self._config, key, value)
-            
+
             # Validate and save
             self._config = LMAppConfig(**self._config.model_dump())
             return self.save()
         except Exception as e:
             logger.error(f"Failed to update config: {e}")
             return False
-    
+
     def show(self) -> str:
         """Get configuration as formatted string"""
         if not self._config:
             self.load()
-        
+
         if not self._config:
             return "Error: Configuration could not be loaded"
-        
+
         lines = ["Current Configuration:"]
         for key, value in self._config.model_dump().items():
             lines.append(f"  {key}: {value}")
-        
+
         return "\n".join(lines)
 
 

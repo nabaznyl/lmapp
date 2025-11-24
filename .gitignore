@@ -71,3 +71,10 @@ Thumbs.db
 tmp/
 temp/
 *.tmp
+
+# Launch & campaign materials (personal use only)
+LAUNCH_*.md
+CONSOLIDATION_SUMMARY.md
+AUDIT_REPORT.md
+archive/launch-campaign-v0.1.0/
+SESSION_COMPLETION_REPORT*.md

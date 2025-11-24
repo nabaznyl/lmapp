@@ -40,7 +40,7 @@ hooks:
 	@echo "✅ Pre-commit hooks installed!"
 
 test:
-	pytest tests/ -v
+	@./scripts/run_tests.sh
 
 lint:
 	flake8 src/ --count --exit-zero --max-complexity=10
@@ -65,6 +65,7 @@ quick-start:
 
 check:
 	@echo "🔍 Running pre-commit checks..."
+	@./scripts/check_env.sh || (echo "Ensure .venv is active or run './scripts/bootstrap_dev_env.sh'" && false)
 	@python -m black --check src/ tests/ 2>/dev/null || true
 	@python -m flake8 src/ --max-complexity=10 2>/dev/null || true
 	@python -m mypy src/lmapp/ --ignore-missing-imports 2>/dev/null || true

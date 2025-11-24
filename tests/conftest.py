@@ -1,3 +1,12 @@
+import os
+import sys
+
+# Ensure the repository root is on sys.path so `src` is an importable top-level
+# package. Tests import modules as `src.lmapp...`, so the parent directory
+# (project root) must be on sys.path.
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
 """Pytest configuration and fixtures"""
 
 import pytest
