@@ -82,6 +82,8 @@ AUTOMATION_GUIDE.md
 MULTI_LANGUAGE_STRATEGY.md
 AUTOMATION_FRAMEWORK.md
 AUTOMATION_STATUS.txt
+ENTERPRISE_FEATURES.md
+INSTALL.md
 
 # Developer automation scripts (local development only - not in public releases)
 scripts/pre-commit-cleanup.sh

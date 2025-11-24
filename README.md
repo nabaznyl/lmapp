@@ -16,12 +16,32 @@
 ## 🚀 Quick Start (30 seconds)
 
 ### Installation
+
 ```bash
 pip install lmapp
 lmapp chat
 ```
 
-✅ **v0.1.0 Now Available** - [Install from PyPI](https://pypi.org/project/lmapp/)
+**Update:**
+```bash
+pip install --upgrade lmapp
+```
+
+**Alternative installations:**
+```bash
+# From GitHub Releases
+pip install https://github.com/nabaznyl/lmapp/releases/download/v0.1.0/lmapp-0.1.0-py3-none-any.whl
+
+# From Source
+git clone https://github.com/nabaznyl/lmapp.git && cd lmapp && pip install .
+```
+
+**Verify installation:**
+```bash
+lmapp --version && lmapp status
+```
+
+✅ **v0.1.0 Now Available** - [Install from PyPI](https://pypi.org/project/lmapp/) | [GitHub Packages](https://github.com/nabaznyl/lmapp/packages) | [Releases](https://github.com/nabaznyl/lmapp/releases)
 
 
 
@@ -281,24 +301,15 @@ tail -f ~/.local/share/lmapp/logs/lmapp.log
 - Enterprise features
 - Extended ecosystem
 
----
-
 ## 🤝 Contributing
 
-We love contributors! Here's how to get started:
+**Want to help improve lmapp?**
 
-1. **Read** [Contributing Guidelines](CONTRIBUTING.md)
-2. **Review** [Architecture](ARCHITECTURE.md)
-3. **Run tests** `pytest` (all should pass)
-4. **Make changes** and add tests
-5. **Submit** a pull request
+- [**Contributing Guide**](./CONTRIBUTING.md) - For developers who want to contribute code, fix bugs, or improve features
+- [**Code of Conduct**](./CODE_OF_CONDUCT.md) - Community standards
+- [**Architecture Guide**](./ARCHITECTURE.md) - Understand the codebase
 
-All contributions welcome:
-- Bug fixes
-- Feature suggestions (via issues first)
-- Documentation improvements
-- Test additions
-- Code refactoring
+All contributions welcome: bug fixes, features, documentation, tests, and ideas.
 
 ---
 
@@ -307,6 +318,18 @@ All contributions welcome:
 - **Found a bug?** Open an [Issue](https://github.com/nabaznyl/lmapp/issues)
 - **Questions?** See [Troubleshooting Guide](TROUBLESHOOTING.md)
 - **Discussions?** Use [GitHub Discussions](https://github.com/nabaznyl/lmapp/discussions)
+
+---
+
+## ⚙️ Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| `command not found` | Add `~/.local/bin` to `$PATH` or use `pipx install lmapp` |
+| `ModuleNotFoundError` | Reinstall: `pip install --upgrade lmapp` |
+| Debian/Ubuntu issues | Use `pipx install lmapp` instead of `pip` |
+
+See [Troubleshooting Guide](TROUBLESHOOTING.md) for more.
 
 ---
 
@@ -328,12 +351,11 @@ More questions? See [Troubleshooting Guide](TROUBLESHOOTING.md).
 
 ---
 
-## 🔗 Resources
+## 📚 Documentation
 
-- [Contributing Guidelines](./CONTRIBUTING.md)
-- [Code of Conduct](./CODE_OF_CONDUCT.md)
 - [Security Policy](./SECURITY.md)
-- [Architecture](./ARCHITECTURE.md)
+- [License](LICENSE)
+- [Changelog](CHANGELOG.md)
 
 ---
 
