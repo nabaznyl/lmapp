@@ -88,4 +88,3 @@ def disable_debug():
 if DEBUG_MODE:
     logger.debug("Debug mode enabled via LMAPP_DEBUG environment variable")
     logger.debug(f"Log file: {LOG_FILE}")
-

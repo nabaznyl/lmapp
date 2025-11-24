@@ -4,7 +4,6 @@ Main Menu System
 Provides alphabetic multiple-choice menus for user interaction
 """
 
-import sys
 from typing import List, Callable, Optional
 
 import inquirer
@@ -16,13 +15,13 @@ console = Console()
 
 class MenuItem:
     """Represents a single menu item"""
-    
+
     def __init__(self, key: str, label: str, action: Optional[Callable] = None, description: str = ""):
         self.key = key.upper()
         self.label = label
         self.action = action
         self.description = description
-    
+
     def execute(self):
         """Execute the menu item's action"""
         if self.action:
@@ -33,11 +32,11 @@ class MenuItem:
 
 class MainMenu:
     """Main application menu"""
-    
+
     def __init__(self):
         self.items = self._build_menu_items()
         self.running = True
-    
+
     def _build_menu_items(self) -> List[MenuItem]:
         """Build the main menu structure"""
         return [
@@ -48,46 +47,46 @@ class MainMenu:
             MenuItem("E", "Help & documentation", self.show_help, "View guides and troubleshooting"),
             MenuItem("Q", "Quit", self.quit, "Exit lmapp"),
         ]
-    
+
     def display(self):
         """Display the menu"""
         console.print("\n[bold cyan]lmapp - Main Menu[/bold cyan]\n")
-        
+
         for item in self.items:
             if item.description:
                 console.print(f"[bold]{item.key})[/bold] {item.label}")
                 console.print(f"   [dim]{item.description}[/dim]")
             else:
                 console.print(f"[bold]{item.key})[/bold] {item.label}")
-        
+
         console.print()
-    
+
     def get_choice(self) -> Optional[str]:
         """Get user's menu choice"""
         choices = [(f"{item.key}) {item.label}", item.key) for item in self.items]
-        
+
         questions = [
             inquirer.List(
-                'choice',
+                "choice",
                 message="Choose an option",
                 choices=choices,
             ),
         ]
-        
+
         try:
             answers = inquirer.prompt(questions)
             if answers:
-                return answers['choice']
+                return answers["choice"]
             return None
         except KeyboardInterrupt:
-            return 'Q'
-    
+            return "Q"
+
     def run(self):
         """Main menu loop"""
         while self.running:
             self.display()
             choice = self.get_choice()
-            
+
             if choice:
                 # Find and execute the menu item
                 for item in self.items:
@@ -95,23 +94,23 @@ class MainMenu:
                         console.print()
                         item.execute()
                         break
-                
-                if choice.upper() == 'Q':
+
+                if choice.upper() == "Q":
                     break
             else:
                 break
-        
+
         console.print("\n[dim]Thanks for using lmapp![/dim]\n")
-    
+
     # Menu action methods
-    
+
     def start_chat(self):
         """Start a new chat session"""
         console.print("[bold cyan]Starting chat session...[/bold cyan]")
         console.print("[yellow]Chat functionality coming soon![/yellow]")
         console.print("[dim]Press Enter to return to menu[/dim]")
         input()
-    
+
     def manage_models(self):
         """Model management interface"""
         console.print("[bold cyan]Model Management[/bold cyan]\n")
@@ -123,7 +122,7 @@ class MainMenu:
         console.print("  • Remove unused models")
         console.print("\n[dim]Press Enter to return to menu[/dim]")
         input()
-    
+
     def configure(self):
         """Configuration interface"""
         console.print("[bold cyan]Configuration[/bold cyan]\n")
@@ -135,7 +134,7 @@ class MainMenu:
         console.print("  • API endpoints")
         console.print("\n[dim]Press Enter to return to menu[/dim]")
         input()
-    
+
     def shell_customize(self):
         """Shell customization menu"""
         console.print("[bold cyan]Shell Customization[/bold cyan]\n")
@@ -147,7 +146,7 @@ class MainMenu:
         console.print("  • Add custom aliases")
         console.print("\n[dim]Press Enter to return to menu[/dim]")
         input()
-    
+
     def show_help(self):
         """Display help information"""
         help_text = """
@@ -173,7 +172,7 @@ class MainMenu:
         console.print(Panel(help_text, border_style="cyan"))
         console.print("\n[dim]Press Enter to return to menu[/dim]")
         input()
-    
+
     def quit(self):
         """Exit the application"""
         self.running = False
