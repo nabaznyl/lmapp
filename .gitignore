@@ -72,9 +72,15 @@ tmp/
 temp/
 *.tmp
 
+# Internal Planning & Documentation (Local Only)
+AUDIT_REPORT.md
+PROJECT_CHARTER.md
+INTEGRATED_ROADMAP.md
+GITHUB_BRANCH_PROTECTION_SETUP.md
+
 # Launch & campaign materials (personal use only)
 LAUNCH_*.md
 CONSOLIDATION_SUMMARY.md
-AUDIT_REPORT.md
 archive/launch-campaign-v0.1.0/
 SESSION_COMPLETION_REPORT*.md
+SESSION_*.md
