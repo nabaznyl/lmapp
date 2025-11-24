@@ -73,6 +73,7 @@ temp/
 *.tmp
 
 # Internal Planning & Documentation (Local Only)
+TODO.md
 AUDIT_REPORT.md
 PROJECT_CHARTER.md
 INTEGRATED_ROADMAP.md
