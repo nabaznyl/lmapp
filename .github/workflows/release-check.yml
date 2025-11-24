@@ -1,0 +1,60 @@
+name: Auto-Release Helper
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'VERSION'
+      - 'CHANGELOG.md'
+
+permissions:
+  contents: read
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    name: Validate Version & Changelog
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Get version from VERSION file
+        id: version
+        run: |
+          VERSION=$(cat VERSION | grep -E "^v?[0-9]+\.[0-9]+\.[0-9]+" | head -1)
+          VERSION="${VERSION#v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "📌 Version: $VERSION"
+      
+      - name: Check CHANGELOG has version entry
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          if ! grep -q "## \[v$VERSION\]" CHANGELOG.md; then
+            echo "⚠️  Version v$VERSION not found in CHANGELOG.md"
+            echo "Please add release notes before tagging."
+            exit 1
+          fi
+          echo "✅ CHANGELOG.md has entry for v$VERSION"
+      
+      - name: Check version consistency
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          
+          # Check setup.py
+          if grep -q "version=\"$VERSION\"" setup.py; then
+            echo "✅ setup.py has correct version"
+          else
+            echo "❌ setup.py version mismatch"
+            exit 1
+          fi
+          
+          # Check pyproject.toml
+          if grep -q "version = \"$VERSION\"" pyproject.toml; then
+            echo "✅ pyproject.toml has correct version"
+          else
+            echo "❌ pyproject.toml version mismatch"
+            exit 1
+          fi
