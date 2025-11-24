@@ -35,6 +35,15 @@ python3 -m venv ~/.venv-lmapp
 ~/.venv-lmapp/bin/lmapp chat
 ```
 
+**⚡ Important: Always use `pip install lmapp` (no version pin)**
+
+The simple command `pip install lmapp` automatically installs the **latest stable version**. Future updates are as simple as:
+```bash
+pip install --upgrade lmapp
+```
+
+No need to remember version numbers—just run the same command. That's the whole point.
+
 ✅ **v0.1.0 Now Available** - [Install from PyPI](https://pypi.org/project/lmapp/)  
 📦 **Available on:** PyPI, PyPI (all platforms)
 
@@ -325,6 +334,81 @@ All contributions welcome:
 - **Found a bug?** Open an [Issue](https://github.com/yourusername/lmapp/issues)
 - **Want to discuss?** Use [Discussions](https://github.com/yourusername/lmapp/discussions)
 - **Email**: support@lmapp.dev (coming soon)
+
+---
+
+## ❓ FAQ
+
+### Installation & Updates
+
+**Q: Should I use `pip install lmapp==0.1.0` or just `pip install lmapp`?**
+
+A: **Always use `pip install lmapp`** (no version). This way:
+- First install: Gets the latest stable version automatically
+- Updates: `pip install --upgrade lmapp` works without memorizing version numbers
+- Simplicity: One command works forever, even after new releases
+
+Example workflow:
+```bash
+# Day 1: Install latest
+pip install lmapp
+
+# Month later: Update to new version
+pip install --upgrade lmapp
+# That's it! No need to figure out the new version number.
+```
+
+### Interactive Features
+
+**Q: Why does `lmapp install` fail when I pipe input to it?**
+
+A: The installation wizard needs an interactive terminal (requires `stdin`, `stdout`, `stderr` directly). This is by design—it shows you an interactive menu to choose your backend.
+
+**This is NOT a limitation:**
+- ✅ Works perfectly when you run it directly: `lmapp install`
+- ✅ Users will run it interactively (not in scripts)
+- ✅ Automated CI/CD uses test mode (no interactive wizards)
+
+**When does this matter?**
+- ❌ Testing with piped input: `echo "n" | lmapp install` (expected to fail)
+- ✅ Normal user usage: `lmapp install` (works perfectly)
+
+### Licensing & Legal
+
+**Q: Can I use lmapp commercially?**
+
+A: Yes! MIT License allows commercial use, modification, and distribution. See [LEGAL_NOTICE.md](./LEGAL_NOTICE.md) for details.
+
+**Q: What about GPL? Will using Ollama/llamafile contaminate my code?**
+
+A: No. Ollama (MIT) and llamafile (Apache 2.0) are runtime tools—not bundled with lmapp. Your MIT license is completely safe.
+
+### Troubleshooting
+
+**Q: `pip install lmapp` says "command not found" or not in PATH?**
+
+A: On Linux (Debian/Ubuntu), use `pipx` instead:
+```bash
+sudo apt install pipx
+pipx install lmapp
+```
+
+**Q: How do I update to the latest version?**
+
+A: Simply run:
+```bash
+pip install --upgrade lmapp
+```
+
+**Q: Can I uninstall and reinstall?**
+
+A: Yes:
+```bash
+pip uninstall lmapp
+pip install lmapp
+```
+
+See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for more help.
 
 ---
 
