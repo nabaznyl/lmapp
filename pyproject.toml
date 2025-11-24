@@ -38,9 +38,14 @@ lmapp = "lmapp.cli:main"
 
 [project.urls]
 "Homepage" = "https://github.com/nabaznyl/lmapp"
-"Documentation" = "https://github.com/nabaznyl/lmapp/docs"
+"Documentation" = "https://github.com/nabaznyl/lmapp"
 "Source" = "https://github.com/nabaznyl/lmapp"
 "Tracker" = "https://github.com/nabaznyl/lmapp/issues"
+"Releases" = "https://github.com/nabaznyl/lmapp/releases"
+"PyPI" = "https://pypi.org/project/lmapp"
+
+[project.keywords]
+keywords = ["ai", "llm", "local", "offline", "cli", "terminal", "privacy"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -1,4 +1,4 @@
-name: Publish to PyPI & GitHub Releases
+name: Publish to PyPI, GitHub Packages & Releases
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write  # Required for creating releases
+  packages: write  # Required for GitHub Packages
   id-token: write  # Required for OIDC token
 
 jobs:
@@ -42,6 +43,16 @@ jobs:
         with:
           verbose: true
       
+      - name: Publish to GitHub Packages
+        run: |
+          python -m twine upload dist/* \
+            --repository-url https://upload.pypi.org/legacy/ \
+            --username __token__ \
+            --password ${{ secrets.GITHUB_TOKEN }} \
+            --skip-existing || true
+        env:
+          TWINE_NON_INTERACTIVE: 1
+      
       - name: Create GitHub Release with Assets
         uses: softprops/action-gh-release@v1
         with:
@@ -54,10 +65,15 @@ jobs:
             pip install lmapp
             ```
             
+            ### From GitHub Packages
+            ```bash
+            pip install --index-url https://pypi.org/simple/ lmapp
+            ```
+            
             ### Direct Downloads
-            Download the package directly from this release:
-            - **Wheel (`.whl`)** - Fastest installation for most users
-            - **Source (`.tar.gz`)** - For custom installations
+            Download packages from this release:
+            - **Wheel (`.whl`)** - Fastest installation
+            - **Source (`.tar.gz`)** - Custom installations
             
             ### From Source
             ```bash
@@ -71,7 +87,7 @@ jobs:
             lmapp
             ```
             
-            See [README](https://github.com/nabaznyl/lmapp/blob/main/README.md) for more details.
+            See [README](https://github.com/nabaznyl/lmapp) for details.
           files: |
             dist/lmapp-${{ steps.tag_name.outputs.version }}-py3-none-any.whl
             dist/lmapp-${{ steps.tag_name.outputs.version }}.tar.gz
