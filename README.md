@@ -418,6 +418,7 @@ See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for more help.
 - **Code of Conduct?** See [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
 - **Security Issue?** See [SECURITY.md](./SECURITY.md)
 - **Developer Guide?** See [DEVELOPMENT.md](./DEVELOPMENT.md)
+- **Development Automation?** See [AUTOMATION_FRAMEWORK.md](./AUTOMATION_FRAMEWORK.md)
 
 ---
 
