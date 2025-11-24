@@ -59,7 +59,17 @@ make hooks            # Setup pre-commit hooks
 make test             # Verify everything works
 ```
 
-**Option 2: Manual Setup**
+**Option 2: Using Bootstrap Script**
+
+```bash
+git clone https://github.com/nabaznyl/lmapp.git
+cd lmapp
+./scripts/bootstrap_dev_env.sh   # Automated setup
+source .venv/bin/activate         # Activate environment
+make test                         # Run tests
+```
+
+**Option 3: Manual Setup**
 
 ```bash
 git clone https://github.com/nabaznyl/lmapp.git
@@ -84,8 +94,18 @@ pytest tests/ -v
 ```bash
 make help             # Shows available commands
 make version          # Should show 0.1.0
-make test             # All tests should pass (83 tests)
-make lint             # Code quality check
+make test             # All tests should pass (128 tests)
+make check            # Full code quality check
+```
+
+**Environment Verification:**
+
+```bash
+# Check that .venv is active
+./scripts/check_env.sh
+
+# Run tests with venv-aware wrapper
+./scripts/run_tests.sh
 ```
 
 ---

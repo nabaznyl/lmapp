@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## Unreleased
+
+### Added
+- **Environment Automation Scripts**: Simplify setup and ensure correct venv usage
+  - `scripts/bootstrap_dev_env.sh` - Automated virtualenv creation and dependency installation
+  - `scripts/check_env.sh` - Verify correct .venv activation
+  - `scripts/run_tests.sh` - Run tests with automatic venv management
+
+- **Makefile Enhancements**: Integrated venv-aware targets
+  - `make test` now uses venv wrapper for consistent testing
+  - `make check` requires active .venv for static checks
+
+### Changed
+- **Code Quality Improvements**:
+  - Applied black formatting to all 24 source files
+  - Removed 20+ unused imports for cleaner codebase
+  - Fixed 8 f-string placeholder issues
+  - Cleaned 300+ lines of trailing whitespace
+  - Split long URL for line-length compliance
+  - Result: **0 flake8 errors** ✓
+
+- **Type Safety**:
+  - Added None guard checks in `backend/ollama.py`
+  - Fixed return type annotations in `core/config.py`
+  - Aligned method signatures across backend implementations
+  - Result: **0 mypy errors** ✓
+
+- **Documentation**:
+  - Updated README with accurate code quality metrics
+  - Enhanced CONTRIBUTING guide with automation scripts
+  - Fixed version mismatch (all files now at 0.1.0)
+
+### Fixed
+- Test collection no longer fails with "ModuleNotFoundError: No module named 'src'"
+  - Tests now use correct `lmapp.*` imports instead of `src.lmapp.*`
+- GitHub Actions CI/CD now passes all checks
+- Local and CI environments now consistent
+
+---
+
 ## 🎉 v0.1.0 NOW AVAILABLE ON PyPI!
 
 ```bash
