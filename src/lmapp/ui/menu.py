@@ -16,7 +16,13 @@ console = Console()
 class MenuItem:
     """Represents a single menu item"""
 
-    def __init__(self, key: str, label: str, action: Optional[Callable] = None, description: str = ""):
+    def __init__(
+        self,
+        key: str,
+        label: str,
+        action: Optional[Callable] = None,
+        description: str = "",
+    ):
         self.key = key.upper()
         self.label = label
         self.action = action
@@ -40,11 +46,33 @@ class MainMenu:
     def _build_menu_items(self) -> List[MenuItem]:
         """Build the main menu structure"""
         return [
-            MenuItem("A", "Start new chat", self.start_chat, "Begin chatting with your local AI"),
-            MenuItem("B", "Manage models", self.manage_models, "Download, update, or remove AI models"),
-            MenuItem("C", "Configure settings", self.configure, "Adjust lmapp configuration"),
-            MenuItem("D", "Shell customization", self.shell_customize, "Install bash-it or Oh My Zsh"),
-            MenuItem("E", "Help & documentation", self.show_help, "View guides and troubleshooting"),
+            MenuItem(
+                "A",
+                "Start new chat",
+                self.start_chat,
+                "Begin chatting with your local AI",
+            ),
+            MenuItem(
+                "B",
+                "Manage models",
+                self.manage_models,
+                "Download, update, or remove AI models",
+            ),
+            MenuItem(
+                "C", "Configure settings", self.configure, "Adjust lmapp configuration"
+            ),
+            MenuItem(
+                "D",
+                "Shell customization",
+                self.shell_customize,
+                "Install bash-it or Oh My Zsh",
+            ),
+            MenuItem(
+                "E",
+                "Help & documentation",
+                self.show_help,
+                "View guides and troubleshooting",
+            ),
             MenuItem("Q", "Quit", self.quit, "Exit lmapp"),
         ]
 

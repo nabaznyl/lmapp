@@ -98,28 +98,154 @@
 
 ---
 
-## Infrastructure Decisions (Awaiting Review)
+## Infrastructure Decisions & Multi-Language Strategy
 
-### Multi-Language Strategy
-**Question:** How should lmapp evolve to support multiple languages while maintaining a clean core?
+### Evolution Path for Multi-Language Support
 
-**Options:**
-1. **Python-First (Current):** Keep core in Python, add language bindings as optional modules
-   - Pros: Simpler to maintain, faster iteration, ecosystem stability
-   - Cons: Performance ceiling for some operations
-   - Recommended path for v0.2-0.3
+As lmapp grows from v0.1.0 (foundation) → v0.2.0 (backends) → v0.3.0+ (extensibility), we strategically plan for multi-language support while maintaining a clean, maintainable core. This follows a **3-phase evolution strategy** that balances immediate practicality with long-term scalability.
 
-2. **Core + Plugins:** Establish strict interface contracts, allow community backends in any language
-   - Pros: Extensible, decoupled, scalable
-   - Cons: More complex architecture, version coordination
-   - Recommended path for v0.4+
+**Key Principle:** Don't over-engineer early; let real user needs drive language decisions.
 
-3. **Multi-Repo Strategy:** Separate language implementations, unified API contract
-   - Pros: Maximum flexibility, independent release cycles
-   - Cons: Significant overhead, fragmentation risk
-   - Recommended path for v1.0+
+#### Phase 1: Python-First (v0.2.0 - v0.3.0)
 
-**Recommendation:** Pursue **Option 1 → Option 2 → Option 3** as project matures
+**Duration:** 2-4 weeks (v0.2.0), then 1-2 weeks (v0.3.0)
+
+**Strategy:** Consolidate Python Core
+- Implement Ollama and llamafile as Python backends
+- Establish robust `BackendBase` interface (already done ✅)
+- Design plugin system for future bindings
+- Document plugin expectations and interface contracts
+
+**Advantages:**
+- ✅ No architecture changes needed
+- ✅ Fast feature development
+- ✅ Single testing matrix
+- ✅ Proven Python CLI patterns
+- ✅ Community familiarity
+
+**When to Move Forward:**
+- Real users ask for performance (benchmark results)
+- Users request desktop GUI (Electron, Tauri)
+- Users want browser-based chat UI
+
+#### Phase 2: Core + Plugins (v0.4.0)
+
+**Duration:** 4-6 weeks (design in v0.3.0, implement in v0.4.0)
+
+**Strategy:** Establish Plugin Contracts, Allow External Backends
+
+**Key Insight:** You don't need to implement Rust/Go yourself. Define interfaces that allow community contributors to build them.
+
+**Backend Plugin System Architecture:**
+```
+lmapp/
+├── core/                   # Core CLI, config, abstraction
+├── backends/
+│   ├── base.py            # Abstract interface
+│   ├── mock.py            # Reference implementation (Python)
+│   ├── ollama.py          # Python subprocess
+│   ├── llamafile.py       # Python subprocess
+│   └── plugins/           # Community backends (any language)
+│       ├── rust-adapter/
+│       ├── go-api/
+│       └── node-cli/
+└── specs/
+    ├── backend-interface.json  # Plugin contract
+    └── lifecycle.md             # Expected behavior
+```
+
+**Plugin Discovery Mechanism:**
+1. Local plugins: `~/.lmapp/backends/` folder
+2. Registered plugins: `lmapp backends install <name>`
+3. Package plugins: PyPI packages with `lmapp_backend_*` naming convention
+
+**Interface Contract (JSON):**
+```json
+{
+  "name": "ollama",
+  "version": "0.2.0",
+  "language": "python",
+  "interface_version": "1.0",
+  "methods": ["start", "stop", "is_running", "chat", "list_models", "get_info"],
+  "execution": "subprocess|ffi|grpc",
+  "platforms": ["linux", "macos", "windows"]
+}
+```
+
+**Example Plugins:**
+- Rust stream processor (WASM support, performance)
+- Go microservice (HTTP API, containerization)
+- Node.js desktop app (Electron/Tauri, GUI)
+
+**Advantages:**
+- ✅ Core stays simple and maintainable
+- ✅ Community can contribute backends in any language
+- ✅ Each backend uses best-fit language
+- ✅ Independent release cycles for plugins
+- ✅ Scales to 50+ backends without core bloat
+
+#### Phase 3: Multi-Repo Strategy (v1.0+)
+
+**Duration:** 6+ weeks (design, new repos, migration)
+
+**Strategy:** Separate Orgs/Repos for Each Major Backend
+
+**Architecture:**
+```
+github.com/nabaznyl/
+├── lmapp-core/              # Core CLI, config, interface specs
+├── lmapp-backend-rust/      # Rust stream processor
+├── lmapp-backend-go/        # Go HTTP API
+├── lmapp-backend-node/      # Node.js desktop wrapper
+├── lmapp-spec/              # Unified interface documentation
+└── lmapp/                   # Metarepo (orchestrates releases)
+```
+
+**Advantages:**
+- ✅ Maximum flexibility
+- ✅ Each team owns their backend
+- ✅ Independent performance optimization
+- ✅ Language-native best practices per repo
+- ✅ Scales to enterprise adoption
+
+**Limitations:**
+- ⚠️ Significant maintenance overhead
+- ⚠️ Version coordination complexity
+- ⚠️ Only viable if 10+ active contributors
+
+### Language Selection Rationale
+
+**Python (v0.2+):** ✅ Fastest to iterate, rich LLM ecosystem, easy for contributors
+
+**Rust (v0.4+):** ✅ WASM support, stream processing performance, zero-cost abstractions, growing LLM ecosystem
+
+**Go (v0.4+, optional):** ✅ Lightweight, cross-platform, excellent for microservices/APIs
+
+**Node.js (v0.5+, if desktop):** ✅ Unified CLI + GUI codebase (Electron/Tauri), browser compatibility
+
+### Recommended Evolution Path
+
+- **v0.2.0 (Now - 4 weeks):** ✅ Implement Ollama and llamafile as Python backends
+- **v0.3.0 (6-8 weeks):** Design plugin system, stabilize Python backends
+- **v0.4.0 (3+ months):** Release plugin system, accept first community backends
+- **v1.0+ (6+ months):** Evaluate multi-repo strategy if community demand warrants
+
+### Decision Framework
+
+**Should we add Language X to lmapp?**
+
+Ask:
+1. **Is Python too slow for this task?** (Yes → Consider Rust/Go)
+2. **Do multiple users ask for it?** (No → Don't do it yet)
+3. **Does it fit a clear phase?** (No → Defer to future phase)
+4. **Can we do it via plugins?** (Yes → Prefer plugin)
+5. **Do we have maintainers for it?** (No → Don't add)
+
+**Example Decisions:**
+- Rust tokenizer: ✅ Yes (performance, WASM, plugin)
+- Go API: ⚠️ Maybe (nice but optional, defer to v0.4)
+- Node.js GUI: ⚠️ Maybe (wait for GUI demand)
+- Java backend: ❌ No (too heavy, no clear use case)
 
 ### Automation Opportunities
 - **Version Sync:** Already automated via `scripts/sync-version.sh` ✅

@@ -69,7 +69,9 @@ def retry_with_backoff(
 
             for attempt in range(max_retries + 1):
                 try:
-                    logger.debug(f"Executing {func.__name__} (attempt {attempt + 1}/{max_retries + 1})")
+                    logger.debug(
+                        f"Executing {func.__name__} (attempt {attempt + 1}/{max_retries + 1})"
+                    )
                     return func(*args, **kwargs)
                 except (ConnectionError, TimeoutError) as e:
                     last_exception = e
@@ -89,9 +91,14 @@ def retry_with_backoff(
                         )
                         time.sleep(wait_time)
                     else:
-                        logger.error(f"{func.__name__} failed after {max_retries} retries: {str(e)}")
+                        logger.error(
+                            f"{func.__name__} failed after {max_retries} retries: {str(e)}"
+                        )
                 except Exception as e:
-                    logger.error(f"{func.__name__} raised unretryable error: {str(e)}", exc_info=True)
+                    logger.error(
+                        f"{func.__name__} raised unretryable error: {str(e)}",
+                        exc_info=True,
+                    )
                     raise
 
             # Always raise a meaningful exception if retries failed
@@ -221,7 +228,9 @@ class ErrorRecovery:
         return None
 
     @staticmethod
-    def format_error_with_recovery(error: Exception, context: Optional[str] = None) -> str:
+    def format_error_with_recovery(
+        error: Exception, context: Optional[str] = None
+    ) -> str:
         """
         Format error message with recovery suggestions
 

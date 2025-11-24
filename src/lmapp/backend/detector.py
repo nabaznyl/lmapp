@@ -71,7 +71,9 @@ class BackendDetector:
             console.print("[cyan]Recommending Ollama (best for 8GB+ RAM)[/cyan]")
             return OllamaBackend()
         else:
-            console.print("[cyan]Recommending llamafile (better for limited RAM)[/cyan]")
+            console.print(
+                "[cyan]Recommending llamafile (better for limited RAM)[/cyan]"
+            )
             return LlamafileBackend()
 
     def show_status_table(self):
@@ -88,7 +90,12 @@ class BackendDetector:
             status_icon = "✓" if info.status != BackendStatus.NOT_INSTALLED else "✗"
             running_icon = "✓" if backend.is_running() else "✗"
 
-            table.add_row(info.display_name, f"{status_icon} {info.status.value}", info.version or "N/A", running_icon)
+            table.add_row(
+                info.display_name,
+                f"{status_icon} {info.status.value}",
+                info.version or "N/A",
+                running_icon,
+            )
 
         console.print(table)
 

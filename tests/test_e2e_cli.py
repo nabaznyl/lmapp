@@ -83,7 +83,9 @@ class TestCLIScenarios:
 
         assert result.exit_code == 0
         # Should show configuration
-        assert "config" in result.output.lower() or "temperature" in result.output.lower()
+        assert (
+            "config" in result.output.lower() or "temperature" in result.output.lower()
+        )
 
     def test_config_show_all_settings(self, runner):
         """Test config shows all available settings."""
@@ -115,7 +117,11 @@ class TestCLIScenarios:
 
         assert result.exit_code == 0
         # Should validate successfully
-        assert "valid" in result.output.lower() or "ok" in result.output.lower() or result.exit_code == 0
+        assert (
+            "valid" in result.output.lower()
+            or "ok" in result.output.lower()
+            or result.exit_code == 0
+        )
 
     # Error Handling Tests
 
@@ -126,7 +132,10 @@ class TestCLIScenarios:
         # Should error
         assert result.exit_code != 0
         # Should provide helpful message
-        assert "no such command" in result.output.lower() or "error" in result.output.lower()
+        assert (
+            "no such command" in result.output.lower()
+            or "error" in result.output.lower()
+        )
 
     def test_invalid_config_value(self, runner):
         """Test CLI rejects invalid config values."""
@@ -233,7 +242,10 @@ class TestCLIErrorMessages:
 
         # Error message should be helpful
         output = result.output.lower()
-        assert any(phrase in output for phrase in ["no such command", "error", "usage", "did you mean"])
+        assert any(
+            phrase in output
+            for phrase in ["no such command", "error", "usage", "did you mean"]
+        )
 
     def test_help_on_invalid_args(self, runner):
         """Test providing help when invalid args given."""

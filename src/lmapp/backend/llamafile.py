@@ -128,7 +128,9 @@ class LlamafileBackend(LLMBackend):
         try:
             # Start llamafile in server mode
             self.current_process = subprocess.Popen(
-                [str(llamafile_path), "--server", "--port", "8080"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                [str(llamafile_path), "--server", "--port", "8080"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
             )
 
             # Wait a bit for startup
@@ -160,14 +162,18 @@ class LlamafileBackend(LLMBackend):
         # For now, just use install() which downloads TinyLlama
         return self.install()
 
-    def chat(self, prompt: str, model: str = "", temperature: float = 0.7, *args, **kwargs) -> str:
+    def chat(
+        self, prompt: str, model: str = "", temperature: float = 0.7, *args, **kwargs
+    ) -> str:
         """Send a chat prompt to llamafile"""
         if not self.is_running():
             return ""
 
         try:
             response = requests.post(
-                "http://localhost:8080/completion", json={"prompt": prompt, "stream": False, **kwargs}, timeout=60
+                "http://localhost:8080/completion",
+                json={"prompt": prompt, "stream": False, **kwargs},
+                timeout=60,
             )
 
             if response.status_code == 200:

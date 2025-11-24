@@ -47,7 +47,9 @@ class BackendInstaller:
                 console.print(f"  • {info.display_name} {info.version}")
 
             # Ask if user wants to use existing
-            use_existing = inquirer.confirm(message="Use existing backend?", default=True)
+            use_existing = inquirer.confirm(
+                message="Use existing backend?", default=True
+            )
 
             if use_existing:
                 # Ensure it's running
@@ -88,32 +90,48 @@ class BackendInstaller:
             return None
 
         # Step 4: Install backend
-        console.print(f"\n[bold]Step 4: Installing {backend.backend_display_name()}[/bold]")
+        console.print(
+            f"\n[bold]Step 4: Installing {backend.backend_display_name()}[/bold]"
+        )
 
-        with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), console=console) as progress:
-            task = progress.add_task(f"Installing {backend.backend_display_name()}...", total=None)
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            console=console,
+        ) as progress:
+            task = progress.add_task(
+                f"Installing {backend.backend_display_name()}...", total=None
+            )
 
             success = backend.install()
 
             if success:
-                progress.update(task, description=f"✓ {backend.backend_display_name()} installed")
+                progress.update(
+                    task, description=f"✓ {backend.backend_display_name()} installed"
+                )
             else:
                 progress.update(task, description="✗ Installation failed")
                 console.print("[red]Installation failed. Please check logs.[/red]")
                 return None
 
         # Step 5: Start backend
-        console.print(f"\n[bold]Step 5: Starting {backend.backend_display_name()}[/bold]")
+        console.print(
+            f"\n[bold]Step 5: Starting {backend.backend_display_name()}[/bold]"
+        )
 
         if not backend.is_running():
             console.print("[dim]Starting service...[/dim]")
             if not backend.start():
-                console.print("[yellow]⚠ Could not start service automatically[/yellow]")
+                console.print(
+                    "[yellow]⚠ Could not start service automatically[/yellow]"
+                )
                 console.print("[dim]It may start on first use[/dim]")
 
         # Verify
         if backend.is_installed():
-            console.print(f"\n[green]✓ {backend.backend_display_name()} is ready![/green]")
+            console.print(
+                f"\n[green]✓ {backend.backend_display_name()} is ready![/green]"
+            )
             return backend
         else:
             console.print("\n[red]✗ Installation verification failed[/red]")
@@ -151,7 +169,8 @@ class BackendInstaller:
             inquirer.List(
                 "model",
                 message="Choose a model to download",
-                choices=[(f"{m['label']}", m["name"]) for m in models] + [("Cancel", "cancel")],
+                choices=[(f"{m['label']}", m["name"]) for m in models]
+                + [("Cancel", "cancel")],
             ),
         ]
 
@@ -173,7 +192,9 @@ class BackendInstaller:
         success = backend.download_model(model_name, callback=progress_callback)
 
         if success:
-            console.print(f"\n[green]✓ Model {model_name} downloaded successfully[/green]")
+            console.print(
+                f"\n[green]✓ Model {model_name} downloaded successfully[/green]"
+            )
             return True
         else:
             console.print("\n[red]✗ Model download failed[/red]")
@@ -201,17 +222,29 @@ class BackendInstaller:
 
         # Always offer tiny model
         models.append(
-            {"name": "tinyllama", "label": "A) TinyLlama 1.1B (Fast, ~600MB) - Recommended for 4GB RAM", "size_gb": 0.6}
+            {
+                "name": "tinyllama",
+                "label": "A) TinyLlama 1.1B (Fast, ~600MB) - Recommended for 4GB RAM",
+                "size_gb": 0.6,
+            }
         )
 
         if ram_gb >= 6:
             models.append(
-                {"name": "llama2:7b", "label": "B) Llama 2 7B (Balanced, ~4GB) - Recommended for 8GB RAM", "size_gb": 4}
+                {
+                    "name": "llama2:7b",
+                    "label": "B) Llama 2 7B (Balanced, ~4GB) - Recommended for 8GB RAM",
+                    "size_gb": 4,
+                }
             )
 
         if ram_gb >= 12:
             models.append(
-                {"name": "llama2:13b", "label": "C) Llama 2 13B (Powerful, ~7GB) - Recommended for 16GB RAM", "size_gb": 7}
+                {
+                    "name": "llama2:13b",
+                    "label": "C) Llama 2 13B (Powerful, ~7GB) - Recommended for 16GB RAM",
+                    "size_gb": 7,
+                }
             )
 
         return models

@@ -48,7 +48,9 @@ class ChatSession:
         Raises:
             ValueError: If backend is not running
         """
-        logger.debug(f"Creating ChatSession with backend={backend.backend_name()}, model={model}")
+        logger.debug(
+            f"Creating ChatSession with backend={backend.backend_name()}, model={model}"
+        )
 
         if not backend.is_running():
             logger.error(f"Backend '{backend.backend_display_name()}' is not running")
@@ -78,7 +80,9 @@ class ChatSession:
             ValueError: If prompt is empty
             RuntimeError: If backend fails to respond
         """
-        logger.debug(f"send_prompt: model={self.model}, temp={temperature}, prompt_len={len(prompt)}")
+        logger.debug(
+            f"send_prompt: model={self.model}, temp={temperature}, prompt_len={len(prompt)}"
+        )
 
         if not prompt or not prompt.strip():
             logger.warning("Empty prompt attempted")
@@ -90,7 +94,9 @@ class ChatSession:
         try:
             # Get response from backend
             logger.debug("Requesting response from backend")
-            response = self.backend.chat(prompt=prompt, model=self.model, temperature=temperature)
+            response = self.backend.chat(
+                prompt=prompt, model=self.model, temperature=temperature
+            )
 
             if not response:
                 logger.error("Backend returned empty response")
@@ -111,11 +117,15 @@ class ChatSession:
             error_msg = str(e)
             if "connection" in error_msg.lower() or "refused" in error_msg.lower():
                 raise RuntimeError(
-                    f"❌ Cannot connect to {self.backend.backend_display_name()}.\n" "Try restarting: lmapp install"
+                    f"❌ Cannot connect to {self.backend.backend_display_name()}.\n"
+                    "Try restarting: lmapp install"
                 ) from e
             elif "model" in error_msg.lower():
                 models = self.backend.list_models()
-                raise RuntimeError(f"❌ Model '{self.model}' not found.\n" f"Available models: {', '.join(models)}") from e
+                raise RuntimeError(
+                    f"❌ Model '{self.model}' not found.\n"
+                    f"Available models: {', '.join(models)}"
+                ) from e
             else:
                 raise RuntimeError(f"❌ Backend error: {error_msg}") from e
 

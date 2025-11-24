@@ -36,7 +36,9 @@ class OllamaBackend(LLMBackend):
         if not self.is_installed():
             return None
         try:
-            result = subprocess.run(["ollama", "--version"], capture_output=True, text=True, timeout=5)
+            result = subprocess.run(
+                ["ollama", "--version"], capture_output=True, text=True, timeout=5
+            )
             if result.returncode == 0:
                 # Parse version from output (e.g., "ollama version 0.1.14")
                 return result.stdout.strip().split()[-1]
@@ -67,14 +69,19 @@ class OllamaBackend(LLMBackend):
             # Use official Ollama install script
             console.print("[dim]Downloading Ollama installer...[/dim]")
             result = subprocess.run(
-                ["curl", "-fsSL", "https://ollama.com/install.sh"], capture_output=True, text=True, timeout=30
+                ["curl", "-fsSL", "https://ollama.com/install.sh"],
+                capture_output=True,
+                text=True,
+                timeout=30,
             )
             if result.returncode != 0:
                 console.print("[red]Failed to download installer[/red]")
                 return False
             # Run installer
             console.print("[dim]Running installer...[/dim]")
-            install_result = subprocess.run(["sh"], input=result.stdout, capture_output=True, text=True, timeout=120)
+            install_result = subprocess.run(
+                ["sh"], input=result.stdout, capture_output=True, text=True, timeout=120
+            )
             if install_result.returncode == 0:
                 console.print("[green]✓ Ollama installed successfully[/green]")
                 # Wait for service to start
@@ -82,7 +89,9 @@ class OllamaBackend(LLMBackend):
                 time.sleep(5)
                 return True
             else:
-                console.print(f"[red]Installation failed: {install_result.stderr}[/red]")
+                console.print(
+                    f"[red]Installation failed: {install_result.stderr}[/red]"
+                )
                 return False
         except Exception as e:
             console.print(f"[red]Installation error: {e}[/red]")
@@ -98,7 +107,11 @@ class OllamaBackend(LLMBackend):
 
         try:
             # Ollama runs as a service, try to start it
-            subprocess.run(["systemctl", "--user", "start", "ollama"], capture_output=True, timeout=10)
+            subprocess.run(
+                ["systemctl", "--user", "start", "ollama"],
+                capture_output=True,
+                timeout=10,
+            )
             time.sleep(2)
             return self.is_running()
         except Exception:
@@ -108,7 +121,11 @@ class OllamaBackend(LLMBackend):
     def stop(self) -> bool:
         """Stop Ollama service"""
         try:
-            subprocess.run(["systemctl", "--user", "stop", "ollama"], capture_output=True, timeout=10)
+            subprocess.run(
+                ["systemctl", "--user", "stop", "ollama"],
+                capture_output=True,
+                timeout=10,
+            )
             return True
         except Exception:
             return False
@@ -140,7 +157,11 @@ class OllamaBackend(LLMBackend):
         try:
             # Use ollama pull command
             process = subprocess.Popen(
-                ["ollama", "pull", model_name], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1
+                ["ollama", "pull", model_name],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1,
             )
 
             # Stream output
@@ -156,14 +177,18 @@ class OllamaBackend(LLMBackend):
         except Exception:
             return False
 
-    def chat(self, prompt: str, model: str = "", temperature: float = 0.7, *args, **kwargs) -> str:
+    def chat(
+        self, prompt: str, model: str = "", temperature: float = 0.7, *args, **kwargs
+    ) -> str:
         """Send a chat prompt to Ollama"""
         if not self.is_running():
             return ""
 
         try:
             response = requests.post(
-                f"{self.api_url}/api/generate", json={"model": model, "prompt": prompt, "stream": False, **kwargs}, timeout=60
+                f"{self.api_url}/api/generate",
+                json={"model": model, "prompt": prompt, "stream": False, **kwargs},
+                timeout=60,
             )
 
             if response.status_code == 200:

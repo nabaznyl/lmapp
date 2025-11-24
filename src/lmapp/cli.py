@@ -39,7 +39,9 @@ def main(ctx, version, debug):
     logger.debug(f"lmapp CLI started, version={__version__}, debug={debug}")
 
     if version:
-        console.print(f"[bold cyan]lmapp[/bold cyan] version [yellow]{__version__}[/yellow]")
+        console.print(
+            f"[bold cyan]lmapp[/bold cyan] version [yellow]{__version__}[/yellow]"
+        )
         sys.exit(0)
 
     if ctx.invoked_subcommand is None:
@@ -80,7 +82,9 @@ def chat(model):
     if not backend:
         # No running backend found
         available = detector.detect_all()
-        logger.warning(f"No running backend found. Available: {[b.backend_name() for b in available]}")
+        logger.warning(
+            f"No running backend found. Available: {[b.backend_name() for b in available]}"
+        )
 
         if not available:
             console.print("[red]✗ No LLM backends installed[/red]")
@@ -89,7 +93,9 @@ def chat(model):
             sys.exit(1)
 
         # Backend installed but not running
-        console.print(f"[yellow]⚠️  Backend '{available[0].backend_display_name()}' is not running[/yellow]")
+        console.print(
+            f"[yellow]⚠️  Backend '{available[0].backend_display_name()}' is not running[/yellow]"
+        )
         console.print("\nTo start it, run:")
         console.print("  [bold]lmapp install[/bold]")
         sys.exit(1)
@@ -112,7 +118,9 @@ def chat(model):
 
     try:
         # Create and launch chat session
-        logger.debug(f"Creating ChatSession with backend={backend.backend_name()}, model={chat_model}")
+        logger.debug(
+            f"Creating ChatSession with backend={backend.backend_name()}, model={chat_model}"
+        )
         session = ChatSession(backend, model=chat_model)
         logger.debug("ChatSession created, launching chat UI")
         launch_chat(session)
@@ -144,7 +152,9 @@ def install():
         logger.debug("System checks passed")
     else:
         logger.error("System checks failed")
-        console.print("\n[red]✗ System checks failed. Please address issues above.[/red]")
+        console.print(
+            "\n[red]✗ System checks failed. Please address issues above.[/red]"
+        )
         sys.exit(1)
 
     # Step 2: Backend installation (automated)
@@ -249,7 +259,9 @@ def config_set(key, value):
         console.print("\n[cyan]Valid keys:[/cyan]")
         for field_name in cfg.model_dump().keys():
             field_value = getattr(cfg, field_name)
-            console.print(f"  [yellow]{field_name:15}[/yellow] (current: {field_value})")
+            console.print(
+                f"  [yellow]{field_name:15}[/yellow] (current: {field_value})"
+            )
         logger.warning(f"Invalid config key: {key}")
         return
 

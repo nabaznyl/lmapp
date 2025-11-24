@@ -58,3 +58,15 @@ jobs:
             echo "❌ pyproject.toml version mismatch"
             exit 1
           fi
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      
+      - name: Audit dependencies for vulnerabilities
+        run: |
+          echo "🔍 Running dependency audit..."
+          pip install pip-audit
+          pip-audit --desc || true
+          echo "✅ Dependency audit complete"

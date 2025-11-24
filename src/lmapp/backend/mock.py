@@ -38,7 +38,11 @@ class MockBackend(LLMBackend):
             name="mock",
             display_name="Mock (Testing)",
             version="1.0.0-mock",
-            status=BackendStatus.INSTALLED if self.is_installed() else BackendStatus.NOT_INSTALLED,
+            status=(
+                BackendStatus.INSTALLED
+                if self.is_installed()
+                else BackendStatus.NOT_INSTALLED
+            ),
         )
 
     def is_running(self) -> bool:
@@ -77,7 +81,9 @@ class MockBackend(LLMBackend):
             return True
         return False
 
-    def chat(self, prompt: str, model: str = "mock-model", temperature: float = 0.7, **kwargs) -> str:
+    def chat(
+        self, prompt: str, model: str = "mock-model", temperature: float = 0.7, **kwargs
+    ) -> str:
         """
         Return mock response based on prompt content
 
@@ -97,6 +103,8 @@ class MockBackend(LLMBackend):
         """Mock backend doesn't support streaming"""
         return False
 
-    def stream_chat(self, prompt: str, model: str = "mock-model", temperature: float = 0.7, **kwargs):
+    def stream_chat(
+        self, prompt: str, model: str = "mock-model", temperature: float = 0.7, **kwargs
+    ):
         """Mock streaming not implemented"""
         raise NotImplementedError("Mock backend does not support streaming")

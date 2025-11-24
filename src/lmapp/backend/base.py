@@ -51,7 +51,9 @@ class LLMBackend(ABC):
     """Abstract base class for LLM backends"""
 
     def __init__(self):
-        self.info = BackendInfo(name=self.backend_name(), display_name=self.backend_display_name())
+        self.info = BackendInfo(
+            name=self.backend_name(), display_name=self.backend_display_name()
+        )
 
     @abstractmethod
     def backend_name(self) -> str:
@@ -104,7 +106,14 @@ class LLMBackend(ABC):
         pass
 
     @abstractmethod
-    def chat(self, prompt: str, model: str = "", temperature: float = 0.7, *args, **kwargs: Any) -> str:
+    def chat(
+        self,
+        prompt: str,
+        model: str = "",
+        temperature: float = 0.7,
+        *args,
+        **kwargs: Any,
+    ) -> str:
         """Send a chat prompt and get response.
 
         Signature uses `prompt` first to match callers across the codebase

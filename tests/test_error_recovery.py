@@ -76,7 +76,9 @@ class TestRetryDecorator:
         """Test exponential backoff timing"""
         call_times = []
 
-        @retry_with_backoff(max_retries=2, strategy=RetryStrategy.EXPONENTIAL, backoff_base=0.01)
+        @retry_with_backoff(
+            max_retries=2, strategy=RetryStrategy.EXPONENTIAL, backoff_base=0.01
+        )
         def failing_func():
             call_times.append(time.time())
             raise ConnectionError("Fail")
@@ -92,7 +94,9 @@ class TestRetryDecorator:
         """Test linear backoff timing"""
         call_times = []
 
-        @retry_with_backoff(max_retries=2, strategy=RetryStrategy.LINEAR, backoff_base=0.01)
+        @retry_with_backoff(
+            max_retries=2, strategy=RetryStrategy.LINEAR, backoff_base=0.01
+        )
         def failing_func():
             call_times.append(time.time())
             raise ConnectionError("Fail")
@@ -186,7 +190,9 @@ class TestErrorRecovery:
     def test_format_error_with_recovery(self):
         """Test formatting error with recovery suggestions"""
         error = ConnectionError("Connection refused")
-        formatted = ErrorRecovery.format_error_with_recovery(error, context="Starting chat session")
+        formatted = ErrorRecovery.format_error_with_recovery(
+            error, context="Starting chat session"
+        )
 
         assert "❌ Error occurred:" in formatted
         assert "Context: Starting chat session" in formatted

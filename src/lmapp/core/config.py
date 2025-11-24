@@ -18,13 +18,19 @@ class LMAppConfig(BaseModel):
 
     model_config = ConfigDict(validate_assignment=True)
 
-    backend: str = Field(default="auto", description="LLM backend: auto|ollama|llamafile|mock")
+    backend: str = Field(
+        default="auto", description="LLM backend: auto|ollama|llamafile|mock"
+    )
     model: str = Field(default="tinyllama", description="Model name to use")
-    temperature: float = Field(default=0.7, ge=0.0, le=1.0, description="Temperature (0.0-1.0)")
+    temperature: float = Field(
+        default=0.7, ge=0.0, le=1.0, description="Temperature (0.0-1.0)"
+    )
     debug: bool = Field(default=False, description="Enable debug logging")
 
     # Advanced settings (future)
-    max_tokens: Optional[int] = Field(default=None, description="Maximum tokens in response")
+    max_tokens: Optional[int] = Field(
+        default=None, description="Maximum tokens in response"
+    )
     timeout: int = Field(default=300, description="Request timeout in seconds")
 
     @field_validator("backend")

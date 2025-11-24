@@ -59,7 +59,9 @@ class ChatUI:
     def print_history(self):
         """Print conversation history"""
         history_text = self.session.get_history_text()
-        console.print(Panel(history_text, title="Conversation History", border_style="green"))
+        console.print(
+            Panel(history_text, title="Conversation History", border_style="green")
+        )
 
     def print_stats(self):
         """Print session statistics"""
@@ -139,7 +141,9 @@ class ChatUI:
 
                     # Send prompt to backend
                     console.print("[cyan]AI:[/cyan]", end=" ")
-                    response = self.session.send_prompt(result, temperature=self.temperature)
+                    response = self.session.send_prompt(
+                        result, temperature=self.temperature
+                    )
                     console.print(response)
 
                 except KeyboardInterrupt:
@@ -151,7 +155,9 @@ class ChatUI:
 
                 except RuntimeError as e:
                     console.print(f"[red]{str(e)}[/red]")
-                    console.print("[yellow]Try running 'lmapp install' or restart the backend[/yellow]")
+                    console.print(
+                        "[yellow]Try running 'lmapp install' or restart the backend[/yellow]"
+                    )
                     break
 
                 except Exception as e:

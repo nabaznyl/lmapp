@@ -35,7 +35,9 @@ class SystemCheck:
         os_name = platform.system()
         if os_name != "Linux":
             console.print(f"[red]✗ Unsupported OS: {os_name}[/red]")
-            console.print("[yellow]  Currently only Debian-based Linux is supported[/yellow]")
+            console.print(
+                "[yellow]  Currently only Debian-based Linux is supported[/yellow]"
+            )
             self.results["os"] = False
             return False
 
@@ -44,7 +46,13 @@ class SystemCheck:
         dist_name = distro.name()
         dist_version = distro.version()
 
-        debian_based = dist_id.lower() in ["debian", "ubuntu", "linuxmint", "pop", "elementary"]
+        debian_based = dist_id.lower() in [
+            "debian",
+            "ubuntu",
+            "linuxmint",
+            "pop",
+            "elementary",
+        ]
 
         if debian_based:
             console.print(f"[green]✓ Detected: {dist_name} {dist_version}[/green]")
@@ -52,7 +60,9 @@ class SystemCheck:
             return True
         else:
             console.print(f"[yellow]⚠ Non-Debian system detected: {dist_name}[/yellow]")
-            console.print("[yellow]  Installation may work but is not officially supported[/yellow]")
+            console.print(
+                "[yellow]  Installation may work but is not officially supported[/yellow]"
+            )
             self.results["os"] = True  # Allow to proceed with warning
             return True
 
@@ -66,12 +76,18 @@ class SystemCheck:
         self.results["ram_gb"] = ram_gb
 
         if ram_gb < self.MIN_RAM_GB:
-            console.print(f"[red]✗ Insufficient RAM: {ram_gb:.1f}GB (minimum {self.MIN_RAM_GB}GB)[/red]")
+            console.print(
+                f"[red]✗ Insufficient RAM: {ram_gb:.1f}GB (minimum {self.MIN_RAM_GB}GB)[/red]"
+            )
             self.results["ram"] = False
             return False
         elif ram_gb < self.RECOMMENDED_RAM_GB:
-            console.print(f"[yellow]⚠ Low RAM: {ram_gb:.1f}GB (recommended {self.RECOMMENDED_RAM_GB}GB+)[/yellow]")
-            console.print("[yellow]  Only small models (3B-7B) will be available[/yellow]")
+            console.print(
+                f"[yellow]⚠ Low RAM: {ram_gb:.1f}GB (recommended {self.RECOMMENDED_RAM_GB}GB+)[/yellow]"
+            )
+            console.print(
+                "[yellow]  Only small models (3B-7B) will be available[/yellow]"
+            )
             self.results["ram"] = True
             return True
         else:
@@ -90,7 +106,9 @@ class SystemCheck:
         self.results["storage_gb"] = free_gb
 
         if free_gb < self.MIN_STORAGE_GB:
-            console.print(f"[red]✗ Insufficient storage: {free_gb:.1f}GB free (minimum {self.MIN_STORAGE_GB}GB)[/red]")
+            console.print(
+                f"[red]✗ Insufficient storage: {free_gb:.1f}GB free (minimum {self.MIN_STORAGE_GB}GB)[/red]"
+            )
             self.results["storage"] = False
             return False
         elif free_gb < self.RECOMMENDED_STORAGE_GB:
@@ -154,14 +172,20 @@ class SystemCheck:
 
         try:
             # Try to reach a common endpoint
-            result = subprocess.run(["ping", "-c", "1", "-W", "2", "8.8.8.8"], capture_output=True, timeout=3)
+            result = subprocess.run(
+                ["ping", "-c", "1", "-W", "2", "8.8.8.8"],
+                capture_output=True,
+                timeout=3,
+            )
             if result.returncode == 0:
                 console.print("[green]✓ Internet connection available[/green]")
                 self.results["internet"] = True
                 return True
             else:
                 console.print("[yellow]⚠ No internet connection detected[/yellow]")
-                console.print("[yellow]  Internet required for initial model download[/yellow]")
+                console.print(
+                    "[yellow]  Internet required for initial model download[/yellow]"
+                )
                 self.results["internet"] = False
                 return False
         except Exception:
