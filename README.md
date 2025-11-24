@@ -260,12 +260,13 @@ Start here based on your needs:
 
 | I Want To... | Read This |
 |---|---|
-| Get started in 5 minutes | [Quick Start Guide](QUICK_START.md) |
+| Get started in 5 minutes (User) | [Quick Start Guide](QUICK_START.md) |
+| Get started in 5 minutes (Contributor) | [Getting Started Guide](GETTING_STARTED.md) |
 | Understand the config options | [Configuration Guide](docs/CONFIGURATION.md) |
 | Troubleshoot problems | [Troubleshooting Guide](TROUBLESHOOTING.md) |
 | Learn more about using lmapp | [User Guide](docs/user-guide.md) |
 | Understand the code | [Architecture Guide](ARCHITECTURE.md) |
-| Contribute or modify | [Developer Guide](docs/development.md) + [Contributing](CONTRIBUTING.md) |
+| Contribute or modify | [Contributing Guide](CONTRIBUTING.md) |
 | See what's coming next | [Roadmap](ROADMAP.md) |
 
 ---
