@@ -72,7 +72,8 @@ tmp/
 temp/
 *.tmp
 
-# Internal Planning & Documentation (Local Only)
+# Developer management & operations (local only)
+.management/
 TODO.md
 AUDIT_REPORT.md
 PROJECT_CHARTER.md

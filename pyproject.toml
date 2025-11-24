@@ -10,6 +10,7 @@ readme = "README.md"
 license = {text = "MIT"}
 authors = [{name = "lmapp Contributors", email = "dev@lmapp.dev"}]
 requires-python = ">=3.8"
+keywords = ["ai", "llm", "local", "offline", "cli", "terminal", "privacy"]
 dependencies = [
     "requests>=2.31.0",
     "click>=8.1.0",
@@ -43,9 +44,6 @@ lmapp = "lmapp.cli:main"
 "Tracker" = "https://github.com/nabaznyl/lmapp/issues"
 "Releases" = "https://github.com/nabaznyl/lmapp/releases"
 "PyPI" = "https://pypi.org/project/lmapp"
-
-[project.keywords]
-keywords = ["ai", "llm", "local", "offline", "cli", "terminal", "privacy"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
