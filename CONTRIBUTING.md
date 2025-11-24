@@ -2,6 +2,8 @@
 
 Thank you for your interest in contributing to lmapp! This document covers everything you need to know to get started.
 
+> **👉 New contributor?** Start with [GETTING_STARTED.md](./GETTING_STARTED.md) for a quick 5-minute setup guide!
+
 ## Table of Contents
 
 1. [Code of Conduct](#code-of-conduct)
@@ -111,6 +113,33 @@ make check            # Full code quality check
 ---
 
 ## Development Workflow
+
+### The Standard Workflow (Quick Version)
+
+```bash
+# Step 1: Setup (first time only)
+bash scripts/dev-utils.sh setup && bash scripts/dev-utils.sh ready
+
+# Step 2: Create a branch and make your changes
+git checkout -b feature/your-feature-name
+# ... make your changes ...
+
+# Step 3: Validate before committing
+make format          # Auto-format your code
+make test            # Run all tests
+git add .
+git commit -m "description"    # Pre-commit hook validates automatically
+
+# Step 4: Before pushing
+make all             # Full validation (format + lint + test)
+bash scripts/dev-utils.sh deps-audit    # Security check
+git push origin feature/your-feature-name
+
+# Step 5: Submit pull request
+# Go to GitHub and open a PR with description
+```
+
+**That's it!** The git hooks protect you automatically.
 
 ### Finding Something to Work On
 
