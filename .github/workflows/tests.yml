@@ -15,6 +15,7 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
+      # No PYTHONPATH hack required — tests import the installed package namespace
       
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4

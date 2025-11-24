@@ -33,6 +33,16 @@ class BackendInfo:
     supports_web_access: bool = False      # PROJECT 2
     supports_file_operations: bool = False  # PROJECT 3
     supports_code_execution: bool = False   # PROJECT 3
+    
+    # Provide a minimal mapping-like interface so callers can use `in` and
+    # index access in tests and templates (e.g., `"name" in info`).
+    def __contains__(self, key: str) -> bool:  # pragma: no cover - trivial
+        return hasattr(self, key)
+
+    def __getitem__(self, key: str):  # pragma: no cover - trivial
+        if hasattr(self, key):
+            return getattr(self, key)
+        raise KeyError(key)
 
 
 class LLMBackend(ABC):

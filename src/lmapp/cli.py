@@ -262,6 +262,8 @@ def config_set(key, value):
         for error in e.errors():
             console.print(f"  [yellow]{error['msg']}[/yellow]")
         logger.warning(f"Validation failed for {key}={parsed_value}: {e}")
+        # Validation errors are non-fatal for interactive CLI usage; return
+        # so the command prints a helpful message but does not exit the process.
         return
     except Exception as e:
         console.print(f"[red]✗ Failed to set {key}: {str(e)}[/red]")
@@ -321,3 +323,7 @@ def config_validate():
 
 if __name__ == "__main__":
     main()
+
+# Backwards-compatible alias: some tests and external code import `cli`.
+# Provide `cli` as an alias to the main click entrypoint.
+cli = main

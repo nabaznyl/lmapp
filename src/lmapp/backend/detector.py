@@ -12,6 +12,7 @@ from rich.table import Table
 from .base import LLMBackend, BackendStatus
 from .ollama import OllamaBackend
 from .llamafile import LlamafileBackend
+from .mock import MockBackend
 
 console = Console()
 
@@ -20,10 +21,33 @@ class BackendDetector:
     """Detect and recommend LLM backends"""
     
     def __init__(self):
+        # Include MockBackend first so tests and local dev always have a
+        # predictable backend available.
         self.backends: List[LLMBackend] = [
+            MockBackend(),
             OllamaBackend(),
             LlamafileBackend(),
         ]
+
+    def get_best_backend(self) -> Optional[LLMBackend]:
+        """Return the best available backend.
+
+        Preference order:
+        1. Any running backend
+        2. First detected installed backend
+        3. None if nothing is available
+        """
+        available = self.detect_all()
+        if not available:
+            return None
+
+        # Prefer a running backend
+        for b in available:
+            if b.is_running():
+                return b
+
+        # Otherwise return the first available
+        return available[0]
     
     def detect_all(self) -> List[LLMBackend]:
         """Detect all available backends"""

@@ -2,9 +2,9 @@
 
 import pytest
 from unittest.mock import patch, MagicMock
-from src.lmapp.backend.detector import BackendDetector
-from src.lmapp.backend.mock import MockBackend
-from src.lmapp.core.config import LMAppConfig
+from lmapp.backend.detector import BackendDetector
+from lmapp.backend.mock import MockBackend
+from lmapp.core.config import LMAppConfig
 
 
 class TestBackendDetector:
@@ -158,7 +158,7 @@ class TestCLIIntegration:
     def test_cli_main_help(self):
         """Test that help command works."""
         from click.testing import CliRunner
-        from src.lmapp.cli import main
+        from lmapp.cli import main
         
         runner = CliRunner()
         result = runner.invoke(main, ["--help"])
@@ -170,7 +170,7 @@ class TestCLIIntegration:
     def test_cli_status_command(self):
         """Test status command works and shows system info."""
         from click.testing import CliRunner
-        from src.lmapp.cli import main
+        from lmapp.cli import main
         
         runner = CliRunner()
         result = runner.invoke(main, ["status"])
@@ -182,7 +182,7 @@ class TestCLIIntegration:
     def test_cli_version_flag(self):
         """Test version flag displays version."""
         from click.testing import CliRunner
-        from src.lmapp.cli import main
+        from lmapp.cli import main
         
         runner = CliRunner()
         result = runner.invoke(main, ["--version"])
@@ -195,7 +195,7 @@ class TestCLIIntegration:
     def test_cli_invalid_command(self):
         """Test CLI handles invalid commands gracefully."""
         from click.testing import CliRunner
-        from src.lmapp.cli import main
+        from lmapp.cli import main
         
         runner = CliRunner()
         result = runner.invoke(main, ["invalid-command"])
@@ -404,7 +404,7 @@ class TestCLIIntegration:
     def test_cli_help_command(self):
         """Test that help command works."""
         from click.testing import CliRunner
-        from src.lmapp.cli import cli
+        from lmapp.cli import cli
         
         runner = CliRunner()
         result = runner.invoke(cli, ["--help"])
@@ -416,7 +416,7 @@ class TestCLIIntegration:
     def test_cli_status_command(self):
         """Test status command works and shows system info."""
         from click.testing import CliRunner
-        from src.lmapp.cli import cli
+        from lmapp.cli import cli
         
         runner = CliRunner()
         result = runner.invoke(cli, ["status"])
@@ -428,7 +428,7 @@ class TestCLIIntegration:
     def test_cli_version_command(self):
         """Test version command displays version."""
         from click.testing import CliRunner
-        from src.lmapp.cli import cli
+        from lmapp.cli import cli
         
         runner = CliRunner()
         result = runner.invoke(cli, ["--version"])
@@ -439,7 +439,7 @@ class TestCLIIntegration:
     def test_cli_invalid_command(self):
         """Test CLI handles invalid commands gracefully."""
         from click.testing import CliRunner
-        from src.lmapp.cli import cli
+        from lmapp.cli import cli
         
         runner = CliRunner()
         result = runner.invoke(cli, ["invalid-command"])
