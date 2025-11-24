@@ -80,6 +80,12 @@ INTEGRATED_ROADMAP.md
 GITHUB_BRANCH_PROTECTION_SETUP.md
 AUTOMATION_GUIDE.md
 MULTI_LANGUAGE_STRATEGY.md
+AUTOMATION_FRAMEWORK.md
+AUTOMATION_STATUS.txt
+
+# Developer automation scripts (local development only - not in public releases)
+scripts/pre-commit-cleanup.sh
+scripts/dev-utils.sh
 
 # Launch & campaign materials (personal use only)
 LAUNCH_*.md
