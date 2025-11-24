@@ -87,3 +87,5 @@ archive/launch-campaign-v0.1.0/
 SESSION_COMPLETION_REPORT*.md
 SESSION_*.md
 DOCUMENTATION_INDEX.md
+QUICKSTART.md
+docs/
