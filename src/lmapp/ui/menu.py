@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """
-Main Menu System
-Provides alphabetic multiple-choice menus for user interaction
+Enhanced Menu System with Advanced Mode
+Provides intuitive beginner experience with power-user features
 """
 
 from typing import List, Callable, Optional
-
 import inquirer
 import psutil
 from rich.console import Console
@@ -43,7 +42,7 @@ class MenuItem:
 
 
 class MainMenu:
-    """Main application menu"""
+    """Main application menu with Advanced Mode support"""
 
     def __init__(self):
         self.config_manager = get_config_manager()
@@ -51,93 +50,97 @@ class MainMenu:
         self.running = True
 
     def _build_menu_items(self) -> List[MenuItem]:
-        """Build the main menu structure based on developer mode"""
+        """Build menu structure based on Advanced Mode setting"""
         config = self.config_manager.load()
-        dev_mode = config.developer_mode
+        advanced = config.advanced_mode
 
         items = [
-            MenuItem(
-                "A",
-                "Start Chat",
-                self.start_chat,
-            ),
+            MenuItem("A", "Start Chat", self.start_chat),
         ]
 
-        if dev_mode:
-            items.extend(
-                [
-                    MenuItem(
-                        "B",
-                        "Manage Models",
-                        self.manage_models,
-                    ),
-                    MenuItem(
-                        "C",
-                        "Configure Settings",
-                        self.configure,
-                    ),
-                    MenuItem(
-                        "D",
-                        "Shell Customization",
-                        self.shell_customize,
-                    ),
-                    MenuItem(
-                        "E",
-                        "Help & Documentation",
-                        self.show_help,
-                    ),
-                    MenuItem(
-                        "F",
-                        "About",
-                        self.show_about,
-                    ),
-                ]
-            )
+        if advanced:
+            # Advanced Mode: Full feature access
+            items.extend([
+                MenuItem("B", "Plugins", self.manage_plugins),
+                MenuItem("C", "Models", self.manage_models),
+                MenuItem("D", "API & Integration", self.show_api),
+                MenuItem("E", "Settings", self.configure),
+                MenuItem("F", "Developer Tools", self.show_dev_tools),
+                MenuItem("G", "Help & Documentation", self.show_help),
+                MenuItem("H", "About", self.show_about),
+            ])
         else:
-            items.extend(
-                [
-                    MenuItem(
-                        "B",
-                        "Help & Documentation",
-                        self.show_help,
-                    ),
-                    MenuItem(
-                        "C",
-                        "About",
-                        self.show_about,
-                    ),
-                ]
-            )
+            # Beginner Mode: Simplified menus
+            items.extend([
+                MenuItem("B", "Plugins", self.manage_plugins),
+                MenuItem("C", "Settings", self.configure),
+                MenuItem("D", "Help & Documentation", self.show_help),
+                MenuItem("E", "About", self.show_about),
+            ])
 
         items.append(MenuItem("Q", "Quit", self.quit))
         return items
 
     def display(self):
-        """Display the menu"""
-        # Rebuild items to reflect current state
-        self.items = self._build_menu_items()
-
-        console.print("\n[bold cyan]lmapp - Main Menu[/bold cyan]\n")
+        """Display the menu with enhanced visual hierarchy"""
+        config = self.config_manager.load()
+        mode_indicator = "[bold green]📊 Advanced Mode[/bold green]" if config.advanced_mode else "[dim]Beginner Mode[/dim]"
+        
+        # Clear console for fresh start
+        console.clear()
+        
+        # Show header with branding
+        console.print("\n" + "=" * 60)
+        console.print("[bold cyan]LMAPP - Local LLM Chat[/bold cyan]", justify="center")
+        console.print(f"Version {__version__}", justify="center", style="dim")
+        
+        # Show mode indicator
+        console.print(f"\nMode: {mode_indicator}", justify="center")
+        console.print("=" * 60 + "\n")
 
     def get_choice(self) -> Optional[str]:
-        """Get user's menu choice"""
-        # Rebuild items to ensure choices match display
+        """Get user's menu choice with visual separators"""
         self.items = self._build_menu_items()
-        choices = [(f"{item.key}) {item.label}", item.key) for item in self.items]
-
-        questions = [
-            inquirer.List(
-                "choice",
-                message="Choose an option",
-                choices=choices,
-            ),
-        ]
-
+        
+        # Organize items into categories
+        chat_items = [i for i in self.items if i.key == "A"]
+        management_items = [i for i in self.items if i.key in ["B", "C", "D"]]
+        advanced_items = [i for i in self.items if i.key in ["E", "F"]]
+        control_items = [i for i in self.items if i.key in ["G", "H"]]
+        quit_items = [i for i in self.items if i.key == "Q"]
+        
+        # Display categorized menu with separators
+        if chat_items:
+            console.print("[cyan]─── Chat ───[/cyan]")
+            for item in chat_items:
+                console.print(f"  [bold]{item.key}[/bold])  {item.label}")
+        
+        if management_items:
+            console.print("\n[cyan]─── Explore & Manage ───[/cyan]")
+            for item in management_items:
+                console.print(f"  [bold]{item.key}[/bold])  {item.label}")
+        
+        if advanced_items:
+            console.print("\n[cyan]─── Configure ───[/cyan]")
+            for item in advanced_items:
+                console.print(f"  [bold]{item.key}[/bold])  {item.label}")
+        
+        if control_items:
+            console.print("\n[cyan]─── Help & Info ───[/cyan]")
+            for item in control_items:
+                console.print(f"  [bold]{item.key}[/bold])  {item.label}")
+        
+        if quit_items:
+            console.print("\n[cyan]─── Exit ───[/cyan]")
+            for item in quit_items:
+                console.print(f"  [bold]{item.key}[/bold])  {item.label}")
+        
+        console.print()
+        
+        # Get user input
         try:
-            answers = inquirer.prompt(questions)
-            if answers:
-                return answers["choice"]
-            return None
+            choice = console.input("[bold]Enter your choice [/bold](Q to quit): ").upper().strip()
+            return choice if choice else None
         except KeyboardInterrupt:
             return "Q"
 
@@ -148,7 +151,6 @@ class MainMenu:
             choice = self.get_choice()
 
             if choice:
-                # Find and execute the menu item
                 for item in self.items:
                     if item.key == choice.upper():
                         console.print()
@@ -162,593 +164,482 @@ class MainMenu:
 
         console.print("\n[dim]Thanks for using lmapp![/dim]\n")
 
-    # Menu action methods
+    # ============================================================================
+    # MENU ACTIONS
+    # ============================================================================
 
     def start_chat(self):
-        """Start a new chat session"""
-        # Try to find a running backend
+        """Start chat - with auto-setup for beginners"""
         backend = self.detector.get_best_backend()
 
         if not backend:
-            console.print("[red]No backend installed![/red]")
-            console.print(
-                "You need to install a backend (Ollama or llamafile) to chat."
-            )
+            console.print("[red]No backend found![/red]")
+            console.print("\n[dim]A backend like Ollama is required to use LMAPP.[/dim]")
+            
+            q = [inquirer.Confirm("install", message="Install a backend now?", default=True)]
+            if inquirer.prompt(q).get("install"):
+                self.manage_models()
+            return
 
-            questions = [
-                inquirer.Confirm(
-                    "install",
-                    message="Would you like to install a backend now?",
-                    default=True,
-                )
-            ]
-            answers = inquirer.prompt(questions)
-
-            if answers and answers["install"]:
-                self.install_backend()
-                # Try again after install
-                backend = self.detector.get_best_backend()
-                if not backend:
-                    return
-            else:
-                console.input("[dim]Press Enter to continue...[/dim]")
-                return
-
+        # Ensure backend is running
         if not backend.is_running():
-            console.print(
-                f"[yellow]Backend {backend.backend_display_name()} is not running.[/yellow]"
-            )
-            questions = [
-                inquirer.Confirm(
-                    "start",
-                    message=f"Start {backend.backend_display_name()}?",
-                    default=True,
-                )
-            ]
-            answers = inquirer.prompt(questions)
-
-            if answers and answers["start"]:
-                with console.status("Starting backend..."):
-                    if backend.start():
-                        console.print("[green]Backend started successfully![/green]")
-                    else:
-                        console.print("[red]Failed to start backend.[/red]")
-                        console.input("[dim]Press Enter to continue...[/dim]")
-                        return
-            else:
-                return
-
-        # Get available models
-        with console.status("Fetching models..."):
-            models = backend.list_models()
-
-        if not models:
-            console.print("[yellow]No models found.[/yellow]")
-            # Offer to download default model
-            questions = [
-                inquirer.Confirm(
-                    "download",
-                    message="Download default model (tinyllama)?",
-                    default=True,
-                )
-            ]
-            answers = inquirer.prompt(questions)
-
-            if answers and answers["download"]:
-                # TODO: Implement download logic here or call manage_models
-                # For now, just try to use tinyllama and let the backend handle it if it can
-                # But backend.list_models() returned empty, so we probably need to explicitly download
-                if hasattr(backend, "download_model"):
-                    console.print("Downloading model... (this may take a while)")
-                    if backend.download_model("tinyllama"):
-                        console.print("[green]Model downloaded successfully![/green]")
-                        models = ["tinyllama"]
-                    else:
-                        console.print("[red]Failed to download model.[/red]")
-                        console.input("[dim]Press Enter to continue...[/dim]")
-                        return
-                else:
-                    console.print("[red]Backend does not support auto-download.[/red]")
-                    console.input("[dim]Press Enter to continue...[/dim]")
-                    return
-            else:
-                console.input("[dim]Press Enter to continue...[/dim]")
-                return
-
-        # Ask for model selection if multiple
-        config = self.config_manager.load()
-        model = models[0]
-
-        # If default model is set and available, use it
-        if config.default_model and config.default_model in models:
-            model = config.default_model
-        elif len(models) > 1:
-            questions = [
-                inquirer.List(
-                    "model",
-                    message="Choose a model",
-                    choices=models,
-                ),
-            ]
-            answers = inquirer.prompt(questions)
-            if answers:
-                model = answers["model"]
-                # Ask to save as default if not set or different
-                if model != config.default_model:
-                    q_def = [
-                        inquirer.Confirm(
-                            "save_default",
-                            message=f"Set {model} as default model?",
-                            default=True,
-                        )
-                    ]
-                    a_def = inquirer.prompt(q_def)
-                    if a_def and a_def["save_default"]:
-                        config.default_model = model
-                        self.config_manager.save(config)
-                        console.print(f"[green]Default model set to {model}[/green]")
-            else:
-                return
-
-        try:
-            session = ChatSession(backend, model=model)
-            launch_chat(session)
-        except Exception as e:
-            console.print(f"[red]Error starting chat: {e}[/red]")
-            console.input("[dim]Press Enter to continue...[/dim]")
-
-    def manage_models(self):
-        """Model management interface"""
-        backend = self.detector.get_best_backend()
-
-        if not backend:
-            console.print("[red]No backend installed![/red]")
-            questions = [
-                inquirer.Confirm(
-                    "install",
-                    message="Would you like to install a backend now?",
-                    default=True,
-                )
-            ]
-            answers = inquirer.prompt(questions)
-
-            if answers and answers["install"]:
-                self.install_backend()
-                backend = self.detector.get_best_backend()
-                if not backend:
-                    return
-            else:
-                console.input("[dim]Press Enter to continue...[/dim]")
-                return
-
-        while True:
-            console.clear()
-            console.print()  # Add blank space for better spacing
-            console.print(
-                f"[bold cyan]Model Management ({backend.backend_display_name()})[/bold cyan]\n"
-            )
-
-            if not backend.is_running():
-                console.print(
-                    "[yellow]Backend is not running. Starting it to manage models...[/yellow]"
-                )
+            with console.status("Starting backend..."):
                 if not backend.start():
                     console.print("[red]Failed to start backend.[/red]")
                     console.input("[dim]Press Enter to continue...[/dim]")
                     return
 
-            with console.status("Fetching models..."):
-                models = backend.list_models()
+        # Get available models
+        with console.status("Fetching models..."):
+            models = backend.list_models() or []
 
-            console.print("[bold]Installed Models:[/bold]")
-            if models:
-                for m in models:
-                    console.print(f"  • {m}")
+        if not models:
+            console.print("[yellow]No models found.[/yellow]")
+            q = [inquirer.Confirm("download", message="Download a model?", default=True)]
+            if inquirer.prompt(q).get("download"):
+                self.manage_models()
+                return
             else:
-                console.print("  [dim]No models installed[/dim]")
+                return
+
+        # Select or auto-use model
+        config = self.config_manager.load()
+        model = config.default_model if config.default_model in models else models[0]
+
+        if len(models) > 1 and model not in models:
+            q = [inquirer.List("model", message="Choose a model", choices=models)]
+            model = inquirer.prompt(q).get("model")
+
+        if not model:
+            return
+
+        try:
+            session = ChatSession(backend, model=model)
+            launch_chat(session)
+        except Exception as e:
+            console.print(f"[red]Error: {e}[/red]")
+            console.input("[dim]Press Enter to continue...[/dim]")
+
+    def manage_plugins(self):
+        """Browse and execute plugins"""
+        config = self.config_manager.load()
+        
+        if config.advanced_mode:
+            self._manage_plugins_advanced()
+        else:
+            self._manage_plugins_beginner()
+
+    def _manage_plugins_beginner(self):
+        """Simplified plugin interface for beginners"""
+        while True:
+            console.clear()
+            console.print("[bold cyan]Plugins[/bold cyan]\n")
+            
+            # Group plugins by category
+            categories = {
+                "Code Tools": [
+                    ("Auditor", "Code review & analysis"),
+                    ("Refactoring", "Improve Python code"),
+                ],
+                "Content Tools": [
+                    ("Translator", "Multi-language translation"),
+                    ("Document Chat", "Q&A on your files"),
+                ],
+                "Data Tools": [
+                    ("Knowledge Base", "Search your documents"),
+                    ("Q&A Bot", "Question answering"),
+                ],
+            }
+            
+            choices = []
+            for category, plugins in categories.items():
+                choices.append((f"[{category}]", "HEADER"))
+                for name, desc in plugins:
+                    choices.append((f"  {name:<20} - {desc}", name.lower()))
+                choices.append(("", "SPACER"))
+            
+            choices.append(("Back to Menu", "back"))
+            
+            q = [inquirer.List("plugin", message="Select a plugin", choices=choices)]
+            answer = inquirer.prompt(q)
+            
+            if not answer or answer.get("plugin") in ["back", "HEADER", "SPACER"]:
+                break
+            
+            plugin = answer.get("plugin")
+            console.print(f"\n[cyan]{plugin} plugin selected[/cyan]")
+            console.print("[dim]Feature coming soon...[/dim]")
+            console.input("[dim]Press Enter to continue...[/dim]")
+
+    def _manage_plugins_advanced(self):
+        """Full plugin management for advanced users"""
+        console.print("[bold cyan]Plugins (Advanced)[/bold cyan]\n")
+        console.print("[yellow]Plugin management UI coming soon[/yellow]")
+        console.print("\nAvailable plugins:")
+        console.print("  • auditor - Code analysis")
+        console.print("  • cache-manager - Cache optimization")
+        console.print("  • document-chatbot - PDF/text Q&A")
+        console.print("  • refactoring - Code improvements")
+        console.print("  • knowledge-base - Document search")
+        console.print("  • translator - Multi-language")
+        console.print("  • git-flow - Git automation")
+        console.print("  • qa-bot - Question answering")
+        console.input("\n[dim]Press Enter to continue...[/dim]")
+
+    def manage_models(self):
+        """Download and manage models - auto-detects hardware"""
+        backend = self.detector.get_best_backend()
+
+        if not backend:
+            console.print("[red]No backend installed![/red]")
+            q = [inquirer.Confirm("install", message="Install Ollama?", default=True)]
+            if inquirer.prompt(q).get("install"):
+                self._install_backend_auto()
+            return
+
+        while True:
+            console.clear()
+            console.print(f"[bold cyan]Models ({backend.backend_display_name()})[/bold cyan]\n")
+
+            if not backend.is_running():
+                console.print("[yellow]Starting backend...[/yellow]\n")
+                if not backend.start():
+                    console.print("[red]Failed to start backend[/red]")
+                    console.input("[dim]Press Enter to continue...[/dim]")
+                    return
+
+            with console.status("Fetching models..."):
+                models = backend.list_models() or []
+
+            if models:
+                console.print("[bold]Installed Models:[/bold]")
+                for m in models:
+                    console.print(f"  ✓ {m}")
+            else:
+                console.print("[dim]No models installed[/dim]")
 
             console.print()
 
-            questions = [
-                inquirer.List(
-                    "action",
-                    message="Choose an action",
-                    choices=[
-                        ("Download New Model", "download"),
-                        ("Back to Main Menu", "back"),
-                    ],
-                ),
-            ]
+            q = [inquirer.List(
+                "action",
+                message="Choose an action",
+                choices=[
+                    ("Download New Model", "download"),
+                    ("Back to Menu", "back"),
+                ],
+            )]
 
-            answers = inquirer.prompt(questions)
-            if not answers or answers["action"] == "back":
+            answer = inquirer.prompt(q)
+            if not answer or answer.get("action") == "back":
                 break
 
-            if answers["action"] == "download":
-                self.download_model_ui(backend)
+            if answer.get("action") == "download":
+                self._download_model_ui(backend)
 
-    def download_model_ui(self, backend):
-        """Show the download model UI"""
-        while True:
-            # Get system RAM
-            ram_gb = psutil.virtual_memory().total / (1024**3)
+    def _download_model_ui(self, backend):
+        """Model download interface with hardware detection"""
+        ram_gb = psutil.virtual_memory().total / (1024**3)
+        installed = [m.split(":")[0] for m in (backend.list_models() or [])]
 
-            # Get currently installed models to filter them out
-            installed_models = backend.list_models() or []
-            # Normalize installed models to handle tags (simple check)
-            installed_base_names = [m.split(":")[0] for m in installed_models]
-
-            # Define recommended models with structured data
-            # Format: id, name, version, quality, min_ram
-            models_data = [
-                {
-                    "id": "tinyllama",
-                    "name": "TinyLlama",
-                    "ver": "1.1B",
-                    "qual": "Fast/Low RAM",
-                    "min_ram": 2,
-                },
-                {
-                    "id": "qwen2.5:0.5b",
-                    "name": "Qwen 2.5",
-                    "ver": "0.5B",
-                    "qual": "Ultra Fast",
-                    "min_ram": 2,
-                },
-                {
-                    "id": "llama3.2:1b",
-                    "name": "Llama 3.2",
-                    "ver": "1B",
-                    "qual": "Modern/Fast",
-                    "min_ram": 3,
-                },
-                {
-                    "id": "llama3.2:3b",
-                    "name": "Llama 3.2",
-                    "ver": "3B",
-                    "qual": "Balanced",
-                    "min_ram": 4,
-                },
-                {
-                    "id": "phi3",
-                    "name": "Phi-3 Mini",
-                    "ver": "3.8B",
-                    "qual": "High Quality",
-                    "min_ram": 4,
-                },
-                {
-                    "id": "mistral",
-                    "name": "Mistral",
-                    "ver": "7B",
-                    "qual": "Standard",
-                    "min_ram": 6,
-                },
-                {
-                    "id": "llama3.1",
-                    "name": "Llama 3.1",
-                    "ver": "8B",
-                    "qual": "SOTA",
-                    "min_ram": 8,
-                },
-                {
-                    "id": "deepseek-r1:7b",
-                    "name": "DeepSeek R1",
-                    "ver": "7B",
-                    "qual": "Reasoning",
-                    "min_ram": 8,
-                },
-                {
-                    "id": "gemma2:9b",
-                    "name": "Gemma 2",
-                    "ver": "9B",
-                    "qual": "Google",
-                    "min_ram": 10,
-                },
-            ]
-
-            # Filter compatible models AND not installed
-            compatible_models = []
-            for m in models_data:
-                # Check RAM
-                if m["min_ram"] > ram_gb:
-                    continue
-
-                # Check if installed (check both full ID and base name)
-                is_installed = False
-                if m["id"] in installed_models:
-                    is_installed = True
-                elif m["id"].split(":")[0] in installed_base_names:
-                    is_installed = True
-
-                if not is_installed:
-                    compatible_models.append(m)
-
-            # Build choices with aligned columns
-            choices = []
-
-            # Add header as pseudo-items (workaround for missing Separator and rendering glitches)
-            # We use unique IDs for them and filter them out if selected.
-            choices.append((" ", "HEADER_0"))
-            choices.append(
-                (f"   {'MODEL':^20} {'VERSION':^10} {'QUALITY':^20}", "HEADER_1")
-            )
-            choices.append((" ", "HEADER_2"))
-
-            for m in compatible_models:
-                # Create aligned string for the menu item
-                # We use a fixed width font assumption here
-                label = f"{m['name']:<20} {m['ver']:<10} {m['qual']:<20}"
-                choices.append((label, m["id"]))
-
-            choices.append(("Custom Model Name...", "custom"))
-            choices.append(("Back", "back"))
-
-            # Set default to first real model to skip headers
-            default_model = compatible_models[0]["id"] if compatible_models else "back"
-
-            questions = [
-                inquirer.List(
-                    "model_choice",
-                    message="Select a model to download",
-                    choices=choices,
-                    default=default_model,
-                ),
-            ]
-
-            dl_answers = inquirer.prompt(questions)
-            if not dl_answers:
-                break
-
-            model_name = dl_answers["model_choice"]
-
-            # Handle header selection (ignore)
-            if model_name in ["HEADER_0", "HEADER_1", "HEADER_2"]:
-                continue
-
-            if model_name == "back":
-                break
-
-            if model_name == "custom":
-                model_name = console.input(
-                    "Enter model name to download (e.g. llama3, mistral): "
-                )
-
-            if model_name:
-                console.print(f"[cyan]Downloading {model_name}...[/cyan]")
-                # We can't use console.status here easily because download might take a long time and we want output
-                if hasattr(backend, "download_model"):
-                    # Define a callback to print progress if supported
-                    def progress_callback(line):
-                        # Try to parse progress if possible, or just print
-                        # For now, just print the line if it's meaningful
-                        pass  # console.print(line.strip())
-
-                    if backend.download_model(model_name):
-                        console.print(
-                            f"[green]Successfully downloaded {model_name}![/green]"
-                        )
-                        console.input("[dim]Press Enter to continue...[/dim]")
-                    else:
-                        console.print(f"[red]Failed to download {model_name}.[/red]")
-                        console.input("[dim]Press Enter to continue...[/dim]")
-                else:
-                    console.print("[red]Backend does not support auto-download.[/red]")
-                    console.input("[dim]Press Enter to continue...[/dim]")
-
-    def install_backend(self):
-        """Install a backend"""
-        # Filter out MockBackend if present (shouldn't be in production, but good to be safe)
-        available_backends = [
-            b for b in self.detector.backends if b.backend_name() != "mock"
+        # Hardware-optimized model recommendations
+        models = [
+            {"id": "qwen2.5:0.5b", "name": "Qwen 2.5", "size": "0.5B", "speed": "⚡ Ultra-Fast", "ram": 2},
+            {"id": "tinyllama", "name": "TinyLlama", "size": "1.1B", "speed": "⚡ Fast", "ram": 2},
+            {"id": "llama3.2:1b", "name": "Llama 3.2", "size": "1B", "speed": "⚡ Fast", "ram": 3},
+            {"id": "llama3.2:3b", "name": "Llama 3.2", "size": "3B", "speed": "🔥 Balanced", "ram": 4},
+            {"id": "phi3", "name": "Phi-3 Mini", "size": "3.8B", "speed": "🔥 Good", "ram": 4},
+            {"id": "mistral", "name": "Mistral", "size": "7B", "speed": "💪 Standard", "ram": 6},
+            {"id": "llama3.1", "name": "Llama 3.1", "size": "8B", "speed": "💪 Excellent", "ram": 8},
+            {"id": "neural-chat", "name": "Neural Chat", "size": "7B", "speed": "💪 Optimized", "ram": 6},
         ]
 
-        if not available_backends:
-            console.print("[red]No installable backends found.[/red]")
+        # Filter: compatible RAM + not installed
+        compatible = [m for m in models if m["ram"] <= ram_gb and m["id"].split(":")[0] not in installed]
+
+        if not compatible:
+            console.print("[yellow]All compatible models already installed[/yellow]")
             console.input("[dim]Press Enter to continue...[/dim]")
             return
 
-        choices = [(b.backend_display_name(), b) for b in available_backends]
-
-        questions = [
-            inquirer.List(
-                "backend",
-                message="Choose a backend to install",
-                choices=choices,
-            ),
+        choices = [
+            (f"{m['name']:<15} {m['size']:<6} {m['speed']:<15}", m['id'])
+            for m in compatible
         ]
+        choices.append(("Custom model name...", "custom"))
+        choices.append(("Back", "back"))
 
-        answers = inquirer.prompt(questions)
-        if not answers:
+        q = [inquirer.List("model", message="Select a model to download", choices=choices)]
+        answer = inquirer.prompt(q)
+        model = answer.get("model") if answer else None
+
+        if model == "back" or not model:
             return
 
-        backend = answers["backend"]
+        if model == "custom":
+            model = console.input("Enter model name (e.g., mistral, llama3): ").strip()
+            if not model:
+                return
 
-        console.print(f"[cyan]Installing {backend.backend_display_name()}...[/cyan]")
-        if backend.install():
-            console.print(
-                f"[green]Successfully installed {backend.backend_display_name()}![/green]"
-            )
+        console.print(f"\n[cyan]Downloading {model}...[/cyan]")
+        if hasattr(backend, "download_model") and backend.download_model(model):
+            console.print(f"[green]✓ Model '{model}' downloaded![/green]")
         else:
-            console.print(
-                f"[red]Failed to install {backend.backend_display_name()}.[/red]"
-            )
+            console.print(f"[red]✗ Failed to download '{model}'[/red]")
 
         console.input("[dim]Press Enter to continue...[/dim]")
 
+    def _install_backend_auto(self):
+        """Auto-install best backend for system"""
+        console.print("[cyan]Detecting system...[/cyan]\n")
+
+        available = [b for b in self.detector.backends if b.backend_name() != "mock"]
+        if not available:
+            console.print("[red]No installable backends found[/red]")
+            return
+
+        # Recommend Ollama by default (most compatible)
+        recommended = next((b for b in available if b.backend_name() == "ollama"), available[0])
+
+        console.print(f"[dim]Recommended: {recommended.backend_display_name()}[/dim]\n")
+
+        with console.status(f"Installing {recommended.backend_display_name()}..."):
+            if recommended.install():
+                console.print(f"[green]✓ {recommended.backend_display_name()} installed![/green]")
+            else:
+                console.print(f"[red]✗ Installation failed[/red]")
+
+        console.input("[dim]Press Enter to continue...[/dim]")
+
+    def show_api(self):
+        """REST API documentation (Advanced only)"""
+        api_text = """
+[bold cyan]REST API Endpoints[/bold cyan]
+
+[bold]Chat:[/bold]
+  POST /chat - Send message
+  POST /chat/stream - Stream response
+  GET /chat/history - Get conversation
+
+[bold]Plugins:[/bold]
+  GET /plugins - List all
+  POST /plugins/{id} - Execute
+  GET /plugins/{id}/status
+
+[bold]Models:[/bold]
+  GET /models - List available
+  POST /models/{id}/select
+
+[bold]System:[/bold]
+  GET /health - Health check
+  GET /metrics - Performance stats
+
+[dim]Run: lmapp server --help[/dim]
+        """
+        console.print(Panel(api_text, border_style="cyan"))
+        console.input("\n[dim]Press Enter to continue...[/dim]")
+
+    def show_dev_tools(self):
+        """Developer tools (Advanced only)"""
+        console.print("[bold cyan]Developer Tools[/bold cyan]\n")
+        console.print("[yellow]Coming soon:[/yellow]")
+        console.print("  • Debug logging viewer")
+        console.print("  • Performance profiler")
+        console.print("  • Error history")
+        console.print("  • Plugin tester")
+        console.input("\n[dim]Press Enter to continue...[/dim]")
+
     def configure(self):
-        """Configuration interface"""
+        """Settings interface - simplified for beginners"""
+        config = self.config_manager.load()
+
         while True:
             console.clear()
-            console.print("[bold cyan]Configuration[/bold cyan]\n")
+            console.print("[bold cyan]Settings[/bold cyan]\n")
 
-            config = self.config_manager.load()
+            choices = []
 
-            console.print(
-                f"Developer Mode: {'[green]ON[/green]' if config.developer_mode else '[red]OFF[/red]'}"
-            )
-            console.print(f"Default Model: {config.default_model or '[dim]None[/dim]'}")
-            console.print()
+            if not config.advanced_mode:
+                choices.extend([
+                    ("Dark Mode (Coming)", "dark-mode"),
+                    ("Default Model", "default-model"),
+                    ("Enable Advanced Mode", "advanced-mode"),
+                ])
+            else:
+                choices.extend([
+                    ("Dark Mode (Coming)", "dark-mode"),
+                    ("Default Model", "default-model"),
+                    ("Backend", "backend"),
+                    ("Temperature", "temperature"),
+                    ("Disable Advanced Mode", "advanced-mode"),
+                ])
 
-            questions = [
-                inquirer.List(
-                    "setting",
-                    message="Choose a setting to change",
-                    choices=[
-                        ("Set Default Model", "default_model"),
-                        ("Back to Main Menu", "back"),
-                    ],
-                ),
-            ]
+            choices.append(("Back to Menu", "back"))
 
-            answers = inquirer.prompt(questions)
-            if not answers or answers["setting"] == "back":
+            q = [inquirer.List("setting", message="Choose a setting", choices=choices)]
+            answer = inquirer.prompt(q)
+            setting = answer.get("setting") if answer else "back"
+
+            if setting == "back":
                 break
 
-            elif answers["setting"] == "default_model":
+            elif setting == "default-model":
                 backend = self.detector.get_best_backend()
-                if backend:
-                    if not backend.is_running():
-                        # Try to start it silently or just warn
-                        pass
-
-                    # Try to list models if running
-                    models = []
-                    if backend.is_running():
-                        models = backend.list_models()
-
+                if backend and backend.is_running():
+                    models = backend.list_models() or []
                     if models:
-                        q = [
-                            inquirer.List(
-                                "model", message="Select default model", choices=models
-                            )
-                        ]
-                        a = inquirer.prompt(q)
-                        if a:
-                            config.default_model = a["model"]
+                        q = [inquirer.List("model", message="Select default model", choices=models)]
+                        ans = inquirer.prompt(q)
+                        if ans:
+                            config.default_model = ans.get("model")
                             self.config_manager.save(config)
+                            console.print("[green]✓ Default model updated[/green]")
                     else:
-                        console.print(
-                            "[yellow]No models found or backend not running.[/yellow]"
-                        )
-                        model_name = console.input(
-                            "Enter model name manually (leave empty to cancel): "
-                        )
-                        if model_name:
-                            config.default_model = model_name
-                            self.config_manager.save(config)
+                        console.print("[yellow]No models found[/yellow]")
                 else:
-                    console.print("[red]No backend found.[/red]")
-                    console.input("[dim]Press Enter to continue...[/dim]")
+                    console.print("[yellow]Backend not running[/yellow]")
+                console.input("[dim]Press Enter to continue...[/dim]")
 
-    def shell_customize(self):
-        """Shell customization menu"""
-        console.print("[bold cyan]Shell Customization[/bold cyan]\n")
-        console.print("[yellow]Shell customization coming soon![/yellow]")
-        console.print("\n[dim]Options:[/dim]")
-        console.print("  • Install bash-it")
-        console.print("  • Install Oh My Zsh")
-        console.print("  • Configure shell themes")
-        console.print("  • Add custom aliases")
-        console.print("\n[dim]Press Enter to return to menu[/dim]")
-        input()
+            elif setting == "advanced-mode":
+                config.advanced_mode = not config.advanced_mode
+                self.config_manager.save(config)
+                state = "[green]ENABLED[/green]" if config.advanced_mode else "[dim]DISABLED[/dim]"
+                console.print(f"\nAdvanced Mode {state}")
+                console.input("[dim]Press Enter to continue...[/dim]")
+
+            elif setting in ["dark-mode", "backend", "temperature"]:
+                console.print("[yellow]Coming soon[/yellow]")
+                console.input("[dim]Press Enter to continue...[/dim]")
 
     def show_help(self):
-        """Display help information"""
+        """Help & Documentation"""
         help_text = """
-[bold]lmapp Help & Documentation[/bold]
+[bold cyan]Help & Documentation[/bold cyan]
 
-[cyan]Menu Options:[/cyan]
-• [bold]Start Chat:[/bold] Begin chatting with your local AI
-• [bold]Manage Models:[/bold] Download, update, or remove AI models
-• [bold]Configure Settings:[/bold] Adjust lmapp configuration
-• [bold]Shell Customization:[/bold] Install bash-it or Oh My Zsh
-• [bold]About:[/bold] System information and version
+[bold]Getting Started:[/bold]
+1. Select "Start Chat" from main menu
+2. LMAPP auto-downloads a model for your hardware
+3. Start chatting with your local AI!
 
-[cyan]Quick Start:[/cyan]
-1. Run installation: lmapp install
-2. Start chatting: lmapp chat
-3. Or use this menu to explore features
+[bold]Using Plugins:[/bold]
+From chat, press [bold]Ctrl+P[/bold] to access plugins:
+• [bold]Auditor:[/bold] Review your code
+• [bold]Translator:[/bold] Translate text
+• [bold]Knowledge Base:[/bold] Search documents
+• [bold]...and 5 more[/bold]
 
-[yellow]Note:[/yellow] To change the default model, enable Advanced Mode in the About menu.
+[bold]Keyboard Shortcuts:[/bold]
+• [bold]Ctrl+C:[/bold] Exit chat
+• [bold]Ctrl+L:[/bold] Clear screen
+• [bold]/help:[/bold] In-chat help
 
-[cyan]Documentation:[/cyan]
-• User Guide: docs/user-guide.md
-• Installation: docs/installation.md
-• Troubleshooting: docs/troubleshooting.md
-• FAQ: docs/faq.md
+[bold]Resources:[/bold]
+• GitHub: github.com/nabaznyl/lmapp
+• Docs: github.com/nabaznyl/lmapp/wiki
+• Issues: github.com/nabaznyl/lmapp/issues
 
-[cyan]Support:[/cyan]
-• GitHub Issues: github.com/yourusername/lmapp/issues
-• Documentation: github.com/yourusername/lmapp/docs
-
-[cyan]Version:[/cyan] 0.1.0-dev
+[bold]Tips:[/bold]
+• Models stay on your machine (privacy first)
+• No cloud calls, works offline
+• Enable Advanced Mode for more control
         """
         console.print(Panel(help_text, border_style="cyan"))
-        console.print("\n[dim]Press Enter to return to menu[/dim]")
-        input()
+        console.input("\n[dim]Press Enter to continue...[/dim]")
 
     def show_about(self):
-        """Show system information and developer toggle"""
+        """About screen with hardware info and mode toggle"""
         while True:
             config = self.config_manager.load()
-            dev_mode = config.developer_mode
+            mode_text = "[green]ENABLED ✓[/green]" if config.advanced_mode else "[yellow]DISABLED[/yellow]"
 
-            # Get backend info
-            backend_name = config.backend
+            # Get hardware info
+            memory = psutil.virtual_memory()
+            cpu_count = psutil.cpu_count()
+            memory_gb = memory.total / (1024**3)
+            
+            # Get recommended model
+            if memory_gb < 2:
+                recommended = "qwen2.5:0.5b (370MB) - Minimal"
+            elif memory_gb < 4:
+                recommended = "llama3.2:1b (950MB) - Light"
+            elif memory_gb < 8:
+                recommended = "llama3.2:3b (1.9GB) - Balanced"
+            else:
+                recommended = "llama3.1 (8GB) - Powerful"
 
-            if backend_name == "auto":
-                rec = self.detector.get_recommended(
-                    8
-                )  # Default to 8GB assumption for display
-                backend_name = f"Auto ({rec.backend_name() if rec else 'None'})"
-
-            # Build About Text
             about_text = f"""
-[bold cyan]lmapp[/bold cyan] v{__version__}
+[bold cyan]LMAPP[/bold cyan] v{__version__}
+
+Beautiful AI. Complete control. Your data, always.
 
 [bold]System Information:[/bold]
-• Model: [yellow]{config.model}[/yellow]
-• Backend: [yellow]{backend_name}[/yellow]
-• Advanced Mode: {'[green]ON[/green]' if dev_mode else '[dim]OFF[/dim]'}
+• RAM: {memory_gb:.1f}GB
+• CPU Cores: {cpu_count}
+• Recommended Model: {recommended}
 
-[dim]Local LLM Made Simple[/dim]
+[bold]Current Configuration:[/bold]
+• Default Model: {config.model}
+• Backend: {config.backend}
+• Advanced Mode: {mode_text}
+
+[dim]MIT Licensed • Privacy-First • Fully Local[/dim]
             """
-            console.print(Panel(about_text, title="About", border_style="blue"))
+            console.print(Panel(about_text, title="About LMAPP", border_style="blue"))
 
-            # Sub-menu options
-            options = [
-                ("Toggle Advanced Mode", "toggle"),
-                ("Back to Main Menu", "back"),
-            ]
+            q = [inquirer.List(
+                "action",
+                message="Choose an option",
+                choices=[
+                    ("Toggle Advanced Mode", "toggle"),
+                    ("View All System Info", "info"),
+                    ("Back to Menu", "back"),
+                ],
+            )]
 
-            questions = [
-                inquirer.List(
-                    "action",
-                    message="Choose an option",
-                    choices=options,
-                ),
-            ]
+            answer = inquirer.prompt(q)
+            action = answer.get("action") if answer else "back"
 
-            try:
-                answer = inquirer.prompt(questions)
-                if not answer or answer["action"] == "back":
-                    break
-                elif answer["action"] == "toggle":
-                    self.toggle_dev_mode()
-            except KeyboardInterrupt:
+            if action == "back":
                 break
+            elif action == "toggle":
+                config.advanced_mode = not config.advanced_mode
+                self.config_manager.save(config)
+                state = "[green]ENABLED ✓[/green]" if config.advanced_mode else "[yellow]DISABLED[/yellow]"
+                console.clear()
+                console.print(f"\n[bold]Advanced Mode {state}[/bold]")
+                console.print("\n[dim]Menu will update on next screen...[/dim]")
+                console.input("[dim]Press Enter to return to main menu[/dim]")
+                # Return to main menu - it will rebuild items automatically
+                break
+            elif action == "info":
+                # Get detailed system info
+                backend = self.detector.get_best_backend()
+                backend_name = backend.backend_display_name() if backend else "None"
+                
+                info = f"""
+[bold cyan]System Information[/bold cyan]
 
-    def toggle_dev_mode(self):
-        """Toggle developer mode"""
-        config = self.config_manager.load()
-        config.developer_mode = not config.developer_mode
-        self.config_manager.save(config)
-        state = "ENABLED" if config.developer_mode else "DISABLED"
-        color = "green" if config.developer_mode else "yellow"
-        console.print(f"[{color}]Advanced Mode {state}[/{color}]")
+[bold]Hardware:[/bold]
+• RAM: {memory_gb:.1f}GB (Total)
+• CPU: {cpu_count} cores
+• Available Memory: {memory.available / (1024**3):.1f}GB
+
+[bold]Software:[/bold]
+• LMAPP Version: {__version__}
+• Detected Backend: {backend_name}
+• Backend Status: {'Running ✓' if backend and backend.is_running() else 'Not Running'}
+
+[bold]Recommended Model:[/bold]
+{recommended}
+
+[bold]Advanced Mode:[/bold]
+{mode_text}
+                """
+                console.print(Panel(info, border_style="green", title="System Details"))
+                console.input("\n[dim]Press Enter to continue...[/dim]")
+
 
     def quit(self):
-        """Exit the application"""
+        """Exit application"""
         self.running = False
 
 
