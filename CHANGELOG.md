@@ -11,6 +11,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.4] - 2025-12-11
+
+### Added
+- **Retrieval-Augmented Generation (RAG) System** (`rag.rag_system` module):
+  - `Document` class for storing indexed content with metadata and timestamps
+  - `SearchResult` class for ranking search results with relevance scores
+  - `SimpleVectorizer` for semantic similarity calculation (Jaccard-based, no ML libraries)
+  - `DocumentIndex` for persistent document storage and retrieval
+  - `RAGSystem` high-level interface for file/directory indexing and context injection
+  - Automatic file format detection (txt, py, json, md, html, etc.)
+  - Full-text search without external dependencies
+  - Context extraction for LLM prompt injection
+  - 16 comprehensive tests for RAG functionality (100% passing)
+
+- **Plugin System** (`plugins.plugin_manager` module):
+  - `PluginMetadata` for plugin registration and versioning
+  - `BasePlugin` abstract class for extensible plugin architecture
+  - `PluginManager` for discovery, loading, lifecycle management
+  - Plugin error isolation and safe execution
+  - CLI command registration from plugins
+  - Plugin statistics and listing
+  - 6 comprehensive tests for plugin functionality (100% passing)
+
+- **Batch Processing** (`batch.batch_processor` module):
+  - `BatchInput` for input items with metadata support
+  - `BatchResult` for tracking individual results with error handling
+  - `BatchJob` for managing batch collections with status tracking
+  - `BatchProcessor` for job management and parallel processing
+  - Multiple output formats: JSON, JSONL, CSV, text
+  - Progress callbacks during batch processing
+  - Input loading from files (JSON, JSONL, text)
+  - Result persistence and job statistics
+  - 11 comprehensive tests for batch functionality (100% passing)
+
+- **Integration Tests**:
+  - RAG + Batch Processing integration test
+  - 33 new tests total for v0.2.4 advanced features
+
+### Changed
+- Updated all config files to version 0.2.4-dev
+- Test suite expanded to 272 total tests (33 new v0.2.4 tests)
+
+### Test Coverage
+- **Previous (v0.2.3):** 239/239 tests passing
+- **Current (v0.2.4):** 272/272 tests passing (+33 new tests)
+- All new modules: 100% test coverage
+
+---
+
 ## [0.2.3] - 2025-12-11
 
 ### Added

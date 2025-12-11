@@ -6,17 +6,20 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI Version](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/)
 [![Python: 3.8+](https://img.shields.io/badge/Python-3.8+-green.svg)]()
-[![Tests: 146/146 Passing](https://img.shields.io/badge/Tests-146%2F146%20passing-brightgreen.svg)]()
+[![Tests: 272/272 Passing](https://img.shields.io/badge/Tests-272%2F272%20passing-brightgreen.svg)]()
 [![Code Quality: Linting 0 errors](https://img.shields.io/badge/Code%20Quality-0%20errors-brightgreen.svg)]()
 [![Type Safety: mypy Clean](https://img.shields.io/badge/Type%20Safety-mypy%20clean-brightgreen.svg)]()
 [![Status: Production Ready](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
 
-**v0.2.3 Now Available!** 🎉 
+**v0.2.4 Now Available!** 🎉 Advanced Features:
+- 🔍 **RAG System** - Retrieve-Augmented Generation (semantic search of local files)
+- 🔌 **Plugin System** - Extend functionality with custom plugins
+- 📦 **Batch Processing** - Process multiple inputs in parallel
 - 💾 **Conversation Sessions** - Remember multi-turn conversations
 - 🎭 **Custom System Prompts** - Tailor AI behavior to your needs  
 - 📝 **Enhanced Error Messages** - Clear troubleshooting guidance
 - ⌨️ **Command Aliases** - `lmapp c` for chat, `lmapp m` for models
-- ✅ **239 Tests Passing** - Comprehensive feature coverage
+- ✅ **272 Tests Passing** - Comprehensive feature coverage (33 new v0.2.4 tests)
 
 ---
 
@@ -30,9 +33,24 @@ lmapp install  # Automatically installs and configures Ollama
 lmapp chat     # Start chatting!
 ```
 
-**Latest Features (v0.2.3):**
+**Latest Features (v0.2.4):**
 ```bash
-# Use command aliases for faster workflow
+# RAG - Search through your own files
+lmapp rag index ~/documents          # Index all documents
+lmapp rag search "Python tips"       # Find relevant content
+lmapp chat --with-context "Python?"  # Use RAG context in conversation
+
+# Batch Processing - Process multiple queries efficiently
+lmapp batch create inputs.json       # Create batch from file
+lmapp batch process job_id           # Process batch
+lmapp batch results job_id --json    # Export results
+
+# Plugins - Extend with custom functionality
+lmapp plugin list                    # See installed plugins
+lmapp plugin search "translation"    # Find plugins
+lmapp plugin install my-plugin       # Add plugin to workflow
+
+# Use command aliases for faster workflow (v0.2.3 feature)
 lmapp c "What is AI?"           # Shortcut for 'lmapp chat'
 lmapp m list                    # Shortcut for 'lmapp models list'
 lmapp s new "Python Help"       # Create a new conversation session

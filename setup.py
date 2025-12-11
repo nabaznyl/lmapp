@@ -40,7 +40,7 @@ extras_require = {
 
 setup(
     name="lmapp",
-    version="0.2.3-dev",
+    version="0.2.4-dev",
     description="Local LLM Made Simple - Consumer-friendly AI assistant",
     long_description=long_description,
     long_description_content_type="text/markdown",
