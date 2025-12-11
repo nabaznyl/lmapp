@@ -8,13 +8,13 @@
 
 ## 🎯 Mission Statement
 
-**LMAPP:** An offline-first AI search engine that replaces "Google it" with "LMAPP it"
+**LMAPP:** An offline/online AI search engine that replaces "Google it" with "LMAPP it"
 - Works completely offline after initial setup
 - No cloud dependencies, no subscriptions, no telemetry
 - GitHub Copilot alternative/replacement for code understanding
 - Fast, local, private, and always available
 
-**Slogan:** *"All the answers at your fingertips. No internet required."*
+**Slogan:** *"All the answers at your fingertips. Offline and online."*
 
 ---
 
