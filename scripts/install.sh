@@ -155,6 +155,34 @@ run_checks() {
     echo -e "\n${GREEN}System checks complete!${NC}\n"
 }
 
+prompt_uaft() {
+    echo -e "\n${CYAN}Feature Notice: Universal Automation Framework Tool (uaft)${NC}"
+    echo "This installation includes 'uaft', a powerful automation tool."
+    echo "It allows you to run project tasks (like 'uaft test') and global automation scripts."
+    echo ""
+    echo "Options:"
+    echo "  1) Install Everything (Recommended)"
+    echo "     - Installs 'lmapp' (AI Assistant)"
+    echo "     - Installs 'uaft' (Automation Tool)"
+    echo "     - Enables global automation features"
+    echo ""
+    echo "  2) Minimal Install"
+    echo "     - Installs 'lmapp' only"
+    echo "     - 'uaft' command will still exist but won't be configured globally"
+    echo ""
+    
+    read -p "Select option [1/2] (default: 1): " choice
+    choice=${choice:-1}
+    
+    if [[ "$choice" == "1" ]]; then
+        echo -e "${GREEN}✓ Enabling full automation suite${NC}"
+        export INSTALL_UAFT_GLOBAL=1
+    else
+        echo -e "${YELLOW}⚠ Minimal install selected${NC}"
+        export INSTALL_UAFT_GLOBAL=0
+    fi
+}
+
 show_eula() {
     echo -e "\n${CYAN}End-User License Agreement${NC}\n"
     echo "By proceeding with this installation, you agree to:"
@@ -170,7 +198,7 @@ show_eula() {
     
     read -p "Do you accept these terms? (yes/no): " ACCEPT
     
-    if [[ "$ACCEPT" != "yes" ]]; then
+    if [[ ! "$ACCEPT" =~ ^[yY](es)?$ ]]; then
         print_error "Installation cancelled"
         exit 1
     fi
@@ -198,19 +226,32 @@ install_lmapp() {
     pip install -q -e .
     print_success "lmapp installed"
     
+    if [[ "$INSTALL_UAFT_GLOBAL" == "1" ]]; then
+        echo "Configuring global uaft..."
+        mkdir -p ~/.config/uaft
+        if [ ! -f ~/.config/uaft/uaft.yaml ]; then
+            echo "version: 1.0" > ~/.config/uaft/uaft.yaml
+            echo "global-hello:" >> ~/.config/uaft/uaft.yaml
+            echo "  description: 'Say hello from global config'" >> ~/.config/uaft/uaft.yaml
+            echo "  commands:" >> ~/.config/uaft/uaft.yaml
+            echo "    - echo 'Hello from Global UAFT!'" >> ~/.config/uaft/uaft.yaml
+        fi
+        print_success "uaft configured globally"
+    fi
+    
     echo -e "\n${GREEN}Installation complete!${NC}\n"
 }
 
 show_next_steps() {
     echo -e "${CYAN}Next Steps:${NC}\n"
     echo "1. Activate virtual environment:"
-    echo "   ${GREEN}source .venv/bin/activate${NC}"
+    echo -e "   ${GREEN}source .venv/bin/activate${NC}"
     echo ""
     echo "2. Run lmapp:"
-    echo "   ${GREEN}lmapp${NC}"
+    echo -e "   ${GREEN}lmapp${NC}"
     echo ""
     echo "3. Or run system check:"
-    echo "   ${GREEN}lmapp status${NC}"
+    echo -e "   ${GREEN}lmapp status${NC}"
     echo ""
     echo "Documentation: docs/installation.md"
     echo "Support: https://github.com/yourusername/lmapp/issues"
@@ -222,6 +263,7 @@ main() {
     print_header
     run_checks
     show_eula
+    prompt_uaft
     install_lmapp
     show_next_steps
 }

@@ -1,0 +1,46 @@
+{
+  "version": 1.0,
+  "project": "lmapp",
+  "fix": {
+    "python": [
+      "black src/ tests/",
+      "flake8 src/"
+    ]
+  },
+  "cleanup": [
+    "**/__pycache__",
+    "**/*.pyc",
+    "**/*.egg-info",
+    "dist/",
+    "build/",
+    ".pytest_cache",
+    ".coverage"
+  ],
+  "test": {
+    "command": "pytest",
+    "args": [
+      "tests/",
+      "-v"
+    ],
+    "description": "Run lmapp test suite"
+  },
+  "setup": {
+    "description": "Setup development environment",
+    "commands": [
+      "pip install -e ."
+    ]
+  },
+  "dev": {
+    "description": "Install with dev dependencies",
+    "commands": [
+      "pip install -e .[dev]"
+    ]
+  },
+  "check": {
+    "description": "Run full quality check",
+    "commands": [
+      "uaft fix",
+      "uaft test"
+    ]
+  }
+}

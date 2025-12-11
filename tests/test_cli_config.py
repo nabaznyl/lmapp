@@ -4,14 +4,9 @@ Configuration CLI Commands Tests
 Tests for lmapp config command and subcommands
 """
 
-import pytest
-import json
-import tempfile
-from pathlib import Path
 from click.testing import CliRunner
 
 from lmapp.cli import main
-from lmapp.core.config import ConfigManager, LMAppConfig
 
 
 class TestConfigShowCommand:

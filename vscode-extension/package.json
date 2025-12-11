@@ -1,0 +1,67 @@
+{
+  "name": "lmapp-vscode",
+  "displayName": "lmapp Copilot",
+  "description": "Local AI Assistant for VS Code - Powered by lmapp",
+  "version": "0.1.0",
+  "publisher": "lmapp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nabaznyl/lmapp"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Machine Learning"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "lmapp.startServer",
+        "title": "lmapp: Start API Server"
+      },
+      {
+        "command": "lmapp.stopServer",
+        "title": "lmapp: Stop API Server"
+      }
+    ],
+    "configuration": {
+      "title": "lmapp",
+      "properties": {
+        "lmapp.serverUrl": {
+          "type": "string",
+          "default": "http://localhost:8000",
+          "description": "URL of the lmapp API server"
+        },
+        "lmapp.model": {
+          "type": "string",
+          "default": "tinyllama",
+          "description": "Model to use for completion"
+        },
+        "lmapp.enableInlineCompletion": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable inline ghost-text completions"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^18.0.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}

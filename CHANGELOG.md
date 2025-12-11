@@ -10,7 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
+- **Error Database & Fail-Safe System**:
+  - New `ErrorDB` module (`src/lmapp/core/error_db.py`) to persist errors and suggest solutions.
+  - Global exception handler in CLI to catch crashes and log them.
+  - `lmapp errors` command to view error history and suggested fixes.
+  - "Knowledge Base" of known issues (e.g., Ollama connection errors) with auto-suggestions.
+
 - **Environment Automation Scripts**: Simplify setup and ensure correct venv usage
+
   - `scripts/bootstrap_dev_env.sh` - Automated virtualenv creation and dependency installation
   - `scripts/check_env.sh` - Verify correct .venv activation
   - `scripts/run_tests.sh` - Run tests with automatic venv management

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lmapp"
-version = "0.1.0"
+version = "0.1.1"
 description = "Local LLM Made Simple - Consumer-friendly AI assistant"
 readme = "README.md"
 license = {text = "MIT"}
@@ -36,6 +36,7 @@ dev = [
 
 [project.scripts]
 lmapp = "lmapp.cli:main"
+# uaft = "lmapp.uaft_cli:main"  # Removed to avoid conflict with standalone uaft package
 
 [project.urls]
 "Homepage" = "https://github.com/nabaznyl/lmapp"

@@ -5,7 +5,6 @@ Tests for config module with pydantic integration
 """
 
 import pytest
-import json
 import tempfile
 import os
 from pathlib import Path

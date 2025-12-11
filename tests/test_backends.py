@@ -1,6 +1,5 @@
 """Tests for backend modules"""
 
-import pytest
 from lmapp.backend.mock import MockBackend
 from lmapp.backend.detector import BackendDetector
 from lmapp.backend.base import BackendStatus

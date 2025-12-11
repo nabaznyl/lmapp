@@ -106,16 +106,30 @@ class OllamaBackend(LLMBackend):
             return True
 
         try:
-            # Ollama runs as a service, try to start it
+            # Try starting via systemctl first (standard Linux service)
             subprocess.run(
                 ["systemctl", "--user", "start", "ollama"],
                 capture_output=True,
                 timeout=10,
             )
             time.sleep(2)
-            return self.is_running()
+            if self.is_running():
+                return True
+
+            # Fallback: Start as background process
+            subprocess.Popen(
+                ["ollama", "serve"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                start_new_session=True,
+            )
+            # Wait for startup
+            for _ in range(10):
+                if self.is_running():
+                    return True
+                time.sleep(1)
+            return False
         except Exception:
-            # If systemctl doesn't work, Ollama might auto-start on first use
             return False
 
     def stop(self) -> bool:

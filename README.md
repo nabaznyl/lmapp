@@ -29,12 +29,11 @@ pip install --upgrade lmapp
 
 **Alternative installations:**
 ```bash
-# From GitHub Releases
-pip install https://github.com/nabaznyl/lmapp/releases/download/v0.1.0/lmapp-0.1.0-py3-none-any.whl
-
 # From Source
 git clone https://github.com/nabaznyl/lmapp.git && cd lmapp && pip install .
 ```
+
+See [Installation Guide](./INSTALL.md) for more options.
 
 **Verify installation:**
 ```bash

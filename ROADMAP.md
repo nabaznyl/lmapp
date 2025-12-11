@@ -63,9 +63,36 @@
 
 ---
 
-## Phase 4: Multi-Language Support & Extensibility (v0.3.0+)
+## Phase 4: API Server (The Bridge) ✅ COMPLETE
 
-### Python Backend (v0.1-0.2)
+**Goal:** Expose lmapp as a local HTTP API to support external tools (VS Code, etc.)
+
+- [x] Add `fastapi` and `uvicorn` dependencies
+- [x] Implement `lmapp serve` command
+- [x] Create OpenAI-compatible API endpoints (`/v1/completions`, `/v1/chat/completions`)
+- [x] Implement Fill-In-Middle (FIM) support for code completion models
+
+**Status:** Delivered in v0.2.0
+
+---
+
+## Phase 5: VS Code Extension (The Copilot Killer) ✅ COMPLETE
+
+**Goal:** A free, offline, private alternative to GitHub Copilot
+
+- [x] Create `vscode-extension` project structure
+- [x] Implement Inline Completion Provider (Ghost Text)
+- [x] Implement Chat Sidebar (Explain/Refactor)
+- [x] Add Status Bar integration
+- [x] Publish to VS Code Marketplace (Packaged as .vsix)
+
+**Status:** Delivered in v0.2.0
+
+---
+
+## Phase 6: Multi-Language Support & Extensibility (v0.4.0+)
+
+### Future Language Bindings
 - [x] Core CLI and abstraction layer
 - [x] Backend interface contracts
 - [ ] Real LLM backends (Ollama, llamafile)

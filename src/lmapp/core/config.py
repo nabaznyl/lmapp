@@ -26,6 +26,13 @@ class LMAppConfig(BaseModel):
         default=0.7, ge=0.0, le=1.0, description="Temperature (0.0-1.0)"
     )
     debug: bool = Field(default=False, description="Enable debug logging")
+    developer_mode: bool = Field(
+        default=False,
+        description="Enable advanced mode (verbose output, advanced options)",
+    )
+    default_model: Optional[str] = Field(
+        default=None, description="Default model to use across sessions"
+    )
 
     # Advanced settings (future)
     max_tokens: Optional[int] = Field(
@@ -111,6 +118,7 @@ class ConfigManager:
             model=os.getenv("LMAPP_MODEL", "tinyllama"),
             temperature=float(os.getenv("LMAPP_TEMP", "0.7")),
             debug=os.getenv("LMAPP_DEBUG", "0") == "1",
+            developer_mode=os.getenv("LMAPP_DEV_MODE", "0") == "1",
         )
 
     def get(self) -> LMAppConfig:

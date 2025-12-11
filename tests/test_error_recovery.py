@@ -6,7 +6,7 @@ Tests for retry logic, fallback strategies, and error messages
 
 import pytest
 import time
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock
 
 from lmapp.utils.error_recovery import (
     retry_with_backoff,
@@ -83,7 +83,6 @@ class TestRetryDecorator:
             call_times.append(time.time())
             raise ConnectionError("Fail")
 
-        start = time.time()
         with pytest.raises(ConnectionError):
             failing_func()
 

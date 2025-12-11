@@ -119,9 +119,9 @@ class TestChatSession:
 
     def test_multiple_turns(self, chat_session):
         """Test multi-turn conversation"""
-        response1 = chat_session.send_prompt("What is Python?")
-        response2 = chat_session.send_prompt("Is it hard to learn?")
-        response3 = chat_session.send_prompt("Can I use it for web development?")
+        chat_session.send_prompt("What is Python?")
+        chat_session.send_prompt("Is it hard to learn?")
+        chat_session.send_prompt("Can I use it for web development?")
 
         assert len(chat_session.history) == 6  # 3 user + 3 assistant
         stats = chat_session.get_stats()

@@ -17,6 +17,8 @@ from lmapp.utils.logging import logger
 from lmapp.backend.installer import BackendInstaller
 from lmapp.backend.detector import BackendDetector
 from lmapp.core.chat import ChatSession
+from lmapp.core.nux import check_first_run, run_user_mode_setup
+from lmapp.core.config import get_config_manager
 
 console = Console()
 
@@ -24,8 +26,9 @@ console = Console()
 @click.group(invoke_without_command=True)
 @click.option("--version", is_flag=True, help="Show version and exit")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
+@click.option("--dev", is_flag=True, help="Enable Developer Mode")
 @click.pass_context
-def main(ctx, version, debug):
+def main(ctx, version, debug, dev):
     """lmapp - Local LLM Made Simple
 
     Your personal AI assistant, running locally on your machine.
@@ -38,11 +41,68 @@ def main(ctx, version, debug):
 
     logger.debug(f"lmapp CLI started, version={__version__}, debug={debug}")
 
+    # Setup global exception handler
+    def handle_exception(exc_type, exc_value, exc_traceback):
+        if issubclass(exc_type, KeyboardInterrupt):
+            sys.__excepthook__(exc_type, exc_value, exc_traceback)
+            return
+
+        # Ignore Click exceptions which are handled by Click
+        if issubclass(exc_type, click.exceptions.ClickException):
+            sys.__excepthook__(exc_type, exc_value, exc_traceback)
+            return
+
+        # Log to ErrorDB
+        try:
+            from lmapp.core.error_db import ErrorDB
+
+            db = ErrorDB()
+            solution = db.log_error(exc_value)
+
+            console.print(
+                f"\n[bold red]An unexpected error occurred:[/bold red] {exc_value}"
+            )
+            if solution:
+                console.print(
+                    f"\n[bold green]Suggested Solution:[/bold green] {solution}"
+                )
+
+            # Silent logging as requested
+            # console.print(f"\n[dim]Error has been logged to the database. Run 'lmapp errors' to view history.[/dim]")
+        except Exception as e:
+            # Fallback if ErrorDB fails
+            console.print(f"\n[bold red]Critical Error:[/bold red] {exc_value}")
+            # console.print(f"[dim]Failed to log error: {e}[/dim]")
+
+        # Call original hook if debug
+
+        import os
+
+        if os.environ.get("LMAPP_DEBUG"):
+            sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        else:
+            sys.exit(1)
+
+    sys.excepthook = handle_exception
+
     if version:
         console.print(
             f"[bold cyan]lmapp[/bold cyan] version [yellow]{__version__}[/yellow]"
         )
         sys.exit(0)
+
+    # NUX Check
+    if check_first_run():
+        run_user_mode_setup()
+
+    # Handle Developer Mode flag
+    if dev:
+        config_manager = get_config_manager()
+        config = config_manager.load()
+        if not config.developer_mode:
+            config.developer_mode = True
+            config_manager.save(config)
+            console.print("[green]Developer Mode Enabled[/green]")
 
     if ctx.invoked_subcommand is None:
         # No subcommand, show main menu
@@ -139,6 +199,46 @@ def chat(model):
 
 
 @main.command()
+def errors():
+    """View error history and solutions"""
+    from lmapp.core.error_db import ErrorDB
+    from rich.table import Table
+    from rich import box
+    import time
+
+    db = ErrorDB()
+    history = db.get_history()
+
+    if not history:
+        console.print("[green]No errors recorded in the database.[/green]")
+        return
+
+    table = Table(title="Error History", box=box.ROUNDED)
+    table.add_column("Time", style="cyan", no_wrap=True)
+    table.add_column("Error", style="red")
+    table.add_column("Solution", style="green")
+
+    for entry in history[-10:]:  # Show last 10
+        ts = entry.get("timestamp", 0)
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ts))
+        error_msg = entry.get("message", "") or entry.get(
+            "error", ""
+        )  # Handle both keys if schema changed
+        solution = entry.get("solution", "") or "-"
+
+        # Truncate long error messages
+        if len(error_msg) > 80:
+            error_msg = error_msg[:77] + "..."
+
+        table.add_row(timestamp, error_msg, solution)
+
+    console.print(table)
+    console.print(
+        f"\n[dim]Showing last {min(len(history), 10)} of {len(history)} errors. Log file: {db.db_file}[/dim]"
+    )
+
+
+@main.command()
 def install():
     """Run the automated installation wizard"""
     logger.debug("install command started")
@@ -180,6 +280,74 @@ def install():
         logger.warning("Model installation skipped")
         console.print("\n[yellow]Backend installed but model download skipped[/yellow]")
         console.print("[dim]You can download models later with: lmapp config[/dim]")
+
+
+@main.group(invoke_without_command=True)
+@click.pass_context
+def model(ctx):
+    """List of installed LLM's"""
+    if ctx.invoked_subcommand is None:
+        detector = BackendDetector()
+        backend = detector.get_best_backend()
+
+        if not backend:
+            console.print("[red]No backend installed![/red]")
+            return
+
+        if not backend.is_running():
+            console.print(
+                f"[yellow]Backend {backend.backend_display_name()} is not running.[/yellow]"
+            )
+            return
+
+        models = backend.list_models()
+        console.print("[bold]Installed Models:[/bold]")
+        if models:
+            for m in models:
+                console.print(f"  • {m}")
+        else:
+            console.print("  [dim]No models installed[/dim]")
+
+
+@model.command()
+def download():
+    """Download New Model"""
+    detector = BackendDetector()
+    backend = detector.get_best_backend()
+
+    if not backend:
+        console.print("[red]No backend installed![/red]")
+        return
+
+    if not backend.is_running():
+        console.print(
+            f"[yellow]Backend {backend.backend_display_name()} is not running. Starting it...[/yellow]"
+        )
+        if not backend.start():
+            console.print("[red]Failed to start backend.[/red]")
+            return
+
+    menu = MainMenu()
+    menu.download_model_ui(backend)
+
+
+@main.command()
+def serve():
+    """Start the API server for VS Code integration"""
+    import uvicorn
+    from lmapp.server.app import app
+
+    console.print("[bold cyan]Starting lmapp API Server...[/bold cyan]")
+    console.print("[dim]Listening on http://localhost:8000[/dim]")
+    console.print("[dim]Press Ctrl+C to stop[/dim]\n")
+
+    try:
+        uvicorn.run(app, host="127.0.0.1", port=8000, log_level="info")
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Server stopped[/yellow]")
+    except Exception as e:
+        console.print(f"\n[red]Server error: {e}[/red]")
+        sys.exit(1)
 
 
 @main.command()

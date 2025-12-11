@@ -4,9 +4,6 @@ __pycache__/
 *$py.class
 *.so
 .Python
-venv/
-env/
-ENV/
 build/
 develop-eggs/
 dist/
@@ -24,78 +21,51 @@ wheels/
 *.egg
 
 # Virtual environments
+.venv/
 venv/
 ENV/
-.venv
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
 
 # Testing
 .pytest_cache/
 .coverage
 htmlcov/
 .tox/
-.hypothesis/
 
-# Logs
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Local development
 *.log
-logs/
+.env
+.env.local
+config.local.json
 
-# Models (large files)
-models/*.gguf
-models/*.bin
-*.llamafile
-
-# User data
-*.db
-*.sqlite
-user_data/
-conversations/
+# Byte-compiled
+*.pyc
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Distribution
-*.deb
-*.rpm
-*.tar.gz
-*.zip
+# Git
+.git
 
-# Temporary
-tmp/
-temp/
-*.tmp
+# Archive (internal planning docs)
+archive/
+notes/
 
-# Developer management & operations (local only)
-.management/
-TODO.md
-AUDIT_REPORT.md
-PROJECT_CHARTER.md
+# Local-only files (internal use, not public)
 INTEGRATED_ROADMAP.md
-GITHUB_BRANCH_PROTECTION_SETUP.md
-AUTOMATION_GUIDE.md
-MULTI_LANGUAGE_STRATEGY.md
-AUTOMATION_FRAMEWORK.md
-AUTOMATION_STATUS.txt
-ENTERPRISE_FEATURES.md
-INSTALL.md
-
-# Developer automation scripts (local development only - not in public releases)
-scripts/pre-commit-cleanup.sh
-scripts/dev-utils.sh
-
-# Launch & campaign materials (personal use only)
-LAUNCH_*.md
-CONSOLIDATION_SUMMARY.md
-archive/launch-campaign-v0.1.0/
-SESSION_COMPLETION_REPORT*.md
+PROJECT_CHARTER.md
+AUDIT_REPORT.md
+TODO.md
 SESSION_*.md
-DOCUMENTATION_INDEX.md
-QUICKSTART.md
-docs/
+DEVELOPMENT.md
+LAUNCHING.md
+RELEASE_NOTES_v0.1.0.md
+INSTALL.md

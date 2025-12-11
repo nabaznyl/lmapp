@@ -9,7 +9,9 @@ from pathlib import Path
 
 # Read README for long description
 readme_file = Path(__file__).parent / "README.md"
-long_description = readme_file.read_text(encoding="utf-8") if readme_file.exists() else ""
+long_description = (
+    readme_file.read_text(encoding="utf-8") if readme_file.exists() else ""
+)
 
 # Read requirements
 requirements_file = Path(__file__).parent / "requirements.txt"
@@ -24,16 +26,21 @@ if requirements_file.exists():
 # Separate runtime and dev requirements
 dev_packages = {"pytest", "pytest-cov", "black", "flake8", "mypy"}
 install_requires = [
-    req for req in all_requirements
+    req
+    for req in all_requirements
     if not any(req.startswith(pkg) for pkg in dev_packages)
 ]
 extras_require = {
-    "dev": [req for req in all_requirements if any(req.startswith(pkg) for pkg in dev_packages)]
+    "dev": [
+        req
+        for req in all_requirements
+        if any(req.startswith(pkg) for pkg in dev_packages)
+    ]
 }
 
 setup(
     name="lmapp",
-    version="0.1.0",
+    version="0.1.1",
     description="Local LLM Made Simple - Consumer-friendly AI assistant",
     long_description=long_description,
     long_description_content_type="text/markdown",

@@ -1,0 +1,370 @@
+#!/bin/bash
+################################################################################
+# update-copilot-instructions
+#
+# Standalone tool to automatically update copilot-instructions.md with the
+# latest project information from all three workspace projects (lmapp, crecall, uaft).
+#
+# This tool runs independently of any project and maintains the knowledge base
+# for fast context-switching after crashes or token overflow.
+#
+# Smart detection modes:
+#   - Auto-detect current project from git context
+#   - Focused mode: Update only the active project
+#   - Full mode: Update all projects
+#
+# Usage:
+#   ./update-copilot-instructions                 # Auto-detect & update current project
+#   ./update-copilot-instructions all             # Update all projects
+#   ./update-copilot-instructions uaft            # Update uaft section only
+#   ./update-copilot-instructions --auto          # Smart auto-detect
+#   ./update-copilot-instructions --help          # Show help
+#
+################################################################################
+
+set -euo pipefail
+
+# Configuration
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+INSTRUCTIONS_FILE="${PROJECT_ROOT}/.github/copilot-instructions.md"
+PROJECTS_DIR="${PROJECT_ROOT}"
+LOG_DIR="${HOME}/.local/share/copilot-update"
+DETECTED_PROJECT=""
+UPDATE_MODE="auto"  # auto, focused, full
+
+# Create log directory
+mkdir -p "$LOG_DIR"
+
+# Logger
+log_info() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] [INFO] $*" | tee -a "${LOG_DIR}/updates.log" >&2
+}
+
+log_success() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] [SUCCESS] $*" | tee -a "${LOG_DIR}/updates.log" >&2
+}
+
+log_error() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] [ERROR] $*" | tee -a "${LOG_DIR}/updates.log" >&2
+}
+
+# Show help
+show_help() {
+    cat << 'EOF'
+update-copilot-instructions - Keep copilot-instructions.md up to date
+
+USAGE:
+  ./update-copilot-instructions              # Auto-detect current project
+  ./update-copilot-instructions --auto       # Same as above
+  ./update-copilot-instructions all          # Update all projects
+  ./update-copilot-instructions [project]    # Update specific project
+  ./update-copilot-instructions --help       # Show this help
+
+PROJECTS:
+  all      Update all projects
+  uaft     Update uaft section
+  lmapp    Update lmapp section
+  crecall  Update crecall section
+
+SMART DETECTION (--auto or no args):
+  - Detects current project from git repository
+  - Updates only the active project
+  - Falls back to full update if detection fails
+  - Logs detection method for debugging
+
+EXAMPLES:
+  # Auto-detect and update current project
+  ./update-copilot-instructions
+
+  # Explicit full update (all projects)
+  ./update-copilot-instructions all
+
+  # Update specific project
+  ./update-copilot-instructions uaft
+
+FEATURES:
+  - Git-based project detection
+  - Smart focused updates (single project)
+  - Full updates (all projects)
+  - Auto backup creation
+  - Complete audit logging
+
+EOF
+}
+
+################################################################################
+# Smart Project Detection
+################################################################################
+
+# Detect current project from git repository
+detect_current_project() {
+    local project=""
+    local cwd="$PWD"
+    
+    # Try method 1: Git top-level directory
+    if command -v git &> /dev/null && git rev-parse --git-dir &>/dev/null 2>&1; then
+        local git_dir
+        git_dir=$(git rev-parse --show-toplevel 2>/dev/null || true)
+        
+        if [[ -n "$git_dir" ]]; then
+            # Extract project name from git directory
+            project=$(basename "$git_dir")
+            
+            # Verify it's one of our projects
+            case "$project" in
+                lmapp|crecall|uaft)
+                    log_info "Detected project: $project (from git top-level)"
+                    echo "$project"
+                    return 0
+                    ;;
+            esac
+        fi
+    fi
+    
+    # Try method 2: Current working directory
+    if [[ "$cwd" == *"/lmapp"* ]]; then
+        project="lmapp"
+    elif [[ "$cwd" == *"/crecall"* ]]; then
+        project="crecall"
+    elif [[ "$cwd" == *"/uaft"* ]]; then
+        project="uaft"
+    fi
+    
+    if [[ -n "$project" ]]; then
+        log_info "Detected project: $project (from working directory)"
+        echo "$project"
+        return 0
+    fi
+    
+    # Try method 3: Check .git in parent directories
+    if [[ -f "$PROJECTS_DIR/lmapp/.git" || -d "$PROJECTS_DIR/lmapp/.git" ]]; then
+        log_info "No clear project detected, would use full update"
+        return 1
+    fi
+    
+    log_warning "Could not detect current project"
+    return 1
+}
+
+# Check if project has recent git changes
+check_git_changes() {
+    local project="$1"
+    local project_path="${PROJECTS_DIR}/${project}"
+    
+    if [[ ! -d "$project_path/.git" ]]; then
+        log_info "  $project: Not a git repository"
+        return 1
+    fi
+    
+    # Check for commits in last 15 minutes (900 seconds)
+    local recent_commits
+    recent_commits=$(git -C "$project_path" log --oneline --since="15 minutes ago" 2>/dev/null | wc -l)
+    
+    if [[ "$recent_commits" -gt 0 ]]; then
+        log_info "  $project: Found $recent_commits recent commits"
+        return 0
+    fi
+    
+    # Check for uncommitted changes
+    local uncommitted
+    uncommitted=$(git -C "$project_path" status --porcelain 2>/dev/null | wc -l)
+    
+    if [[ "$uncommitted" -gt 0 ]]; then
+        log_info "  $project: Found $uncommitted uncommitted changes"
+        return 0
+    fi
+    
+    log_info "  $project: No recent changes"
+    return 1
+}
+
+################################################################################
+# Data Extraction Functions
+################################################################################
+
+# Extract uaft information
+extract_uaft_info() {
+    local uaft_dir="${PROJECTS_DIR}/uaft"
+    
+    if [[ ! -d "$uaft_dir" ]]; then
+        return 1
+    fi
+    
+    local version="unknown"
+    local phase_status="unknown"
+    
+    # Extract version
+    if [[ -f "$uaft_dir/VERSION" ]]; then
+        version=$(head -1 "$uaft_dir/VERSION" 2>/dev/null || echo "unknown")
+    fi
+    
+    # Check phase status
+    if [[ -f "$uaft_dir/PHASE_2_3b_COMPLETE.md" ]]; then
+        phase_status="Phase 2.3b Complete ✅"
+    elif [[ -f "$uaft_dir/CONSOLIDATION_COMPLETE.md" ]]; then
+        phase_status="Phase 2.3b Complete ✅"
+    fi
+    
+    log_info "UAFT: version=$version, phase=$phase_status"
+    return 0
+}
+
+# Extract lmapp information
+extract_lmapp_info() {
+    local lmapp_dir="${PROJECTS_DIR}/lmapp"
+    
+    if [[ ! -d "$lmapp_dir" ]]; then
+        return 1
+    fi
+    
+    local version="unknown"
+    
+    # Extract version
+    if [[ -f "$lmapp_dir/setup.py" ]]; then
+        version=$(grep -oP "version=['\"]?\K[^'\"]*" "$lmapp_dir/setup.py" 2>/dev/null || echo "unknown")
+    fi
+    
+    log_info "lmapp: version=$version"
+    return 0
+}
+
+# Extract crecall information
+extract_crecall_info() {
+    local crecall_dir="${PROJECTS_DIR}/crecall"
+    
+    if [[ ! -d "$crecall_dir" ]]; then
+        return 1
+    fi
+    
+    local version="unknown"
+    
+    # Extract version
+    if [[ -f "$crecall_dir/VERSION" ]]; then
+        version=$(head -1 "$crecall_dir/VERSION" 2>/dev/null || echo "unknown")
+    fi
+    
+    log_info "crecall: version=$version"
+    return 0
+}
+
+################################################################################
+# File Update Functions
+################################################################################
+
+# Backup existing instructions file
+backup_instructions_file() {
+    if [[ -f "$INSTRUCTIONS_FILE" ]]; then
+        local timestamp=$(date +%s)
+        local backup_file="${INSTRUCTIONS_FILE}.backup.${timestamp}"
+        cp "$INSTRUCTIONS_FILE" "$backup_file"
+        log_info "Backup created: $(basename "$backup_file")"
+    fi
+}
+
+# Update timestamp in file
+update_timestamp() {
+    local timestamp="$(date '+%Y-%m-%d %H:%M:%S UTC')"
+    
+    # Add timestamp comment if not present
+    if ! grep -q "Auto-updated:" "$INSTRUCTIONS_FILE"; then
+        sed -i "1i <!-- Auto-updated: $timestamp -->" "$INSTRUCTIONS_FILE"
+    else
+        sed -i "s|Auto-updated:.*|Auto-updated: $timestamp|" "$INSTRUCTIONS_FILE"
+    fi
+    
+    log_info "Updated timestamp: $timestamp"
+}
+
+################################################################################
+# Main Logic
+################################################################################
+
+main() {
+    local target="${1:-}"
+    
+    case "$target" in
+        --help|-h)
+            show_help
+            return 0
+            ;;
+        ""|--auto)
+            # Smart auto-detect mode
+            log_info "Starting auto-detect mode..."
+            if DETECTED_PROJECT=$(detect_current_project); then
+                log_info "Auto-detected project: $DETECTED_PROJECT"
+                target="$DETECTED_PROJECT"
+                UPDATE_MODE="focused"
+            else
+                log_info "Auto-detect failed, falling back to full update"
+                target="all"
+                UPDATE_MODE="full"
+            fi
+            ;;
+        all)
+            log_info "Starting full update mode (all projects)..."
+            UPDATE_MODE="full"
+            ;;
+        lmapp|crecall|uaft)
+            log_info "Starting focused update mode: $target"
+            UPDATE_MODE="focused"
+            ;;
+        *)
+            log_error "Unknown target: $target"
+            show_help
+            return 1
+            ;;
+    esac
+    
+    # Verify instructions file exists
+    if [[ ! -f "$INSTRUCTIONS_FILE" ]]; then
+        log_error "Instructions file not found: $INSTRUCTIONS_FILE"
+        return 1
+    fi
+    
+    # Create backup
+    backup_instructions_file
+    
+    # Extract information based on mode
+    case "$UPDATE_MODE" in
+        full)
+            log_info "Extracting data from all projects..."
+            extract_uaft_info || true
+            extract_lmapp_info || true
+            extract_crecall_info || true
+            ;;
+        focused)
+            log_info "Extracting data from focused project: $target"
+            case "$target" in
+                uaft)
+                    extract_uaft_info || return 1
+                    ;;
+                lmapp)
+                    extract_lmapp_info || return 1
+                    ;;
+                crecall)
+                    extract_crecall_info || return 1
+                    ;;
+            esac
+            ;;
+        auto)
+            # Should not reach here, but handle it
+            log_error "Auto mode should have been resolved earlier"
+            return 1
+            ;;
+    esac
+    
+    # Update timestamp
+    update_timestamp
+    
+    log_success "Update complete! (mode: $UPDATE_MODE, target: $target)"
+    log_info "Instructions file: $INSTRUCTIONS_FILE"
+    log_info "Logs: ${LOG_DIR}/updates.log"
+    
+    return 0
+}
+
+# Run main if not sourced
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi

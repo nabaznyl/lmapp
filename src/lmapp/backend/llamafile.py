@@ -56,6 +56,23 @@ class LlamafileBackend(LLMBackend):
         except Exception:
             return False
 
+    def download_model(self, model_name: str, callback=None) -> bool:
+        """
+        Download a model
+        For llamafile, this currently only supports the default model (TinyLlama)
+        or models we have URLs for.
+        """
+        # TODO: Implement a proper model registry for llamafile
+        if "tinyllama" in model_name.lower():
+            return self.install()
+
+        # If it's a URL, try to download it
+        if model_name.startswith("http"):
+            # TODO: Implement URL download
+            pass
+
+        return False
+
     def install(self) -> bool:
         """
         Download a llamafile model
@@ -80,6 +97,21 @@ class LlamafileBackend(LLMBackend):
 
         console.print(f"[cyan]Downloading {model_name}...[/cyan]")
         console.print("[dim]This may take a few minutes...[/dim]")
+
+        # Check for GPU support
+        try:
+            # Simple check for nvidia-smi
+            subprocess.run(
+                ["nvidia-smi"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=True,
+            )
+            console.print(
+                "[green]✓ GPU detected (llamafile will use it automatically)[/green]"
+            )
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            console.print("[yellow]⚠ No GPU detected (running on CPU)[/yellow]")
 
         try:
             # Download with progress
@@ -127,18 +159,23 @@ class LlamafileBackend(LLMBackend):
 
         try:
             # Start llamafile in server mode
+            # Use --nobrowser to prevent opening a browser tab
             self.current_process = subprocess.Popen(
-                [str(llamafile_path), "--server", "--port", "8080"],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                [str(llamafile_path), "--server", "--port", "8080", "--nobrowser"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                start_new_session=True,
             )
 
             # Wait a bit for startup
             import time
 
-            time.sleep(3)
+            for _ in range(10):
+                if self.is_running():
+                    return True
+                time.sleep(1)
 
-            return self.is_running()
+            return False
         except Exception:
             return False
 
