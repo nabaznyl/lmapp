@@ -20,6 +20,7 @@ from lmapp.backend.detector import BackendDetector
 from lmapp.core.chat import ChatSession
 from lmapp.core.nux import check_first_run, run_user_mode_setup
 from lmapp.core.config import get_config_manager
+from lmapp.auto_update import check_for_updates
 
 console = Console()
 
@@ -31,6 +32,9 @@ console = Console()
 @click.pass_context
 def main(ctx, version, debug, dev):
     """lmapp - Local LLM Made Simple
+    # Check for updates
+    check_for_updates(__version__)
+
 
     Your personal AI assistant, running locally on your machine.
     """
