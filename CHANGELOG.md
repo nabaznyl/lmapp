@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.2.6] - 2025-12-11
+## [0.2.6] - 2025-12-11 (RELEASED ✅)
 
 ### Added
 - **Web UI - Self-Hosted Interface** (FastAPI + HTML/CSS/JavaScript):
