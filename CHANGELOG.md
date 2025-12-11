@@ -9,6 +9,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+---
+
+## [0.2.0] - 2025-12-10
+
+### Added
+- **Backend Integration - Ollama Support**:
+  - Full Ollama backend implementation with automatic detection
+  - Real-time service status monitoring and health checks
+  - Model listing and chat functionality
+  - Backend detector automatically selects best available backend
+  - Integration tests for Ollama backend (6 new tests)
+  - Production-ready error recovery and fallback strategies
+
+- **Test Suite Improvements**:
+  - Removed mock backend from production code (now test-only)
+  - Added comprehensive Ollama integration tests
+  - All 140 tests passing (134 unit + 6 integration)
+  - Mock backend properly isolated in test directory
+
+### Changed
+- **Backend Architecture**:
+  - Cleaned up backend detector to exclude test mocks from production
+  - Improved error handling in backend lifecycle operations
+  - Enhanced backend status reporting with rich table display
+
+### Fixed
+- Mock backend no longer included in production builds
+- Backend imports properly organized
+- Error recovery module no longer depends on deleted mock backend
+
+---
+
+## [0.1.1] - Previous Release
+
 ### Added
 - **Error Database & Fail-Safe System**:
   - New `ErrorDB` module (`src/lmapp/core/error_db.py`) to persist errors and suggest solutions.
