@@ -8,6 +8,7 @@ from typing import List, Optional, Dict
 from datetime import datetime
 from lmapp.backend.base import LLMBackend
 from lmapp.utils.logging import logger
+from lmapp.core.cache import ResponseCache
 
 
 class ChatMessage:
@@ -63,6 +64,7 @@ class ChatSession:
         self.model = model
         self.history: List[ChatMessage] = []
         self.created_at = datetime.now()
+        self.cache = ResponseCache()
         logger.debug("ChatSession initialized successfully")
 
     def send_prompt(self, prompt: str, temperature: float = 0.7) -> str:
@@ -87,6 +89,20 @@ class ChatSession:
         if not prompt or not prompt.strip():
             logger.warning("Empty prompt attempted")
             raise ValueError("❌ Prompt cannot be empty")
+        
+        # Check cache for existing response
+        cached_response = self.cache.get(
+            prompt,
+            self.model,
+            self.backend.backend_name(),
+            temperature
+        )
+        if cached_response:
+            logger.debug(f"Cache hit for prompt (model={self.model}, temperature={temperature})")
+            # Add to history for consistency
+            self.history.append(ChatMessage("user", prompt))
+            self.history.append(ChatMessage("assistant", cached_response))
+            return cached_response
 
         # Add user message to history
         self.history.append(ChatMessage("user", prompt))
@@ -104,7 +120,16 @@ class ChatSession:
 
             # Add assistant message to history
             self.history.append(ChatMessage("assistant", response))
-            logger.debug(f"Response received: {len(response)} chars")
+            
+            # Cache the response
+            self.cache.set(
+                prompt,
+                response,
+                self.model,
+                self.backend.backend_name(),
+                temperature
+            )
+            logger.debug(f"Response received: {len(response)} chars, cached for future use")
 
             return response
 
