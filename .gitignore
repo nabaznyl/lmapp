@@ -69,3 +69,16 @@ DEVELOPMENT.md
 LAUNCHING.md
 RELEASE_NOTES_v0.1.0.md
 INSTALL.md
+
+# Internal development tracking - NEVER commit to public repo
+*_DEVELOPMENT_PLAN.md
+*_DEVELOPMENT_ANALYSIS.md
+*_PROGRESS*.md
+*_PROGRESS_PHASE*.md
+SESSION_SUMMARY*.md
+V*.*.*.*.md
+COMPLETION_SUMMARY*.md
+
+# Local internal docs
+.local/
+.internal/
