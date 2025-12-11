@@ -231,7 +231,10 @@ class MainMenu:
 
     def manage_plugins(self):
         """Browse and execute plugins"""
+        from lmapp.plugins.plugin_manager import PluginManager
+        
         config = self.config_manager.load()
+        self.plugin_manager = PluginManager()
         
         if config.advanced_mode:
             self._manage_plugins_advanced()
@@ -239,61 +242,147 @@ class MainMenu:
             self._manage_plugins_beginner()
 
     def _manage_plugins_beginner(self):
-        """Simplified plugin interface for beginners"""
+        """Simplified plugin interface for beginners - load real plugins"""
         while True:
             console.clear()
-            console.print("[bold cyan]Plugins[/bold cyan]\n")
+            console.print("[bold cyan]🔌 Plugins[/bold cyan]\n")
             
-            # Group plugins by category
-            categories = {
-                "Code Tools": [
-                    ("Auditor", "Code review & analysis"),
-                    ("Refactoring", "Improve Python code"),
-                ],
-                "Content Tools": [
-                    ("Translator", "Multi-language translation"),
-                    ("Document Chat", "Q&A on your files"),
-                ],
-                "Data Tools": [
-                    ("Knowledge Base", "Search your documents"),
-                    ("Q&A Bot", "Question answering"),
-                ],
-            }
+            # Discover actual plugins
+            plugin_paths = self.plugin_manager.discover_plugins()
             
+            if not plugin_paths:
+                console.print("[dim]No plugins found[/dim]")
+                console.print("[yellow]Visit github.com/nabaznyl/lmapp for plugins[/yellow]")
+                console.input("\n[dim]Press Enter to go back...[/dim]")
+                break
+            
+            # Load plugins and group by category/tags
+            plugins_by_category = {}
             choices = []
-            for category, plugins in categories.items():
-                choices.append((f"[{category}]", "HEADER"))
-                for name, desc in plugins:
-                    choices.append((f"  {name:<20} - {desc}", name.lower()))
-                choices.append(("", "SPACER"))
+            
+            for plugin_path in plugin_paths:
+                plugin_info = self.plugin_manager.load_plugin(plugin_path)
+                if plugin_info and plugin_info.metadata:
+                    name = plugin_info.metadata.name
+                    desc = plugin_info.metadata.description or "No description"
+                    tags = plugin_info.metadata.tags or ["General"]
+                    
+                    category = tags[0] if tags else "General"
+                    if category not in plugins_by_category:
+                        plugins_by_category[category] = []
+                        choices.append((f"[bold cyan]{category}[/bold cyan]", f"HEADER_{category}"))
+                    
+                    plugins_by_category[category].append((name, plugin_info))
+                    choices.append((f"  {name:<25} - {desc[:40]}", name))
+                    choices.append(("", "SPACER"))
+            
+            if not choices:
+                console.print("[dim]No plugins available[/dim]")
+                console.input("[dim]Press Enter to go back...[/dim]")
+                break
             
             choices.append(("Back to Menu", "back"))
             
             q = [inquirer.List("plugin", message="Select a plugin", choices=choices)]
             answer = inquirer.prompt(q)
             
-            if not answer or answer.get("plugin") in ["back", "HEADER", "SPACER"]:
+            if not answer:
                 break
             
-            plugin = answer.get("plugin")
-            console.print(f"\n[cyan]{plugin} plugin selected[/cyan]")
-            console.print("[dim]Feature coming soon...[/dim]")
-            console.input("[dim]Press Enter to continue...[/dim]")
+            selected = answer.get("plugin")
+            if selected in ["back"] or selected.startswith("HEADER_") or selected == "SPACER":
+                if selected == "back":
+                    break
+                continue
+            
+            # Find and execute selected plugin
+            for category, plugins in plugins_by_category.items():
+                for name, plugin_info in plugins:
+                    if name == selected:
+                        self._execute_plugin(plugin_info)
+                        break
 
     def _manage_plugins_advanced(self):
-        """Full plugin management for advanced users"""
-        console.print("[bold cyan]Plugins (Advanced)[/bold cyan]\n")
-        console.print("[yellow]Plugin management UI coming soon[/yellow]")
-        console.print("\nAvailable plugins:")
-        console.print("  • auditor - Code analysis")
-        console.print("  • cache-manager - Cache optimization")
-        console.print("  • document-chatbot - PDF/text Q&A")
-        console.print("  • refactoring - Code improvements")
-        console.print("  • knowledge-base - Document search")
-        console.print("  • translator - Multi-language")
-        console.print("  • git-flow - Git automation")
-        console.print("  • qa-bot - Question answering")
-        console.input("\n[dim]Press Enter to continue...[/dim]")
+        """Full plugin management for advanced users - load real plugins"""
+        while True:
+            console.clear()
+            console.print("[bold cyan]🔌 Plugins (Advanced Mode)[/bold cyan]\n")
+            
+            # Discover actual plugins
+            plugin_paths = self.plugin_manager.discover_plugins()
+            
+            if not plugin_paths:
+                console.print("[dim]No plugins found[/dim]")
+                console.print("[yellow]To add plugins, place them in ~/.lmapp/plugins/[/yellow]")
+                console.input("\n[dim]Press Enter to go back...[/dim]")
+                break
+            
+            # Load and display all plugins
+            choices = []
+            loaded_plugins = {}
+            
+            for plugin_path in plugin_paths:
+                plugin_info = self.plugin_manager.load_plugin(plugin_path)
+                if plugin_info and plugin_info.metadata:
+                    name = plugin_info.metadata.name
+                    version = plugin_info.metadata.version or "unknown"
+                    desc = plugin_info.metadata.description or "No description"
+                    loaded_plugins[name] = plugin_info
+                    
+                    status = "✓" if plugin_info.is_loaded else "✗"
+                    choices.append((f"{status} {name:<20} v{version:<10} - {desc[:35]}", name))
+            
+            choices.extend([
+                ("", "SPACER"),
+                ("Browse Plugin Repository", "repo"),
+                ("Back to Menu", "back"),
+            ])
+            
+            q = [inquirer.List("plugin", message="Choose plugin", choices=choices)]
+            answer = inquirer.prompt(q)
+            
+            if not answer:
+                break
+            
+            selected = answer.get("plugin")
+            if selected == "back":
+                break
+            elif selected == "repo":
+                console.print("[yellow]Plugin repository: github.com/nabaznyl/lmapp/plugins[/yellow]")
+                console.input("[dim]Press Enter to continue...[/dim]")
+            elif selected in loaded_plugins:
+                self._execute_plugin(loaded_plugins[selected])
+
+    def _execute_plugin(self, plugin_info):
+        """Execute a plugin and display output
+        
+        Args:
+            plugin_info: PluginInfo object with loaded plugin
+        """
+        try:
+            console.clear()
+            console.print(f"[bold cyan]{plugin_info.metadata.name}[/bold cyan]\n")
+            console.print(f"[dim]{plugin_info.metadata.description}[/dim]\n")
+            
+            # Try to execute the plugin
+            if plugin_info.plugin and hasattr(plugin_info.plugin, 'execute'):
+                with console.status(f"Running {plugin_info.metadata.name}..."):
+                    result = plugin_info.plugin.execute()
+                
+                if result:
+                    console.print("[green]✓ Completed successfully[/green]")
+                    console.print(f"\n[dim]Output:[/dim]\n{result}")
+                else:
+                    console.print("[yellow]Plugin executed but no output[/yellow]")
+            else:
+                console.print("[yellow]Plugin interface not yet available[/yellow]")
+                console.print("[dim]Plugin loading UI coming soon[/dim]")
+        
+        except Exception as e:
+            console.print(f"[red]✗ Error executing plugin: {e}[/red]")
+            console.print("[dim]Check plugin compatibility and configuration[/dim]")
+        
+        console.input("\n[dim]Press Enter to go back...[/dim]")
 
     def manage_models(self):
         """Download and manage models - auto-detects hardware"""
