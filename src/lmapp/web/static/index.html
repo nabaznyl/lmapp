@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LMAPP - Offline AI Assistant</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <span class="logo-text">LMAPP</span>
+                </h1>
+                <p class="tagline">Offline AI</p>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="chat">
+                    <span class="icon">💬</span>
+                    <span>Chat</span>
+                </button>
+                <button class="nav-item" data-tab="documents">
+                    <span class="icon">📄</span>
+                    <span>Documents</span>
+                </button>
+                <button class="nav-item" data-tab="plugins">
+                    <span class="icon">🔌</span>
+                    <span>Plugins</span>
+                </button>
+                <button class="nav-item" data-tab="settings">
+                    <span class="icon">⚙️</span>
+                    <span>Settings</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="status-dot online"></span>
+                    <span class="status-text" id="status">Connecting...</span>
+                </div>
+                <button class="btn-secondary btn-small" id="btn-refresh">Refresh</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Chat Tab -->
+            <section id="chat-tab" class="tab-content active">
+                <div class="chat-header">
+                    <h2>AI Chat Assistant</h2>
+                    <div class="model-selector">
+                        <label for="model-select">Model:</label>
+                        <select id="model-select">
+                            <option value="ollama-default">Ollama (Default)</option>
+                            <option value="neural-chat">Neural Chat</option>
+                            <option value="mistral">Mistral</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="chat-container">
+                    <div id="chat-history" class="chat-history"></div>
+                    <div id="loading" class="chat-message loading-message" style="display: none;">
+                        <div class="typing-indicator">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <form id="chat-form" class="chat-form">
+                        <textarea
+                            id="chat-input"
+                            class="chat-input"
+                            placeholder="Type your message... (Shift+Enter for new line, Enter to send)"
+                            rows="3"
+                        ></textarea>
+                        <button type="submit" class="btn-primary btn-send">
+                            <span>Send</span>
+                            <span class="icon">→</span>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Documents Tab -->
+            <section id="documents-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>Knowledge Base Documents</h2>
+                    <button id="btn-upload-doc" class="btn-primary">+ Upload Document</button>
+                </div>
+
+                <div id="documents-list" class="documents-list">
+                    <p class="empty-state">No documents uploaded yet. Upload a file to get started.</p>
+                </div>
+
+                <div id="upload-form" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Upload Document</h3>
+                            <button type="button" class="modal-close">&times;</button>
+                        </div>
+                        <form id="document-form" class="document-form">
+                            <div class="form-group">
+                                <label for="file-input">Select a file (PDF, TXT, MD):</label>
+                                <input
+                                    type="file"
+                                    id="file-input"
+                                    accept=".pdf,.txt,.md,.markdown"
+                                    required
+                                >
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary">Upload</button>
+                                <button type="button" class="btn-secondary modal-cancel">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Plugins Tab -->
+            <section id="plugins-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>Plugin Manager</h2>
+                    <button id="btn-refresh-plugins" class="btn-secondary">Refresh</button>
+                </div>
+
+                <div id="plugins-list" class="plugins-grid">
+                    <p class="empty-state">Loading plugins...</p>
+                </div>
+            </section>
+
+            <!-- Settings Tab -->
+            <section id="settings-tab" class="tab-content">
+                <div class="settings-container">
+                    <h2>Settings</h2>
+
+                    <div class="settings-group">
+                        <h3>Interface</h3>
+                        <label class="setting-item">
+                            <input type="checkbox" id="theme-toggle" checked>
+                            <span>Dark Theme (Enabled)</span>
+                        </label>
+                        <label class="setting-item">
+                            <input type="checkbox" id="notifications-toggle" checked>
+                            <span>Desktop Notifications</span>
+                        </label>
+                    </div>
+
+                    <div class="settings-group">
+                        <h3>Chat Behavior</h3>
+                        <label class="setting-item">
+                            <input type="checkbox" id="stream-toggle" checked>
+                            <span>Stream Responses</span>
+                        </label>
+                        <label class="setting-item">
+                            <input type="checkbox" id="auto-save-toggle" checked>
+                            <span>Auto-save Chat History</span>
+                        </label>
+                    </div>
+
+                    <div class="settings-group">
+                        <h3>System Information</h3>
+                        <div class="info-item">
+                            <span class="label">LMAPP Version:</span>
+                            <span class="value" id="version">0.2.6</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Server Status:</span>
+                            <span class="value" id="server-status">Running</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Chat Messages:</span>
+                            <span class="value" id="message-count">0</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Documents Indexed:</span>
+                            <span class="value" id="document-count">0</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-group actions">
+                        <button id="btn-clear-history" class="btn-secondary">Clear Chat History</button>
+                        <button id="btn-export-chat" class="btn-secondary">Export Chat</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/js/utils.js"></script>
+    <script src="/static/js/chat.js"></script>
+    <script src="/static/js/plugins.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
