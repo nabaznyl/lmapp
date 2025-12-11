@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI Version](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/)
 [![Python: 3.8+](https://img.shields.io/badge/Python-3.8+-green.svg)]()
-[![Tests: 144/144 Passing](https://img.shields.io/badge/Tests-144%2F144%20passing-brightgreen.svg)]()
+[![Tests: 146/146 Passing](https://img.shields.io/badge/Tests-146%2F146%20passing-brightgreen.svg)]()
 [![Code Quality: Linting 0 errors](https://img.shields.io/badge/Code%20Quality-0%20errors-brightgreen.svg)]()
 [![Type Safety: mypy Clean](https://img.shields.io/badge/Type%20Safety-mypy%20clean-brightgreen.svg)]()
 [![Status: Production Ready](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
@@ -41,7 +41,7 @@ See [Installation Guide](./INSTALL.md) for more options.
 lmapp --version && lmapp status
 ```
 
-✅ **v0.2.0 Now Available** - Ollama & llamafile backend integration | [Install from PyPI](https://pypi.org/project/lmapp/) | [GitHub Packages](https://github.com/nabaznyl/lmapp/packages) | [Releases](https://github.com/nabaznyl/lmapp/releases)
+✅ **v0.2.1 Now Available** - Ollama & llamafile backend integration | [Install from PyPI](https://pypi.org/project/lmapp/) | [GitHub Packages](https://github.com/nabaznyl/lmapp/packages) | [Releases](https://github.com/nabaznyl/lmapp/releases)
 
 
 

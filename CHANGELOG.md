@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.1] - 2025-12-10
+
+### Changed
+- Version bumped to 0.2.1 (following 0.2.1-0.2.9 stepping before 0.3.0)
+
+### Removed
+- Internal roadmap/documentation files from public repo (cleaned for public distribution)
+
+---
+
 ## [0.2.0] - 2025-12-10
 
 ### Added
