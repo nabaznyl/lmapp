@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lmapp"
-version = "0.2.1"
+version = "0.2.3-dev"
 description = "Local LLM Made Simple - Consumer-friendly AI assistant"
 readme = "README.md"
 license = {text = "MIT"}

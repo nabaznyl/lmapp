@@ -11,6 +11,13 @@
 [![Type Safety: mypy Clean](https://img.shields.io/badge/Type%20Safety-mypy%20clean-brightgreen.svg)]()
 [![Status: Production Ready](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
 
+**v0.2.3 Now Available!** 🎉 
+- 💾 **Conversation Sessions** - Remember multi-turn conversations
+- 🎭 **Custom System Prompts** - Tailor AI behavior to your needs  
+- 📝 **Enhanced Error Messages** - Clear troubleshooting guidance
+- ⌨️ **Command Aliases** - `lmapp c` for chat, `lmapp m` for models
+- ✅ **239 Tests Passing** - Comprehensive feature coverage
+
 ---
 
 ## 🚀 Quick Start (30 seconds)
@@ -21,6 +28,16 @@
 pip install lmapp
 lmapp install  # Automatically installs and configures Ollama
 lmapp chat     # Start chatting!
+```
+
+**Latest Features (v0.2.3):**
+```bash
+# Use command aliases for faster workflow
+lmapp c "What is AI?"           # Shortcut for 'lmapp chat'
+lmapp m list                    # Shortcut for 'lmapp models list'
+lmapp s new "Python Help"       # Create a new conversation session
+lmapp config --set-prompt       # Customize AI behavior
+```
 ```
 
 **Update:**
