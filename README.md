@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI Version](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/)
 [![Python: 3.8+](https://img.shields.io/badge/Python-3.8+-green.svg)]()
-[![Tests: 128/128 Passing](https://img.shields.io/badge/Tests-128%2F128%20passing-brightgreen.svg)]()
+[![Tests: 144/144 Passing](https://img.shields.io/badge/Tests-144%2F144%20passing-brightgreen.svg)]()
 [![Code Quality: Linting 0 errors](https://img.shields.io/badge/Code%20Quality-0%20errors-brightgreen.svg)]()
 [![Type Safety: mypy Clean](https://img.shields.io/badge/Type%20Safety-mypy%20clean-brightgreen.svg)]()
 [![Status: Production Ready](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
@@ -19,7 +19,8 @@
 
 ```bash
 pip install lmapp
-lmapp chat
+lmapp install  # Automatically installs and configures Ollama
+lmapp chat     # Start chatting!
 ```
 
 **Update:**
@@ -40,7 +41,7 @@ See [Installation Guide](./INSTALL.md) for more options.
 lmapp --version && lmapp status
 ```
 
-✅ **v0.1.0 Now Available** - [Install from PyPI](https://pypi.org/project/lmapp/) | [GitHub Packages](https://github.com/nabaznyl/lmapp/packages) | [Releases](https://github.com/nabaznyl/lmapp/releases)
+✅ **v0.2.0 Now Available** - Ollama & llamafile backend integration | [Install from PyPI](https://pypi.org/project/lmapp/) | [GitHub Packages](https://github.com/nabaznyl/lmapp/packages) | [Releases](https://github.com/nabaznyl/lmapp/releases)
 
 
 
@@ -175,16 +176,53 @@ Stats:
 
 ## 📖 Usage
 
+### Backend Management
+
+lmapp automatically detects and manages AI backends (Ollama or llamafile):
+
+```bash
+# Check backend status
+lmapp status
+
+# Install and start a backend (automatic detection)
+lmapp install
+
+# Start backend service
+lmapp start
+
+# Stop backend service
+lmapp stop
+```
+
+**Supported Backends:**
+- **Ollama** (Recommended for 8GB+ RAM) - Fast, efficient, well-maintained
+- **llamafile** (Best for limited RAM) - Single-file, portable, runs anywhere
+
 ### Start Chat
 ```bash
-# Simple
+# Simple chat (uses default backend and model)
 lmapp chat
+
+# With specific model
+lmapp chat --model tinyllama:latest
 
 # With debug logging
 lmapp --debug chat
 
 # Enable debug via environment
 LMAPP_DEBUG=1 lmapp chat
+```
+
+### Model Management
+```bash
+# List available models
+lmapp models list
+
+# Download a specific model (Ollama)
+ollama pull tinyllama:latest
+ollama pull qwen2.5:0.5b
+
+# For llamafile, models are downloaded automatically on install
 ```
 
 ### Configure
