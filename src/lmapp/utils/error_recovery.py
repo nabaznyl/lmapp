@@ -11,7 +11,6 @@ from enum import Enum
 
 from lmapp.utils.logging import logger
 from lmapp.backend.base import LLMBackend
-from lmapp.backend.mock import MockBackend
 
 T = TypeVar("T")
 
@@ -119,11 +118,6 @@ class BackendFallback:
         self.primary = primary_backend
         self.fallback: Optional[LLMBackend] = None
         self.use_fallback = False
-
-    def enable_mock_fallback(self):
-        """Enable mock backend as fallback"""
-        self.fallback = MockBackend()
-        logger.debug("Mock fallback backend enabled")
 
     @retry_with_backoff(max_retries=2, strategy=RetryStrategy.EXPONENTIAL)
     def chat(

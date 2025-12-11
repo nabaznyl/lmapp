@@ -2,7 +2,7 @@
 
 import pytest
 from lmapp.backend.detector import BackendDetector
-from lmapp.backend.mock import MockBackend
+from mock_backend import MockBackend
 from lmapp.core.config import LMAppConfig
 
 
@@ -40,13 +40,9 @@ class TestBackendDetector:
     def test_detector_get_by_name(self):
         """Test getting backend by name."""
         detector = BackendDetector()
+        # Mock backend is no longer in detector, so this should return None
         backend = detector.get_backend_by_name("mock")
-
-        assert backend is not None
-        # Should have required methods
-        assert hasattr(backend, "start")
-        assert hasattr(backend, "stop")
-        assert hasattr(backend, "chat")
+        assert backend is None
 
     def test_detector_status_display(self):
         """Test backend status display works."""
@@ -204,8 +200,7 @@ class TestBackendChatIntegration:
 
     def test_chat_message_formats(self):
         """Test chat handles various message formats."""
-        detector = BackendDetector()
-        backend = detector.get_backend_by_name("mock")
+        backend = MockBackend()
         backend.start()
 
         test_cases = [
@@ -227,8 +222,7 @@ class TestBackendChatIntegration:
 
     def test_chat_consecutive_messages(self):
         """Test multiple consecutive chat messages."""
-        detector = BackendDetector()
-        backend = detector.get_backend_by_name("mock")
+        backend = MockBackend()
         backend.start()
 
         messages = ["Hello", "How are you?", "Tell me about Python", "Goodbye"]
@@ -274,8 +268,7 @@ class TestSystemIntegration:
 
     def test_repeated_start_stop_cycles(self):
         """Test backend handles repeated start/stop cycles."""
-        detector = BackendDetector()
-        backend = detector.get_backend_by_name("mock")
+        backend = MockBackend()
 
         for _ in range(5):
             backend.start()

@@ -1,7 +1,7 @@
 import os
 import sys
 import pytest
-from lmapp.backend.mock import MockBackend
+from mock_backend import MockBackend
 from lmapp.core.chat import ChatSession
 
 # Ensure the repository root is on sys.path so `src` is an importable top-level

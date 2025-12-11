@@ -19,7 +19,7 @@ from lmapp.utils.error_recovery import (
     ErrorRecovery,
     check_backend_health,
 )
-from lmapp.backend.mock import MockBackend
+from mock_backend import MockBackend
 
 
 class TestRetryDecorator:
@@ -118,15 +118,6 @@ class TestBackendFallback:
         assert fallback.fallback is None
         assert fallback.use_fallback is False
 
-    def test_enable_mock_fallback(self):
-        """Test enabling mock fallback"""
-        primary = MockBackend()
-        fallback = BackendFallback(primary)
-        fallback.enable_mock_fallback()
-
-        assert fallback.fallback is not None
-        assert isinstance(fallback.fallback, MockBackend)
-
     def test_chat_with_primary_success(self):
         """Test chat succeeds with primary backend"""
         primary = MockBackend()
@@ -143,7 +134,7 @@ class TestBackendFallback:
         primary.chat = Mock(side_effect=ConnectionError("Primary failed"))
 
         fallback = BackendFallback(primary)
-        fallback.enable_mock_fallback()
+        fallback.fallback = MockBackend()
 
         response = fallback.chat(prompt="Hello", model="tinyllama", temperature=0.7)
 

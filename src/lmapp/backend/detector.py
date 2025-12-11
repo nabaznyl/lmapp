@@ -11,7 +11,6 @@ from rich.table import Table
 from .base import LLMBackend, BackendStatus
 from .ollama import OllamaBackend
 from .llamafile import LlamafileBackend
-from .mock import MockBackend
 
 console = Console()
 
@@ -20,10 +19,7 @@ class BackendDetector:
     """Detect and recommend LLM backends"""
 
     def __init__(self):
-        # Include MockBackend first so tests and local dev always have a
-        # predictable backend available.
         self.backends: List[LLMBackend] = [
-            MockBackend(),
             OllamaBackend(),
             LlamafileBackend(),
         ]

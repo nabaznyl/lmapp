@@ -3,7 +3,7 @@
 import pytest
 from datetime import datetime
 from lmapp.core.chat import ChatSession, ChatMessage
-from lmapp.backend.mock import MockBackend
+from mock_backend import MockBackend
 
 
 class TestChatMessage:
