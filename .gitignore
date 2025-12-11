@@ -82,3 +82,19 @@ COMPLETION_SUMMARY*.md
 # Local internal docs
 .local/
 .internal/
+
+# ===== INTERNAL DOCUMENTATION (LOCAL ONLY) =====
+# Progress tracking, strategic decisions, session notes
+# These are for internal development only, NEVER commit to public repo
+V0.2.*_PROGRESS*.md
+V0.2.*_DECISION*.md
+V0.2.*_UPDATE*.md
+*_STRATEGIC*.md
+SESSION_*.md
+CHECKPOINT*.md
+CONTINUATION*.md
+SAVEPOINT*.md
+TODO.md
+AUTOMATION*.md
+PHASE_*.md
+IMPLEMENTATION_PLAN.md
