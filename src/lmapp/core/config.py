@@ -30,6 +30,14 @@ class LMAppConfig(BaseModel):
         default=False,
         description="Enable advanced mode (verbose output, advanced options)",
     )
+    advanced_mode: bool = Field(
+        default=False,
+        description="Enable Advanced Mode UI (power user features)",
+    )
+    completed_setup: bool = Field(
+        default=False,
+        description="Whether first-run wizard has been completed",
+    )
     default_model: Optional[str] = Field(
         default=None, description="Default model to use across sessions"
     )

@@ -145,7 +145,16 @@ class MainMenu:
             return "Q"
 
     def run(self):
-        """Main menu loop"""
+        """Main menu loop with first-run wizard"""
+        from lmapp.ui.first_run import FirstRunWizard
+        
+        # Run first-time setup wizard if needed
+        config = self.config_manager.load()
+        if not config.completed_setup:
+            wizard = FirstRunWizard()
+            wizard.run()
+        
+        # Main menu loop
         while self.running:
             self.display()
             choice = self.get_choice()
