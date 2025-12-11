@@ -3,6 +3,7 @@
 lmapp CLI - Main entry point
 Provides the primary command-line interface for lmapp
 """
+import os
 
 import sys
 import click
@@ -34,7 +35,6 @@ def main(ctx, version, debug, dev):
     Your personal AI assistant, running locally on your machine.
     """
     if debug:
-        import os
 
         os.environ["LMAPP_DEBUG"] = "1"
         logger.enable_debug()
@@ -76,7 +76,6 @@ def main(ctx, version, debug, dev):
 
         # Call original hook if debug
 
-        import os
 
         if os.environ.get("LMAPP_DEBUG"):
             sys.__excepthook__(exc_type, exc_value, exc_traceback)

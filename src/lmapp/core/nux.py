@@ -11,6 +11,7 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from lmapp.core.config import get_config_manager, LMAppConfig
 from lmapp.backend.detector import BackendDetector
+from lmapp.backend.uaft_integration import UAFTIntegration
 from lmapp.utils.logging import logger
 
 console = Console()
