@@ -5,7 +5,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/) [![CI](https://github.com/nabaznyl/lmapp/actions/workflows/tests.yml/badge.svg)](https://github.com/nabaznyl/lmapp/actions/workflows/tests.yml) [![codecov](https://codecov.io/gh/nabaznyl/lmapp/branch/mother/graph/badge.svg)](https://codecov.io/gh/nabaznyl/lmapp) [![Status](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
 
-**v0.3.1** - Production Ready. Fully Featured. Free.
+**v0.3.2** - Production Ready. Fully Featured. Free.
 
 See [**Demo & Features**](https://github.com/nabaznyl/lmapp/blob/mother/DEMO.md) for examples and use cases.
 
