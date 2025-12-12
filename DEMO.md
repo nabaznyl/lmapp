@@ -1,5 +1,9 @@
 # LMAPP v0.2.6 → v0.3.0: The Professional Demo
 
+**[← Back to README](README.md)** | **[🔗 GitHub](https://github.com/nabaznyl/lmapp)** | **[📦 PyPI](https://pypi.org/project/lmapp/)**
+
+---
+
 **Tagline:** Beautiful AI. Complete control. Your data, always.  
 One command. One click. Works everywhere.
 

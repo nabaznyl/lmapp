@@ -7,25 +7,21 @@
 
 **v0.3.0-beta** - Web UI, 8 Plugins, RAG System, Batch Processing, Sessions, 587 Tests
 
-**[🎬 Try Now in Browser (No Account)](demo/index.html)** | **[📖 See Demo & Features](DEMO.md)**
+See [**Demo & Features**](DEMO.md) for examples and use cases.
 
 ---
 
-## 🚀 Quick Start (30 seconds)
+## 🚀 Quick Start
 
-### Try in Browser (No Installation)
-Click the **"Try Now in Browser"** button above to run lmapp in your terminal right now—no account, no installation, works on mobile.
+### Install
 
-### Install Locally
 ```bash
 pip install lmapp
 lmapp install  # Automatically installs and configures Ollama
 lmapp chat     # Start chatting!
 ```
 
-### Terminal Demo
-
-See what lmapp feels like:
+### Example
 
 ```bash
 $ lmapp chat
@@ -69,31 +65,17 @@ You: exit
 Goodbye! 👋
 ```
 
-### Installation
-
-```bash
-pip install lmapp
-lmapp install  # Automatically installs and configures Ollama
-lmapp chat     # Start chatting!
-```
-
-### Update
-
-```bash
-pip install --upgrade lmapp
-```
-
-### Verify Installation
+### Verify
 
 ```bash
 lmapp --version && lmapp status
 ```
 
-See [Installation Guide](./INSTALL.md) for more options or [QUICKSTART.md](QUICKSTART.md) for detailed setup.
+See [Installation Guide](./INSTALL.md) for details or [QUICKSTART.md](QUICKSTART.md) for step-by-step setup.
 
 ---
 
-## 🎯 Core Features with Examples
+## 🎯 Features
 
 ### 💬 Chat
 ```bash
