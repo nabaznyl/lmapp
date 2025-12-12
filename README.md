@@ -13,81 +13,16 @@ See [**Demo & Features**](DEMO.md) for examples and use cases.
 
 ## 🚀 Quick Start
 
-### Install
+Full installation and setup: see [QUICKSTART.md](QUICKSTART.md).
 
+Everyday commands:
 ```bash
-pip install lmapp
-lmapp install  # Automatically installs and configures Ollama
-lmapp chat     # Start chatting!
+lmapp chat          # Start chatting locally
+lmapp status        # Check backend/model status
+lmapp config show   # View current configuration
 ```
 
-### Check Status
-
-```bash
-lmapp status
-```
-
-**Output:**
-```
-LMAPP Status Report
-===================
-Version: v0.2.6
-Status: Ready
-Backend: Ollama
-Plugins: Enabled
-```
-
-### Example
-
-```bash
-$ lmapp chat
-╔════════════════════════════════════════════╗
-║           LMAPP Chat Interface             ║
-║  Type 'help' for commands, 'exit' to quit  ║
-╚════════════════════════════════════════════╝
-
-You: What is machine learning?
-
-AI: Machine learning is a subset of artificial intelligence that 
-focuses on enabling computer systems to learn and improve from 
-experience without explicit programming...
-
----
-
-You: Give me a Python example
-
-AI: Here's a simple ML example:
-
-```python
-from sklearn.datasets import load_iris
-from sklearn.tree import DecisionTreeClassifier
-
-# Load data
-iris = load_iris()
-X, y = iris.data, iris.target
-
-# Train model
-clf = DecisionTreeClassifier()
-clf.fit(X, y)
-
-# Predict
-prediction = clf.predict([[5.1, 3.5, 1.4, 0.2]])
-print(f"Predicted: {iris.target_names[prediction[0]]}")
-```
-
----
-
-You: exit
-Goodbye! 👋
-```
-
-### Verify
-
-```bash
-lmapp --version && lmapp status
-```
-
-See [Installation Guide](./INSTALL.md) for details or [QUICKSTART.md](QUICKSTART.md) for step-by-step setup.
+More examples and demos: see [DEMO.md](DEMO.md).
 
 ---
 
