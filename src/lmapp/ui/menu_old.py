@@ -171,9 +171,7 @@ class MainMenu:
 
         if not backend:
             console.print("[red]No backend installed![/red]")
-            console.print(
-                "You need to install a backend (Ollama or llamafile) to chat."
-            )
+            console.print("You need to install a backend (Ollama or llamafile) to chat.")
 
             questions = [
                 inquirer.Confirm(
@@ -195,9 +193,7 @@ class MainMenu:
                 return
 
         if not backend.is_running():
-            console.print(
-                f"[yellow]Backend {backend.backend_display_name()} is not running.[/yellow]"
-            )
+            console.print(f"[yellow]Backend {backend.backend_display_name()} is not running.[/yellow]")
             questions = [
                 inquirer.Confirm(
                     "start",
@@ -324,14 +320,10 @@ class MainMenu:
         while True:
             console.clear()
             console.print()  # Add blank space for better spacing
-            console.print(
-                f"[bold cyan]Model Management ({backend.backend_display_name()})[/bold cyan]\n"
-            )
+            console.print(f"[bold cyan]Model Management ({backend.backend_display_name()})[/bold cyan]\n")
 
             if not backend.is_running():
-                console.print(
-                    "[yellow]Backend is not running. Starting it to manage models...[/yellow]"
-                )
+                console.print("[yellow]Backend is not running. Starting it to manage models...[/yellow]")
                 if not backend.start():
                     console.print("[red]Failed to start backend.[/red]")
                     console.input("[dim]Press Enter to continue...[/dim]")
@@ -469,9 +461,7 @@ class MainMenu:
             # Add header as pseudo-items (workaround for missing Separator and rendering glitches)
             # We use unique IDs for them and filter them out if selected.
             choices.append((" ", "HEADER_0"))
-            choices.append(
-                (f"   {'MODEL':^20} {'VERSION':^10} {'QUALITY':^20}", "HEADER_1")
-            )
+            choices.append((f"   {'MODEL':^20} {'VERSION':^10} {'QUALITY':^20}", "HEADER_1"))
             choices.append((" ", "HEADER_2"))
 
             for m in compatible_models:
@@ -509,9 +499,7 @@ class MainMenu:
                 break
 
             if model_name == "custom":
-                model_name = console.input(
-                    "Enter model name to download (e.g. llama3, mistral): "
-                )
+                model_name = console.input("Enter model name to download (e.g. llama3, mistral): ")
 
             if model_name:
                 console.print(f"[cyan]Downloading {model_name}...[/cyan]")
@@ -524,9 +512,7 @@ class MainMenu:
                         pass  # console.print(line.strip())
 
                     if backend.download_model(model_name):
-                        console.print(
-                            f"[green]Successfully downloaded {model_name}![/green]"
-                        )
+                        console.print(f"[green]Successfully downloaded {model_name}![/green]")
                         console.input("[dim]Press Enter to continue...[/dim]")
                     else:
                         console.print(f"[red]Failed to download {model_name}.[/red]")
@@ -538,9 +524,7 @@ class MainMenu:
     def install_backend(self):
         """Install a backend"""
         # Filter out MockBackend if present (shouldn't be in production, but good to be safe)
-        available_backends = [
-            b for b in self.detector.backends if b.backend_name() != "mock"
-        ]
+        available_backends = [b for b in self.detector.backends if b.backend_name() != "mock"]
 
         if not available_backends:
             console.print("[red]No installable backends found.[/red]")
@@ -565,13 +549,9 @@ class MainMenu:
 
         console.print(f"[cyan]Installing {backend.backend_display_name()}...[/cyan]")
         if backend.install():
-            console.print(
-                f"[green]Successfully installed {backend.backend_display_name()}![/green]"
-            )
+            console.print(f"[green]Successfully installed {backend.backend_display_name()}![/green]")
         else:
-            console.print(
-                f"[red]Failed to install {backend.backend_display_name()}.[/red]"
-            )
+            console.print(f"[red]Failed to install {backend.backend_display_name()}.[/red]")
 
         console.input("[dim]Press Enter to continue...[/dim]")
 
@@ -583,9 +563,7 @@ class MainMenu:
 
             config = self.config_manager.load()
 
-            console.print(
-                f"Developer Mode: {'[green]ON[/green]' if config.developer_mode else '[red]OFF[/red]'}"
-            )
+            console.print(f"Developer Mode: {'[green]ON[/green]' if config.developer_mode else '[red]OFF[/red]'}")
             console.print(f"Default Model: {config.default_model or '[dim]None[/dim]'}")
             console.print()
 
@@ -617,22 +595,14 @@ class MainMenu:
                         models = backend.list_models()
 
                     if models:
-                        q = [
-                            inquirer.List(
-                                "model", message="Select default model", choices=models
-                            )
-                        ]
+                        q = [inquirer.List("model", message="Select default model", choices=models)]
                         a = inquirer.prompt(q)
                         if a:
                             config.default_model = a["model"]
                             self.config_manager.save(config)
                     else:
-                        console.print(
-                            "[yellow]No models found or backend not running.[/yellow]"
-                        )
-                        model_name = console.input(
-                            "Enter model name manually (leave empty to cancel): "
-                        )
+                        console.print("[yellow]No models found or backend not running.[/yellow]")
+                        model_name = console.input("Enter model name manually (leave empty to cancel): ")
                         if model_name:
                             config.default_model = model_name
                             self.config_manager.save(config)
@@ -697,9 +667,7 @@ class MainMenu:
             backend_name = config.backend
 
             if backend_name == "auto":
-                rec = self.detector.get_recommended(
-                    8
-                )  # Default to 8GB assumption for display
+                rec = self.detector.get_recommended(8)  # Default to 8GB assumption for display
                 backend_name = f"Auto ({rec.backend_name() if rec else 'None'})"
 
             # Build About Text

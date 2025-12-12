@@ -18,9 +18,7 @@ class TestTrialStateDataclass:
 
     def test_trial_state_creation(self):
         """Test creating trial state"""
-        state = TrialState(
-            trial_id="test123", start_date="2025-12-11T00:00:00", status="active"
-        )
+        state = TrialState(trial_id="test123", start_date="2025-12-11T00:00:00", status="active")
         assert state.trial_id == "test123"
         assert state.renewal_count == 0
         assert state.status == "active"
@@ -59,9 +57,7 @@ class TestTrialManager:
 
     def test_trial_state_to_dict(self):
         """Test serialization of trial state"""
-        state = TrialState(
-            trial_id="abc123", start_date="2025-12-11T00:00:00", status="active"
-        )
+        state = TrialState(trial_id="abc123", start_date="2025-12-11T00:00:00", status="active")
         from dataclasses import asdict
 
         data = asdict(state)
@@ -157,9 +153,7 @@ class TestFeatureGate:
         assert gate.enforce_feature_access("chat_basic", advanced_mode_enabled=False)
 
         # Free user accessing advanced feature
-        assert not gate.enforce_feature_access(
-            "rag_system", advanced_mode_enabled=False
-        )
+        assert not gate.enforce_feature_access("rag_system", advanced_mode_enabled=False)
 
     def test_restricted_features(self):
         """Test getting list of restricted features"""

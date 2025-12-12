@@ -306,9 +306,7 @@ class TestTranslatorPlugin:
         """Test translation handles case conversion."""
         plugin = TranslatorPlugin()
 
-        result = plugin.execute(
-            text="Hello", source_lang="en", target_lang="es"  # Mixed case
-        )
+        result = plugin.execute(text="Hello", source_lang="en", target_lang="es")  # Mixed case
 
         # Should translate despite case difference
         assert result["translated"].lower() in ["hola", "hello"]

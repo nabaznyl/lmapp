@@ -144,9 +144,7 @@ You're about to have your own AI assistant. Let's go!
             "mistral": ("Mistral 7B", "4GB", "8GB RAM"),
         }
 
-        display_name, size, requirement = model_info.get(
-            recommended, (recommended, "Unknown", "Unknown")
-        )
+        display_name, size, requirement = model_info.get(recommended, (recommended, "Unknown", "Unknown"))
 
         recommendation_text = f"""
 [bold cyan]🤖 Recommended Model[/bold cyan]
@@ -164,11 +162,7 @@ This model is perfect for your system.
         """
         console.print(Panel(recommendation_text, border_style="yellow"))
 
-        q = [
-            inquirer.Confirm(
-                "download", message="Download this model now?", default=True
-            )
-        ]
+        q = [inquirer.Confirm("download", message="Download this model now?", default=True)]
 
         answer = inquirer.prompt(q)
         return answer.get("download", True) if answer else False
@@ -185,9 +179,7 @@ This model is perfect for your system.
         backend = self.detector.get_best_backend()
 
         if not backend:
-            console.print(
-                "[yellow]⚠️  No backend found (Ollama/llamafile required)[/yellow]"
-            )
+            console.print("[yellow]⚠️  No backend found (Ollama/llamafile required)[/yellow]")
             console.input("[dim]Press Enter to continue...[/dim]")
             return
 
@@ -203,9 +195,7 @@ This model is perfect for your system.
 
         # Download model
         try:
-            with console.status(
-                f"Downloading {model_name}... (this may take a few minutes)"
-            ):
+            with console.status(f"Downloading {model_name}... (this may take a few minutes)"):
                 # Note: Model download would be handled by backend
                 # For now, we just show the message
                 pass

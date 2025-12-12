@@ -5,6 +5,7 @@ Allows users to run lmapp commands and shell commands interactively
 """
 
 import subprocess
+import shlex
 from rich.console import Console
 from rich.prompt import Prompt
 
@@ -23,9 +24,7 @@ class CLITerminalMode:
         self.running = True
 
         console.print("\n[cyan bold]🖥️  lmapp Advanced CLI Terminal[/cyan bold]\n")
-        console.print(
-            "[dim]Type 'help' for available commands or shell commands directly[/dim]"
-        )
+        console.print("[dim]Type 'help' for available commands or shell commands directly[/dim]")
         console.print("[dim]Type 'exit' or 'quit' to return to main menu[/dim]\n")
 
         while self.running:
@@ -78,7 +77,7 @@ class CLITerminalMode:
         """Run an lmapp command"""
         try:
             result = subprocess.run(
-                command.split(),
+                shlex.split(command),
                 capture_output=True,
                 text=True,
                 timeout=30,

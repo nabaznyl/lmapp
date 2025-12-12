@@ -6,7 +6,7 @@ Prompts are stored in ~/.lmapp/system_prompt.txt (user) and default prompts by r
 """
 
 from pathlib import Path
-from typing import Optional, Dict
+from typing import Any, Dict, Optional
 
 
 class SystemPromptManager:
@@ -138,7 +138,7 @@ You have access to the following tools in the user's environment:
         """List available default prompt roles."""
         return list(self.DEFAULT_PROMPTS.keys())
 
-    def show_prompt(self, role: str = "default") -> Dict[str, str]:
+    def show_prompt(self, role: str = "default") -> Dict[str, Any]:
         """Get detailed prompt information."""
         prompt = self.get_prompt(role)
         is_custom = self.get_custom_prompt() is not None

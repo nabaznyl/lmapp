@@ -51,9 +51,7 @@ class LLMBackend(ABC):
     """Abstract base class for LLM backends"""
 
     def __init__(self):
-        self.info = BackendInfo(
-            name=self.backend_name(), display_name=self.backend_display_name()
-        )
+        self.info = BackendInfo(name=self.backend_name(), display_name=self.backend_display_name())
 
     @abstractmethod
     def backend_name(self) -> str:

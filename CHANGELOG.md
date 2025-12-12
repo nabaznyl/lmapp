@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.5] - 2025-12-12
+
+### Fixed
+- **CI/CD**: Fixed release check workflow to verify `pyproject.toml` instead of missing `setup.py`.
+- **Versioning**: Synchronized version numbers across `VERSION`, `pyproject.toml`, and `CHANGELOG.md`.
+
 ## [0.3.4] - 2025-12-12
 
 ### Security

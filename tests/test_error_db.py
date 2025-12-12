@@ -34,9 +34,7 @@ def test_known_issue_matching(tmp_path):
     db = ErrorDB()
 
     # Add a mock known issue
-    db.KNOWN_ISSUES = [
-        {"pattern": r"connection refused", "solution": "Check your internet connection"}
-    ]
+    db.KNOWN_ISSUES = [{"pattern": r"connection refused", "solution": "Check your internet connection"}]
 
     class MockError(Exception):
         pass

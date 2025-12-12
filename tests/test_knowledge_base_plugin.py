@@ -77,9 +77,7 @@ class TestKnowledgeBasePlugin:
             title="Python Guide",
             content="Learn Python programming basics",
         )
-        plugin.execute(
-            "add", title="JavaScript Tips", content="JavaScript web development"
-        )
+        plugin.execute("add", title="JavaScript Tips", content="JavaScript web development")
 
         # Search
         result = plugin.execute("search", query="python")
@@ -222,15 +220,9 @@ class TestKnowledgeBasePlugin:
 
     def test_related_entries(self, plugin):
         """Test finding related entries."""
-        plugin.execute(
-            "add", title="Python Basics", content="Learning Python programming"
-        )
-        plugin.execute(
-            "add", title="Python Advanced", content="Advanced Python techniques"
-        )
-        result = plugin.execute(
-            "add", title="Python Performance", content="Python optimization tips"
-        )
+        plugin.execute("add", title="Python Basics", content="Learning Python programming")
+        plugin.execute("add", title="Python Advanced", content="Advanced Python techniques")
+        result = plugin.execute("add", title="Python Performance", content="Python optimization tips")
 
         # The last entry should find related entries
         entry_result = plugin.execute("get", entry_id=result["entry_id"])

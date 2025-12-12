@@ -98,9 +98,7 @@ class TestChatEndpoints:
 
     def test_post_chat_custom_model(self, client):
         """Test sending message with custom model."""
-        response = client.post(
-            "/api/chat", json={"message": "Test", "model": "custom-model"}
-        )
+        response = client.post("/api/chat", json={"message": "Test", "model": "custom-model"})
         assert response.status_code == 200
         data = response.json()
         assert data["model"] == "custom-model"
@@ -129,9 +127,7 @@ class TestDocumentEndpoints:
 
     def test_upload_document(self, client):
         """Test uploading a document."""
-        response = client.post(
-            "/api/documents/upload", files={"file": ("test.txt", b"test content")}
-        )
+        response = client.post("/api/documents/upload", files={"file": ("test.txt", b"test content")})
         assert response.status_code == 200
         data = response.json()
         assert data["success"] is True
@@ -153,9 +149,7 @@ class TestDocumentEndpoints:
     def test_delete_document(self, client):
         """Test deleting a document."""
         # Upload a document
-        upload_response = client.post(
-            "/api/documents/upload", files={"file": ("test.txt", b"content")}
-        )
+        upload_response = client.post("/api/documents/upload", files={"file": ("test.txt", b"content")})
         doc_id = upload_response.json()["document_id"]
 
         # Delete the document
@@ -173,9 +167,7 @@ class TestDocumentEndpoints:
         """Test uploading and managing multiple documents."""
         # Upload multiple documents
         for i in range(3):
-            client.post(
-                "/api/documents/upload", files={"file": (f"test{i}.txt", b"content")}
-            )
+            client.post("/api/documents/upload", files={"file": (f"test{i}.txt", b"content")})
 
         # Verify all documents listed
         response = client.get("/api/documents")
@@ -242,9 +234,7 @@ class TestPluginEndpoints:
         # List plugins before installation
         response = client.get("/api/plugins")
         plugins_before = response.json()["plugins"]
-        translator_before = next(
-            (p for p in plugins_before if p["name"] == "translator"), None
-        )
+        translator_before = next((p for p in plugins_before if p["name"] == "translator"), None)
         assert translator_before is not None
         assert translator_before["installed"] is False
 
@@ -254,9 +244,7 @@ class TestPluginEndpoints:
         # List plugins after installation
         response = client.get("/api/plugins")
         plugins_after = response.json()["plugins"]
-        translator_after = next(
-            (p for p in plugins_after if p["name"] == "translator"), None
-        )
+        translator_after = next((p for p in plugins_after if p["name"] == "translator"), None)
         assert translator_after is not None
         assert translator_after["installed"] is True
 
@@ -312,16 +300,12 @@ class TestWebSocketChat:
             # Send first message
             websocket.send_json({"message": "Hello"})
             response1 = websocket.receive_json()
-            assert (
-                "token" in str(response1).lower() or "error" in str(response1).lower()
-            )
+            assert "token" in str(response1).lower() or "error" in str(response1).lower()
 
             # Send second message
             websocket.send_json({"message": "World"})
             response2 = websocket.receive_json()
-            assert (
-                "token" in str(response2).lower() or "error" in str(response2).lower()
-            )
+            assert "token" in str(response2).lower() or "error" in str(response2).lower()
 
 
 class TestIntegration:
@@ -334,9 +318,7 @@ class TestIntegration:
         assert status["stats"]["documents"] == 0
 
         # Upload a document
-        client.post(
-            "/api/documents/upload", files={"file": ("test.txt", b"Test document")}
-        )
+        client.post("/api/documents/upload", files={"file": ("test.txt", b"Test document")})
 
         # Send a chat message
         chat = client.post("/api/chat", json={"message": "Analyze this"}).json()

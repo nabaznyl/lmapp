@@ -91,11 +91,7 @@ class MainMenu:
     def display(self):
         """Display the menu with enhanced visual hierarchy"""
         config = self.config_manager.load()
-        mode_indicator = (
-            "[bold green]📊 Advanced Mode[/bold green]"
-            if config.advanced_mode
-            else "[dim]Beginner Mode[/dim]"
-        )
+        mode_indicator = "[bold green]📊 Advanced Mode[/bold green]" if config.advanced_mode else "[dim]Beginner Mode[/dim]"
 
         # Clear console for fresh start
         console.clear()
@@ -150,11 +146,7 @@ class MainMenu:
 
         # Get user input
         try:
-            choice = (
-                console.input("[bold]Enter your choice [/bold](Q to quit): ")
-                .upper()
-                .strip()
-            )
+            choice = console.input("[bold]Enter your choice [/bold](Q to quit): ").upper().strip()
             return choice if choice else None
         except KeyboardInterrupt:
             return "Q"
@@ -198,15 +190,9 @@ class MainMenu:
 
         if not backend:
             console.print("[red]No backend found![/red]")
-            console.print(
-                "\n[dim]A backend like Ollama is required to use LMAPP.[/dim]"
-            )
+            console.print("\n[dim]A backend like Ollama is required to use LMAPP.[/dim]")
 
-            q = [
-                inquirer.Confirm(
-                    "install", message="Install a backend now?", default=True
-                )
-            ]
+            q = [inquirer.Confirm("install", message="Install a backend now?", default=True)]
             if inquirer.prompt(q).get("install"):
                 self.manage_models()
             return
@@ -225,9 +211,7 @@ class MainMenu:
 
         if not models:
             console.print("[yellow]No models found.[/yellow]")
-            q = [
-                inquirer.Confirm("download", message="Download a model?", default=True)
-            ]
+            q = [inquirer.Confirm("download", message="Download a model?", default=True)]
             if inquirer.prompt(q).get("download"):
                 self.manage_models()
                 return
@@ -275,9 +259,7 @@ class MainMenu:
 
             if not plugin_paths:
                 console.print("[dim]No plugins found[/dim]")
-                console.print(
-                    "[yellow]Visit github.com/nabaznyl/lmapp for plugins[/yellow]"
-                )
+                console.print("[yellow]Visit github.com/nabaznyl/lmapp for plugins[/yellow]")
                 console.input("\n[dim]Press Enter to go back...[/dim]")
                 break
 
@@ -295,9 +277,7 @@ class MainMenu:
                     category = tags[0] if tags else "General"
                     if category not in plugins_by_category:
                         plugins_by_category[category] = []
-                        choices.append(
-                            (f"[bold cyan]{category}[/bold cyan]", f"HEADER_{category}")
-                        )
+                        choices.append((f"[bold cyan]{category}[/bold cyan]", f"HEADER_{category}"))
 
                     plugins_by_category[category].append((name, plugin_info))
                     choices.append((f"  {name:<25} - {desc[:40]}", name))
@@ -317,11 +297,7 @@ class MainMenu:
                 break
 
             selected = answer.get("plugin")
-            if (
-                selected in ["back"]
-                or selected.startswith("HEADER_")
-                or selected == "SPACER"
-            ):
+            if selected in ["back"] or selected.startswith("HEADER_") or selected == "SPACER":
                 if selected == "back":
                     break
                 continue
@@ -344,9 +320,7 @@ class MainMenu:
 
             if not plugin_paths:
                 console.print("[dim]No plugins found[/dim]")
-                console.print(
-                    "[yellow]To add plugins, place them in ~/.lmapp/plugins/[/yellow]"
-                )
+                console.print("[yellow]To add plugins, place them in ~/.lmapp/plugins/[/yellow]")
                 console.input("\n[dim]Press Enter to go back...[/dim]")
                 break
 
@@ -363,9 +337,7 @@ class MainMenu:
                     loaded_plugins[name] = plugin_info
 
                     status = "✓" if plugin_info.is_loaded else "✗"
-                    choices.append(
-                        (f"{status} {name:<20} v{version:<10} - {desc[:35]}", name)
-                    )
+                    choices.append((f"{status} {name:<20} v{version:<10} - {desc[:35]}", name))
 
             choices.extend(
                 [
@@ -385,9 +357,7 @@ class MainMenu:
             if selected == "back":
                 break
             elif selected == "repo":
-                console.print(
-                    "[yellow]Plugin repository: github.com/nabaznyl/lmapp/plugins[/yellow]"
-                )
+                console.print("[yellow]Plugin repository: github.com/nabaznyl/lmapp/plugins[/yellow]")
                 console.input("[dim]Press Enter to continue...[/dim]")
             elif selected in loaded_plugins:
                 self._execute_plugin(loaded_plugins[selected])
@@ -436,9 +406,7 @@ class MainMenu:
 
         while True:
             console.clear()
-            console.print(
-                f"[bold cyan]Models ({backend.backend_display_name()})[/bold cyan]\n"
-            )
+            console.print(f"[bold cyan]Models ({backend.backend_display_name()})[/bold cyan]\n")
 
             if not backend.is_running():
                 console.print("[yellow]Starting backend...[/yellow]\n")
@@ -543,29 +511,18 @@ class MainMenu:
         ]
 
         # Filter: compatible RAM + not installed
-        compatible = [
-            m
-            for m in models
-            if m["ram"] <= ram_gb and m["id"].split(":")[0] not in installed
-        ]
+        compatible = [m for m in models if m["ram"] <= ram_gb and m["id"].split(":")[0] not in installed]
 
         if not compatible:
             console.print("[yellow]All compatible models already installed[/yellow]")
             console.input("[dim]Press Enter to continue...[/dim]")
             return
 
-        choices = [
-            (f"{m['name']:<15} {m['size']:<6} {m['speed']:<15}", m["id"])
-            for m in compatible
-        ]
+        choices = [(f"{m['name']:<15} {m['size']:<6} {m['speed']:<15}", m["id"]) for m in compatible]
         choices.append(("Custom model name...", "custom"))
         choices.append(("Back", "back"))
 
-        q = [
-            inquirer.List(
-                "model", message="Select a model to download", choices=choices
-            )
-        ]
+        q = [inquirer.List("model", message="Select a model to download", choices=choices)]
         answer = inquirer.prompt(q)
         model = answer.get("model") if answer else None
 
@@ -595,17 +552,13 @@ class MainMenu:
             return
 
         # Recommend Ollama by default (most compatible)
-        recommended = next(
-            (b for b in available if b.backend_name() == "ollama"), available[0]
-        )
+        recommended = next((b for b in available if b.backend_name() == "ollama"), available[0])
 
         console.print(f"[dim]Recommended: {recommended.backend_display_name()}[/dim]\n")
 
         with console.status(f"Installing {recommended.backend_display_name()}..."):
             if recommended.install():
-                console.print(
-                    f"[green]✓ {recommended.backend_display_name()} installed![/green]"
-                )
+                console.print(f"[green]✓ {recommended.backend_display_name()} installed![/green]")
             else:
                 console.print("[red]✗ Installation failed[/red]")
 
@@ -692,11 +645,7 @@ class MainMenu:
                 if backend and backend.is_running():
                     models = backend.list_models() or []
                     if models:
-                        q = [
-                            inquirer.List(
-                                "model", message="Select default model", choices=models
-                            )
-                        ]
+                        q = [inquirer.List("model", message="Select default model", choices=models)]
                         ans = inquirer.prompt(q)
                         if ans:
                             config.default_model = ans.get("model")
@@ -711,11 +660,7 @@ class MainMenu:
             elif setting == "advanced-mode":
                 config.advanced_mode = not config.advanced_mode
                 self.config_manager.save(config)
-                state = (
-                    "[green]ENABLED[/green]"
-                    if config.advanced_mode
-                    else "[dim]DISABLED[/dim]"
-                )
+                state = "[green]ENABLED[/green]" if config.advanced_mode else "[dim]DISABLED[/dim]"
                 console.print(f"\nAdvanced Mode {state}")
                 console.input("[dim]Press Enter to continue...[/dim]")
 
@@ -762,11 +707,7 @@ From chat, press [bold]Ctrl+P[/bold] to access plugins:
         """About screen with hardware info and mode toggle"""
         while True:
             config = self.config_manager.load()
-            mode_text = (
-                "[green]ENABLED ✓[/green]"
-                if config.advanced_mode
-                else "[yellow]DISABLED[/yellow]"
-            )
+            mode_text = "[green]ENABLED ✓[/green]" if config.advanced_mode else "[yellow]DISABLED[/yellow]"
 
             # Get hardware info
             memory = psutil.virtual_memory()
@@ -822,11 +763,7 @@ Beautiful AI. Complete control. Your data, always.
             elif action == "toggle":
                 config.advanced_mode = not config.advanced_mode
                 self.config_manager.save(config)
-                state = (
-                    "[green]ENABLED ✓[/green]"
-                    if config.advanced_mode
-                    else "[yellow]DISABLED[/yellow]"
-                )
+                state = "[green]ENABLED ✓[/green]" if config.advanced_mode else "[yellow]DISABLED[/yellow]"
                 console.clear()
                 console.print(f"\n[bold]Advanced Mode {state}[/bold]")
                 console.print("\n[dim]Menu will update on next screen...[/dim]")

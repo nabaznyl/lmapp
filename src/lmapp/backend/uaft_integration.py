@@ -34,9 +34,7 @@ class UAFTIntegration:
     def _check_uaft_installed(self) -> bool:
         """Check if UAFT is installed and available"""
         try:
-            result = subprocess.run(
-                ["uaft", "--version"], capture_output=True, text=True, timeout=5
-            )
+            result = subprocess.run(["uaft", "--version"], capture_output=True, text=True, timeout=5)
             return result.returncode == 0
         except Exception:
             return False
@@ -57,9 +55,7 @@ class UAFTIntegration:
         Prompt user to install UAFT as optional companion tool.
         Returns True if user wants to install, False otherwise.
         """
-        console.print(
-            "\n[bold cyan]Optional: Universal Automation Framework Tool[/bold cyan]"
-        )
+        console.print("\n[bold cyan]Optional: Universal Automation Framework Tool[/bold cyan]")
         console.print(
             """
 UAFT is a recommended companion tool that enhances lmapp with:
@@ -75,9 +71,7 @@ UAFT makes it easy to automate repetitive tasks in your projects.
 
         if self.uaft_installed:
             console.print("[green]✓ UAFT is already installed![/green]")
-            enable = inquirer.confirm(
-                message="Enable UAFT integration with lmapp?", default=True
-            )
+            enable = inquirer.confirm(message="Enable UAFT integration with lmapp?", default=True)
             return enable
 
         questions = [

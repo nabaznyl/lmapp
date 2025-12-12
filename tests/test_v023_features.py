@@ -175,9 +175,7 @@ class TestSessionManager:
 
             # Create old session manually
             old_session = Session()
-            old_session.created_at = (
-                datetime.utcnow() - timedelta(days=40)
-            ).isoformat() + "Z"
+            old_session.created_at = (datetime.utcnow() - timedelta(days=40)).isoformat() + "Z"
 
             session_file = Path(tmpdir) / f"{old_session.session_id}.json"
             with open(session_file, "w") as f:
@@ -261,9 +259,7 @@ class TestHelpfulError:
 
     def test_format_for_display(self):
         """Test error formatting."""
-        error = HelpfulError(
-            title="Test", message="Test message", suggestions=["Suggestion 1"]
-        )
+        error = HelpfulError(title="Test", message="Test message", suggestions=["Suggestion 1"])
 
         display = error.format_for_display(verbose=True)
         assert "Test" in display

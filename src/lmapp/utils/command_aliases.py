@@ -216,11 +216,7 @@ class CommandAliasManager:
     def get_similar_aliases(self, partial: str) -> List[Tuple[str, str]]:
         """Get aliases matching a partial string."""
         all_aliases = self.get_all_aliases()
-        matches = [
-            (alias, cmd)
-            for alias, cmd in all_aliases.items()
-            if partial in alias or partial in cmd
-        ]
+        matches = [(alias, cmd) for alias, cmd in all_aliases.items() if partial in alias or partial in cmd]
         return sorted(matches)
 
 

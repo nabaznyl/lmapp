@@ -77,16 +77,8 @@ class TestAnalysisResult:
         """Test summary with issues."""
         result = AnalysisResult(language="python")
 
-        result.issues.append(
-            CodeIssue(
-                severity="critical", issue_type="bug", line=1, column=0, message="Test"
-            )
-        )
-        result.issues.append(
-            CodeIssue(
-                severity="high", issue_type="bug", line=2, column=0, message="Test"
-            )
-        )
+        result.issues.append(CodeIssue(severity="critical", issue_type="bug", line=1, column=0, message="Test"))
+        result.issues.append(CodeIssue(severity="high", issue_type="bug", line=2, column=0, message="Test"))
         result.issues.append(
             CodeIssue(
                 severity="medium",
@@ -107,11 +99,7 @@ class TestAnalysisResult:
     def test_result_to_dict(self):
         """Test converting result to dictionary."""
         result = AnalysisResult(language="python")
-        result.issues.append(
-            CodeIssue(
-                severity="low", issue_type="style", line=1, column=0, message="Test"
-            )
-        )
+        result.issues.append(CodeIssue(severity="low", issue_type="style", line=1, column=0, message="Test"))
 
         d = result.to_dict()
         assert d["language"] == "python"
@@ -231,10 +219,7 @@ for i in range(10):
         result1 = plugin.execute(code=simple_code)
         result2 = plugin.execute(code=complex_code)
 
-        assert (
-            result1["summary"]["complexity_estimate"]
-            < result2["summary"]["complexity_estimate"]
-        )
+        assert result1["summary"]["complexity_estimate"] < result2["summary"]["complexity_estimate"]
 
     def test_style_detection_strict_mode(self):
         """Test style detection in strict mode."""

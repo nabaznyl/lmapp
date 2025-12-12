@@ -41,10 +41,7 @@ class ShellCustomizer:
             True if successful
         """
         if self.shell != "bash":
-            console.print(
-                "[yellow]⚠ bash-it requires bash shell (currently using "
-                f"{self.shell})[/yellow]"
-            )
+            console.print("[yellow]⚠ bash-it requires bash shell (currently using " f"{self.shell})[/yellow]")
             return False
 
         bash_it_dir = Path.home() / ".bash_it"
@@ -79,10 +76,7 @@ class ShellCustomizer:
                 timeout=30,
             )
 
-            console.print(
-                "[green]✓ bash-it installed successfully[/green]\n"
-                "[yellow]💡 Reload your shell: exec bash[/yellow]"
-            )
+            console.print("[green]✓ bash-it installed successfully[/green]\n" "[yellow]💡 Reload your shell: exec bash[/yellow]")
             return True
 
         except subprocess.CalledProcessError as e:
@@ -98,10 +92,7 @@ class ShellCustomizer:
             True if successful
         """
         if self.shell != "zsh":
-            console.print(
-                "[yellow]⚠ Oh My Zsh requires zsh shell (currently using "
-                f"{self.shell})[/yellow]"
-            )
+            console.print("[yellow]⚠ Oh My Zsh requires zsh shell (currently using " f"{self.shell})[/yellow]")
             return False
 
         omz_dir = Path.home() / ".oh-my-zsh"
@@ -128,10 +119,7 @@ class ShellCustomizer:
                 timeout=60,
             )
 
-            console.print(
-                "[green]✓ Oh My Zsh installed successfully[/green]\n"
-                "[yellow]💡 Reload your shell: exec zsh[/yellow]"
-            )
+            console.print("[green]✓ Oh My Zsh installed successfully[/green]\n" "[yellow]💡 Reload your shell: exec zsh[/yellow]")
             return True
 
         except subprocess.CalledProcessError as e:
@@ -170,10 +158,7 @@ alias lmapp-models='ollama list'  # Ollama models
             with open(self.shell_rc, "a") as f:
                 f.write(aliases)
 
-            console.print(
-                "[green]✓ lmapp aliases added[/green]\n"
-                "[yellow]💡 Reload your shell to use new aliases[/yellow]"
-            )
+            console.print("[green]✓ lmapp aliases added[/green]\n" "[yellow]💡 Reload your shell to use new aliases[/yellow]")
             return True
 
         except Exception as e:

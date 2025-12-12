@@ -6,7 +6,7 @@ Context-aware error messages, intelligent suggestions, and detailed recovery pat
 
 import time
 import re
-from typing import Optional, TypeVar, Callable, Dict
+from typing import Any, Optional, TypeVar, Callable, Dict
 from functools import wraps
 from enum import Enum
 from dataclasses import dataclass
@@ -59,6 +59,8 @@ class ResourceError(BackendError):
     """Resource exhaustion (memory, GPU, etc.)"""
 
 
+from dataclasses import dataclass, field
+
 class ConfigurationError(BackendError):
     """Configuration error"""
 
@@ -73,9 +75,9 @@ class ErrorContext:
     attempt_number: int = 1  # Which attempt
     is_first_attempt: bool = True
     previous_error: Optional[str] = None
-    user_environment: Dict = None  # System info
+    user_environment: Dict[str, Any] = field(default_factory=dict)  # System info
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "operation": self.operation,
             "backend": self.backend_name,
@@ -145,23 +147,16 @@ class ErrorAnalyzer:
                 return ErrorCategory.PERFORMANCE
 
         # Check simple keywords
-        if any(
-            word in error_msg
-            for word in ["auth", "permission", "unauthorized", "forbidden"]
-        ):
+        if any(word in error_msg for word in ["auth", "permission", "unauthorized", "forbidden"]):
             return ErrorCategory.AUTHENTICATION
 
-        if any(
-            word in error_msg for word in ["config", "setting", "parameter", "invalid"]
-        ):
+        if any(word in error_msg for word in ["config", "setting", "parameter", "invalid"]):
             return ErrorCategory.CONFIGURATION
 
         return ErrorCategory.UNKNOWN
 
     @classmethod
-    def get_error_suggestion(
-        cls, error: Exception, context: Optional[ErrorContext] = None
-    ) -> str:
+    def get_error_suggestion(cls, error: Exception, context: Optional[ErrorContext] = None) -> str:
         """Get context-aware error suggestion"""
         category = cls.categorize_error(error)
 
@@ -174,13 +169,9 @@ class ErrorAnalyzer:
             model = context.model_name
 
             if context.attempt_number > 1:
-                suggestions.append(
-                    f"⏱️  Attempt {context.attempt_number} failed on '{operation}' with {backend}/{model}"
-                )
+                suggestions.append(f"⏱️  Attempt {context.attempt_number} failed on '{operation}' with {backend}/{model}")
             else:
-                suggestions.append(
-                    f"🔍 First attempt failed on '{operation}' with {backend}/{model}"
-                )
+                suggestions.append(f"🔍 First attempt failed on '{operation}' with {backend}/{model}")
 
         # Add category-specific suggestions
         if category == ErrorCategory.CONNECTIVITY:
@@ -270,18 +261,14 @@ def retry_with_backoff(
         def wrapper(*args, **kwargs) -> T:
             last_exception = None
             operation_name = getattr(func, "__name__", "unknown_operation")
-            error_context = context or ErrorContext(
-                operation=operation_name, backend_name="unknown", model_name="unknown"
-            )
+            error_context = context or ErrorContext(operation=operation_name, backend_name="unknown", model_name="unknown")
 
             for attempt in range(max_retries + 1):
                 try:
                     error_context.attempt_number = attempt + 1
                     error_context.is_first_attempt = attempt == 0
 
-                    logger.debug(
-                        f"Executing {operation_name} (attempt {attempt + 1}/{max_retries + 1})"
-                    )
+                    logger.debug(f"Executing {operation_name} (attempt {attempt + 1}/{max_retries + 1})")
                     return func(*args, **kwargs)
 
                 except (ConnectionError, TimeoutError) as e:
@@ -298,27 +285,18 @@ def retry_with_backoff(
                             # Shorter waits for transient errors
                             category = ErrorAnalyzer.categorize_error(e)
                             if category == ErrorCategory.CONNECTIVITY:
-                                wait_time = backoff_base * (
-                                    2**attempt
-                                )  # Exponential for connection
+                                wait_time = backoff_base * (2**attempt)  # Exponential for connection
                             elif category == ErrorCategory.PERFORMANCE:
-                                wait_time = backoff_base * (
-                                    attempt + 2
-                                )  # Linear for performance
+                                wait_time = backoff_base * (attempt + 2)  # Linear for performance
                             else:
                                 wait_time = 0
                         else:
                             wait_time = 0
 
-                        logger.warning(
-                            f"{func.__name__} failed: {str(e)}. "
-                            f"Retrying in {wait_time:.1f}s... (attempt {attempt + 1}/{max_retries})"
-                        )
+                        logger.warning(f"{func.__name__} failed: {str(e)}. " f"Retrying in {wait_time:.1f}s... (attempt {attempt + 1}/{max_retries})")
                         time.sleep(wait_time)
                     else:
-                        logger.error(
-                            f"{func.__name__} failed after {max_retries} retries: {str(e)}"
-                        )
+                        logger.error(f"{func.__name__} failed after {max_retries} retries: {str(e)}")
 
                 except Exception as e:
                     logger.error(
@@ -493,9 +471,7 @@ class BackendFallback:
                 except Exception as fallback_error:
                     logger.error(f"Fallback backend also failed: {str(fallback_error)}")
                     raise BackendError(
-                        f"Both primary and fallback backends failed.\n"
-                        f"Primary error: {str(e)}\n"
-                        f"Fallback error: {str(fallback_error)}"
+                        f"Both primary and fallback backends failed.\n" f"Primary error: {str(e)}\n" f"Fallback error: {str(fallback_error)}"
                     ) from e
             else:
                 raise

@@ -74,34 +74,86 @@ async def root():
     status_color = "#4caf50" if b else "#f44336"
     status_text = "Online" if b else "Offline (No Backend)"
     backend_name = b.backend_name() if b else "None"
-    
+
     return f"""
     <html>
         <head>
             <title>lmapp Server</title>
             <style>
-                body {{ font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 0 auto; padding: 2rem; background: #1e1e1e; color: #e0e0e0; }}
-                .card {{ background: #2d2d2d; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin-bottom: 2rem; }}
+                body {{
+                    font-family: system-ui, -apple-system, sans-serif;
+                    max-width: 800px;
+                    margin: 0 auto;
+                    padding: 2rem;
+                    background: #1e1e1e;
+                    color: #e0e0e0;
+                }}
+                .card {{
+                    background: #2d2d2d;
+                    padding: 2rem;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+                    margin-bottom: 2rem;
+                }}
                 h1 {{ color: #4ec9b0; margin-top: 0; }}
-                .status {{ display: inline-block; padding: 0.25rem 0.75rem; border-radius: 999px; background: {status_color}; color: white; font-weight: bold; font-size: 0.875rem; }}
-                .info-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 2rem; }}
+                .status {{
+                    display: inline-block;
+                    padding: 0.25rem 0.75rem;
+                    border-radius: 999px;
+                    background: {status_color};
+                    color: white;
+                    font-weight: bold;
+                    font-size: 0.875rem;
+                }}
+                .info-grid {{
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 1rem;
+                    margin-top: 2rem;
+                }}
                 .info-item {{ background: #333; padding: 1rem; border-radius: 6px; }}
                 .label {{ display: block; color: #888; font-size: 0.875rem; margin-bottom: 0.5rem; }}
                 .value {{ font-size: 1.125rem; font-weight: 500; }}
-                code {{ background: #111; padding: 0.2rem 0.4rem; border-radius: 4px; font-family: monospace; }}
-                
+                code {{
+                    background: #111;
+                    padding: 0.2rem 0.4rem;
+                    border-radius: 4px;
+                    font-family: monospace;
+                }}
+
                 /* Chat Interface */
-                .chat-container {{ display: flex; flex-direction: column; height: 400px; border: 1px solid #444; border-radius: 6px; background: #111; }}
+                .chat-container {{
+                    display: flex;
+                    flex-direction: column;
+                    height: 400px;
+                    border: 1px solid #444;
+                    border-radius: 6px;
+                    background: #111;
+                }}
                 .chat-messages {{ flex: 1; overflow-y: auto; padding: 1rem; }}
                 .message {{ margin-bottom: 1rem; padding: 0.5rem 1rem; border-radius: 4px; max-width: 80%; }}
                 .user {{ background: #264f78; align-self: flex-end; margin-left: auto; }}
                 .assistant {{ background: #333; align-self: flex-start; margin-right: auto; }}
                 .input-area {{ display: flex; padding: 1rem; border-top: 1px solid #444; background: #2d2d2d; }}
-                input {{ flex: 1; padding: 0.5rem; border-radius: 4px; border: 1px solid #444; background: #1e1e1e; color: white; margin-right: 0.5rem; }}
-                button {{ padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }}
+                input {{
+                    flex: 1;
+                    padding: 0.5rem;
+                    border-radius: 4px;
+                    border: 1px solid #444;
+                    background: #1e1e1e;
+                    color: white;
+                    margin-right: 0.5rem;
+                }}
+                button {{
+                    padding: 0.5rem 1rem;
+                    border-radius: 4px;
+                    border: none;
+                    cursor: pointer;
+                    font-weight: bold;
+                }}
                 .send-btn {{ background: #4ec9b0; color: #1e1e1e; }}
                 .shutdown-btn {{ background: #f44336; color: white; margin-left: auto; }}
-                
+
                 .header-actions {{ display: flex; align-items: center; gap: 1rem; }}
             </style>
         </head>
@@ -115,7 +167,7 @@ async def root():
                     <button onclick="shutdownServer()" class="shutdown-btn">Shutdown Server</button>
                 </div>
                 <p>Local LLM API Server is running and ready for VS Code integration.</p>
-                
+
                 <div class="info-grid">
                     <div class="info-item">
                         <span class="label">Version</span>
@@ -139,7 +191,8 @@ async def root():
                         <div class="message assistant">Hello! I'm your local AI assistant. How can I help you?</div>
                     </div>
                     <div class="input-area">
-                        <input type="text" id="userInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+                        <input type="text" id="userInput" placeholder="Type a message..."
+                            onkeypress="handleKeyPress(event)">
                         <button onclick="sendMessage()" class="send-btn">Send</button>
                     </div>
                 </div>
@@ -150,7 +203,8 @@ async def root():
                     if (confirm('Are you sure you want to shut down the server?')) {{
                         try {{
                             await fetch('/admin/shutdown', {{ method: 'POST' }});
-                            document.body.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100vh;color:#f44336"><h1>Server Shut Down</h1></div>';
+                            document.body.innerHTML = '<div style="display:flex;justify-content:center;' +
+                                'align-items:center;height:100vh;color:#f44336"><h1>Server Shut Down</h1></div>';
                         }} catch (e) {{
                             alert('Failed to shutdown: ' + e);
                         }}
@@ -181,7 +235,7 @@ async def root():
                                 max_tokens: 200
                             }})
                         }});
-                        
+
                         const data = await response.json();
                         if (data.choices && data.choices.length > 0) {{
                             addMessage(data.choices[0].text, 'assistant');
@@ -211,10 +265,11 @@ async def root():
 @app.post("/admin/shutdown")
 def shutdown_server(request: Request):
     """Shutdown the server"""
-    if request.client.host != "127.0.0.1":
-        logger.warning(f"Unauthorized shutdown attempt from {request.client.host}")
+    if not request.client or request.client.host != "127.0.0.1":
+        host = request.client.host if request.client else "unknown"
+        logger.warning(f"Unauthorized shutdown attempt from {host}")
         raise HTTPException(status_code=403, detail="Unauthorized")
-        
+
     logger.info("Shutdown requested via API")
     # Schedule shutdown
     os.kill(os.getpid(), signal.SIGINT)
@@ -228,9 +283,7 @@ def health_check():
     backend_name = b.backend_name() if b else None
     models = b.list_models() if b else []
 
-    return HealthResponse(
-        status=status, version=__version__, backend=backend_name, models=models
-    )
+    return HealthResponse(status=status, version=__version__, backend=backend_name, models=models)
 
 
 @app.post("/v1/completions", response_model=CompletionResponse)

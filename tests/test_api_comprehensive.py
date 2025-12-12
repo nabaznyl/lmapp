@@ -126,9 +126,7 @@ class TestRESTAPIEndpoints:
     def test_get_config_response_format(self, config):
         """Test /api/config returns proper format"""
         # Should be serializable to JSON
-        config_dict = (
-            config.model_dump() if hasattr(config, "model_dump") else config.__dict__
-        )
+        config_dict = config.model_dump() if hasattr(config, "model_dump") else config.__dict__
         assert isinstance(config_dict, dict)
 
     def test_update_config_endpoint(self, config):
@@ -305,9 +303,7 @@ class TestRESTAPIEndpoints:
         assert hasattr(config, "temperature")
 
         # 3. Can be serialized
-        config_dict = (
-            config.model_dump() if hasattr(config, "model_dump") else config.__dict__
-        )
+        config_dict = config.model_dump() if hasattr(config, "model_dump") else config.__dict__
         assert isinstance(config_dict, dict)
 
 

@@ -10,7 +10,7 @@ import json
 import sys
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Callable, Dict, List, Optional, Type
 
 
 class PluginMetadata:
@@ -73,10 +73,10 @@ class BasePlugin(ABC):
     def on_cleanup(self) -> None:
         """Called when plugin is unloaded."""
 
-    def register_command(self, name: str, handler: callable) -> None:
+    def register_command(self, name: str, handler: Callable) -> None:
         """Register a command handler."""
 
-    def register_hook(self, hook_name: str, handler: callable) -> None:
+    def register_hook(self, hook_name: str, handler: Callable) -> None:
         """Register a hook handler."""
 
     def get_info(self) -> Dict[str, Any]:
@@ -100,8 +100,8 @@ class PluginManager:
         self.plugins_dir.mkdir(parents=True, exist_ok=True)
 
         self.plugins: Dict[str, BasePlugin] = {}
-        self.hooks: Dict[str, List[callable]] = {}
-        self.commands: Dict[str, callable] = {}
+        self.hooks: Dict[str, List[Callable]] = {}
+        self.commands: Dict[str, Callable] = {}
 
     def discover_plugins(self) -> List[PluginMetadata]:
         """Discover available plugins in plugins directory."""
@@ -187,7 +187,7 @@ class PluginManager:
     def register_hook(
         self,
         hook_name: str,
-        handler: callable,
+        handler: Callable,
         plugin_name: Optional[str] = None,
     ) -> None:
         """Register a hook handler."""
@@ -213,7 +213,7 @@ class PluginManager:
     def register_command(
         self,
         command_name: str,
-        handler: callable,
+        handler: Callable,
         plugin_name: Optional[str] = None,
     ) -> None:
         """Register a command handler."""

@@ -97,11 +97,7 @@ class SimpleLRUCache:
     def clear_expired(self) -> int:
         """Remove all expired entries, return count removed"""
         current_time = time.time()
-        expired_keys = [
-            k
-            for k, e in self.entries.items()
-            if (current_time - e.created_at) > e.ttl_seconds
-        ]
+        expired_keys = [k for k, e in self.entries.items() if (current_time - e.created_at) > e.ttl_seconds]
 
         for key in expired_keys:
             del self.entries[key]
@@ -208,9 +204,7 @@ class CacheManagerPlugin(BasePlugin):
         else:
             return {"status": "error", "message": f"Unknown action: {action}"}
 
-    def cache_response(
-        self, prompt: str, response: str, ttl_seconds: int = 3600
-    ) -> str:
+    def cache_response(self, prompt: str, response: str, ttl_seconds: int = 3600) -> str:
         """
         Cache LLM response.
 
@@ -240,9 +234,7 @@ class CacheManagerPlugin(BasePlugin):
         value, hit = self.response_cache.get(key)
         return value if hit else None
 
-    def cache_document(
-        self, doc_path: str, content: str, ttl_seconds: int = 86400
-    ) -> str:
+    def cache_document(self, doc_path: str, content: str, ttl_seconds: int = 86400) -> str:
         """
         Cache RAG document.
 
@@ -264,9 +256,7 @@ class CacheManagerPlugin(BasePlugin):
         value, hit = self.rag_cache.get(key)
         return value if hit else None
 
-    def cache_search_result(
-        self, query: str, results: List[Dict], ttl_seconds: int = 1800
-    ) -> str:
+    def cache_search_result(self, query: str, results: List[Dict], ttl_seconds: int = 1800) -> str:
         """
         Cache search results.
 
@@ -312,11 +302,7 @@ class CacheManagerPlugin(BasePlugin):
                 "rag": asdict(rag_stats) if rag_stats else None,
                 "search": asdict(search_stats) if search_stats else None,
             },
-            "total_cached_mb": sum(
-                s.total_size_mb
-                for s in [resp_stats, rag_stats, search_stats]
-                if s is not None
-            ),
+            "total_cached_mb": sum(s.total_size_mb for s in [resp_stats, rag_stats, search_stats] if s is not None),
         }
 
     def _clear_cache(self, cache_type: str) -> Dict[str, Any]:
@@ -385,23 +371,14 @@ class CacheManagerPlugin(BasePlugin):
                 continue
 
             if cache_stats["hit_rate"] < 0.3:
-                recommendations.append(
-                    f"{cache_name}: Low hit rate ({cache_stats['hit_rate']:.1%}), "
-                    "consider increasing TTL"
-                )
+                recommendations.append(f"{cache_name}: Low hit rate ({cache_stats['hit_rate']:.1%}), " "consider increasing TTL")
 
             if cache_stats["total_size_mb"] > 80:
-                recommendations.append(
-                    f"{cache_name}: Near size limit "
-                    f"({cache_stats['total_size_mb']:.1f}MB), "
-                    "consider reducing TTL"
-                )
+                recommendations.append(f"{cache_name}: Near size limit " f"({cache_stats['total_size_mb']:.1f}MB), " "consider reducing TTL")
 
             if cache_stats["oldest_entry_age_hours"] > 24:
                 recommendations.append(
-                    f"{cache_name}: Contains very old entries "
-                    f"({cache_stats['oldest_entry_age_hours']:.0f}h old), "
-                    "consider shorter TTL"
+                    f"{cache_name}: Contains very old entries " f"({cache_stats['oldest_entry_age_hours']:.0f}h old), " "consider shorter TTL"
                 )
 
         if not recommendations:

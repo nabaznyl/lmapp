@@ -110,9 +110,7 @@ class TestDependencyAuditorPlugin:
         plugin = DependencyAuditorPlugin()
         with tempfile.TemporaryDirectory() as tmpdir:
             # Create requirements.txt
-            Path(tmpdir, "requirements.txt").write_text(
-                "requests==2.28.0\nflask==2.0.0\n"
-            )
+            Path(tmpdir, "requirements.txt").write_text("requests==2.28.0\nflask==2.0.0\n")
 
             project_type = plugin._detect_project_type(Path(tmpdir))
             assert project_type == "python"
@@ -200,11 +198,7 @@ class TestDependencyAuditorPlugin:
         ]
 
         # Filter for high and above
-        filtered = [
-            v
-            for v in plugin.vulnerabilities
-            if plugin._severity_rank(v.severity) >= plugin._severity_rank("high")
-        ]
+        filtered = [v for v in plugin.vulnerabilities if plugin._severity_rank(v.severity) >= plugin._severity_rank("high")]
         assert len(filtered) == 2
 
     def test_execute_returns_dict(self):

@@ -87,9 +87,7 @@ class BatchJob:
     inputs: List[BatchInput]
     status: BatchStatus = BatchStatus.PENDING
     results: List[BatchResult] = field(default_factory=list)
-    created_at: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     started_at: Optional[str] = None
     completed_at: Optional[str] = None
     total_processed: int = 0
@@ -168,7 +166,7 @@ class BatchProcessor:
         """
         job = self.jobs.get(job_id)
         if not job:
-            return None
+            raise ValueError(f"Job {job_id} not found")
 
         job.status = BatchStatus.PROCESSING
         job.started_at = datetime.now(timezone.utc).isoformat()
@@ -345,11 +343,7 @@ class BatchProcessor:
                                 {
                                     "input_id": result.input_id,
                                     "status": result.status,
-                                    "output": (
-                                        str(result.output)[:200]
-                                        if result.output
-                                        else ""
-                                    ),
+                                    "output": (str(result.output)[:200] if result.output else ""),
                                     "error": result.error or "",
                                     "processing_time": f"{result.processing_time:.3f}s",
                                 }
@@ -395,9 +389,7 @@ class BatchProcessor:
             "total_inputs": len(job.inputs),
             "total_processed": job.total_processed,
             "total_failed": job.total_failed,
-            "success_rate": (
-                job.total_processed / len(job.inputs) * 100 if job.inputs else 0
-            ),
+            "success_rate": (job.total_processed / len(job.inputs) * 100 if job.inputs else 0),
             "total_time": total_time,
             "avg_time_per_item": total_time / len(job.inputs) if job.inputs else 0,
         }

@@ -39,19 +39,13 @@ class Installer:
         # 1. Check Requirements
         reqs = self.check_requirements()
         if not reqs["os_supported"]:
-            console.print(
-                "[red]Error: Currently only Linux and macOS are supported.[/red]"
-            )
+            console.print("[red]Error: Currently only Linux and macOS are supported.[/red]")
             return False
 
         # 2. Choose Backend
         console.print("[bold]Choose an AI Engine:[/bold]")
-        console.print(
-            "1. [cyan]Ollama[/cyan] (Recommended) - Full-featured, runs as service"
-        )
-        console.print(
-            "2. [cyan]llamafile[/cyan] - Portable, single-file, no installation"
-        )
+        console.print("1. [cyan]Ollama[/cyan] (Recommended) - Full-featured, runs as service")
+        console.print("2. [cyan]llamafile[/cyan] - Portable, single-file, no installation")
 
         choice = console.input("\nEnter choice [1/2]: ").strip()
 
@@ -71,14 +65,10 @@ class Installer:
         if backend.install():
             console.print("\n[bold]Downloading default model (llama2)...[/bold]")
             if backend.download_model("llama2", callback=lambda x: print(x, end="")):
-                console.print(
-                    "\n[green]✅ Setup complete! You can now run 'lmapp chat'[/green]"
-                )
+                console.print("\n[green]✅ Setup complete! You can now run 'lmapp chat'[/green]")
                 return True
             else:
-                console.print(
-                    "[yellow]⚠ Ollama installed, but model download failed.[/yellow]"
-                )
+                console.print("[yellow]⚠ Ollama installed, but model download failed.[/yellow]")
                 return True
         return False
 
@@ -88,8 +78,6 @@ class Installer:
         console.print("\n[bold]Setting up llamafile...[/bold]")
 
         if backend.install():
-            console.print(
-                "\n[green]✅ Setup complete! You can now run 'lmapp chat'[/green]"
-            )
+            console.print("\n[green]✅ Setup complete! You can now run 'lmapp chat'[/green]")
             return True
         return False

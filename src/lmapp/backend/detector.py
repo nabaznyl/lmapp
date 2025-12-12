@@ -67,9 +67,7 @@ class BackendDetector:
             console.print("[cyan]Recommending Ollama (best for 8GB+ RAM)[/cyan]")
             return OllamaBackend()
         else:
-            console.print(
-                "[cyan]Recommending llamafile (better for limited RAM)[/cyan]"
-            )
+            console.print("[cyan]Recommending llamafile (better for limited RAM)[/cyan]")
             return LlamafileBackend()
 
     def show_status_table(self):

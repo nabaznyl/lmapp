@@ -12,9 +12,9 @@ def runner():
 
 def test_nux_runs_on_first_run(runner):
     """Test that NUX runs when check_first_run returns True"""
-    with patch("lmapp.cli.check_first_run", return_value=True) as mock_check, patch(
-        "lmapp.cli.run_user_mode_setup"
-    ) as mock_setup, patch("lmapp.cli.MainMenu") as mock_menu:
+    with patch("lmapp.cli.check_first_run", return_value=True) as mock_check, patch("lmapp.cli.run_user_mode_setup") as mock_setup, patch(
+        "lmapp.cli.MainMenu"
+    ) as mock_menu:
 
         result = runner.invoke(main)
 
@@ -26,9 +26,9 @@ def test_nux_runs_on_first_run(runner):
 
 def test_nux_skips_on_subsequent_runs(runner):
     """Test that NUX skips when check_first_run returns False"""
-    with patch("lmapp.cli.check_first_run", return_value=False) as mock_check, patch(
-        "lmapp.cli.run_user_mode_setup"
-    ) as mock_setup, patch("lmapp.cli.MainMenu") as mock_menu:
+    with patch("lmapp.cli.check_first_run", return_value=False) as mock_check, patch("lmapp.cli.run_user_mode_setup") as mock_setup, patch(
+        "lmapp.cli.MainMenu"
+    ) as mock_menu:
 
         result = runner.invoke(main)
 
@@ -47,9 +47,7 @@ def test_dev_flag_enables_developer_mode(runner):
     mock_manager.load.return_value = mock_config
     mock_manager.config_file.exists.return_value = True
 
-    with patch("lmapp.cli.get_config_manager", return_value=mock_manager), patch(
-        "lmapp.cli.check_first_run", return_value=False
-    ), patch("lmapp.cli.MainMenu"):
+    with patch("lmapp.cli.get_config_manager", return_value=mock_manager), patch("lmapp.cli.check_first_run", return_value=False), patch("lmapp.cli.MainMenu"):
 
         result = runner.invoke(main, ["--dev"])
 
@@ -74,11 +72,9 @@ def test_dev_flag_with_nux(runner):
     # After NUX, it should exist.
     # We need to simulate the state change or just mock the calls.
 
-    with patch("lmapp.cli.check_first_run", return_value=True), patch(
-        "lmapp.cli.run_user_mode_setup"
-    ), patch("lmapp.cli.get_config_manager", return_value=mock_manager), patch(
-        "lmapp.cli.MainMenu"
-    ):
+    with patch("lmapp.cli.check_first_run", return_value=True), patch("lmapp.cli.run_user_mode_setup"), patch(
+        "lmapp.cli.get_config_manager", return_value=mock_manager
+    ), patch("lmapp.cli.MainMenu"):
 
         result = runner.invoke(main, ["--dev"])
 

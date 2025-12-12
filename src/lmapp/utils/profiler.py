@@ -86,9 +86,7 @@ class PerformanceProfiler:
         metrics = OperationMetrics(
             operation_name=operation_name,
             start_time=time.time(),
-            memory_start_bytes=(
-                self.process.memory_info().rss if self.enable_memory else 0
-            ),
+            memory_start_bytes=(self.process.memory_info().rss if self.enable_memory else 0),
         )
 
         try:
@@ -105,9 +103,7 @@ class PerformanceProfiler:
         finally:
             if self.enable_memory:
                 metrics.memory_end_bytes = self.process.memory_info().rss
-                metrics.memory_delta_bytes = (
-                    metrics.memory_end_bytes - metrics.memory_start_bytes
-                )
+                metrics.memory_delta_bytes = metrics.memory_end_bytes - metrics.memory_start_bytes
 
             # Ensure duration is calculated
             if metrics.end_time:
@@ -161,7 +157,7 @@ class PerformanceProfiler:
         Returns:
             Dictionary with performance metrics
         """
-        summary = {
+        summary: Dict[str, Any] = {
             "uptime_seconds": time.time() - self.start_time,
             "operations": {},
             "cache_performance": self.cache_stats,
@@ -173,19 +169,17 @@ class PerformanceProfiler:
                 durations = [m.duration_ms for m in metrics_list]
                 memory_deltas = [m.memory_delta_bytes for m in metrics_list]
 
-                summary["operations"][op_name] = {
-                    "count": len(metrics_list),
-                    "total_ms": sum(durations),
-                    "avg_ms": sum(durations) / len(durations),
-                    "min_ms": min(durations),
-                    "max_ms": max(durations),
-                    "total_memory_kb": (
-                        sum(memory_deltas) / 1024 if self.enable_memory else 0
-                    ),
-                    "success_rate": sum(1 for m in metrics_list if m.success)
-                    / len(metrics_list)
-                    * 100,
-                }
+                ops_dict = summary["operations"]
+                if isinstance(ops_dict, dict):
+                    ops_dict[op_name] = {
+                        "count": len(metrics_list),
+                        "total_ms": sum(durations),
+                        "avg_ms": sum(durations) / len(durations),
+                        "min_ms": min(durations),
+                        "max_ms": max(durations),
+                        "total_memory_kb": (sum(memory_deltas) / 1024 if self.enable_memory else 0),
+                        "success_rate": sum(1 for m in metrics_list if m.success) / len(metrics_list) * 100,
+                    }
 
         return summary
 
@@ -234,9 +228,7 @@ class PerformanceProfiler:
         # Top operations
         if summary["operations"]:
             print(f"\nTop {top_n} Operations by Total Time:")
-            print(
-                f"{'Operation':<30} {'Count':>6} {'Total':>8} {'Avg':>8} {'Min':>8} {'Max':>8}"
-            )
+            print(f"{'Operation':<30} {'Count':>6} {'Total':>8} {'Avg':>8} {'Min':>8} {'Max':>8}")
             print("-" * 80)
 
             sorted_ops = sorted(

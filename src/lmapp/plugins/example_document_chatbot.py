@@ -80,7 +80,7 @@ class ConversationMemory:
         if not self.turns:
             return "No conversation yet"
 
-        topics = set()
+        topics: set[str] = set()
         for turn in self.turns:
             # Extract key terms (simplified)
             words = turn.user_message.lower().split()
@@ -301,22 +301,16 @@ class DocumentChatbotPlugin(BasePlugin):
         relevant.sort(key=lambda x: x.relevance_score, reverse=True)
         return relevant[:3]  # Return top 3
 
-    def _generate_response(
-        self, query: str, relevant_docs: List[DocumentContext]
-    ) -> str:
+    def _generate_response(self, query: str, relevant_docs: List[DocumentContext]) -> str:
         """Generate response based on query and documents (simplified)"""
         if not relevant_docs:
             return "I couldn't find information about this in the available documents."
 
         # Build response from document content
         context = " ".join(doc.content for doc in relevant_docs)
-        return (
-            f"Based on the documents, I found relevant information. {context[:200]}..."
-        )
+        return f"Based on the documents, I found relevant information. {context[:200]}..."
 
-    def _extract_citations(
-        self, query: str, relevant_docs: List[DocumentContext]
-    ) -> List[Citation]:
+    def _extract_citations(self, query: str, relevant_docs: List[DocumentContext]) -> List[Citation]:
         """Extract citations from relevant documents"""
         citations = []
 
@@ -341,7 +335,5 @@ class DocumentChatbotPlugin(BasePlugin):
         if not relevant_docs:
             return 0.0
 
-        avg_relevance = sum(d.relevance_score for d in relevant_docs) / len(
-            relevant_docs
-        )
+        avg_relevance = sum(d.relevance_score for d in relevant_docs) / len(relevant_docs)
         return min(avg_relevance, 1.0)

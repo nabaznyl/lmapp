@@ -113,9 +113,7 @@ class FeatureGate:
             True if feature is allowed, False otherwise
         """
         if not self.has_feature(feature, advanced_mode_enabled):
-            logger.warning(
-                f"Feature '{feature}' requires Advanced Mode (trial or paid subscription)"
-            )
+            logger.warning(f"Feature '{feature}' requires Advanced Mode (trial or paid subscription)")
             return False
         return True
 
@@ -184,10 +182,7 @@ class FeatureAccessDenied(Exception):
 
     def __init__(self, feature: str):
         self.feature = feature
-        super().__init__(
-            f"Feature '{feature}' requires Advanced Mode "
-            "(30-day trial or paid subscription)"
-        )
+        super().__init__(f"Feature '{feature}' requires Advanced Mode " "(30-day trial or paid subscription)")
 
 
 # Example usage/testing functions

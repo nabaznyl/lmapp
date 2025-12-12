@@ -119,12 +119,8 @@ class TestDocumentIndex:
         """Test searching documents."""
         with tempfile.TemporaryDirectory() as tmpdir:
             index = DocumentIndex(Path(tmpdir))
-            index.add_document(
-                Document("doc1", "Python", "Python is great for programming")
-            )
-            index.add_document(
-                Document("doc2", "Java", "Java is used in enterprise apps")
-            )
+            index.add_document(Document("doc1", "Python", "Python is great for programming"))
+            index.add_document(Document("doc2", "Java", "Java is used in enterprise apps"))
 
             results = index.search("Python programming", top_k=1)
             assert len(results) == 1
@@ -195,9 +191,7 @@ class TestRAGSystem:
             tmppath = Path(tmpdir)
 
             rag = RAGSystem(tmppath / "index")
-            rag.index.add_document(
-                Document("doc1", "Python", "Python programming language")
-            )
+            rag.index.add_document(Document("doc1", "Python", "Python programming language"))
 
             results = rag.search("Python", top_k=5)
             assert len(results) > 0
@@ -209,9 +203,7 @@ class TestRAGSystem:
             tmppath = Path(tmpdir)
 
             rag = RAGSystem(tmppath / "index")
-            rag.index.add_document(
-                Document("doc1", "Python", "Python is a programming language")
-            )
+            rag.index.add_document(Document("doc1", "Python", "Python is a programming language"))
 
             context = rag.get_context_for_prompt("Python")
             assert len(context) > 0
@@ -223,9 +215,7 @@ class TestPluginMetadata:
 
     def test_metadata_creation(self):
         """Test creating plugin metadata."""
-        meta = PluginMetadata(
-            name="test", version="1.0.0", description="Test", author="Author"
-        )
+        meta = PluginMetadata(name="test", version="1.0.0", description="Test", author="Author")
         assert meta.name == "test"
         assert meta.version == "1.0.0"
 
@@ -244,9 +234,7 @@ class TestPluginMetadata:
 
     def test_metadata_from_dict(self):
         """Test metadata deserialization."""
-        original = PluginMetadata(
-            name="test", version="1.0.0", description="Test", author="Author"
-        )
+        original = PluginMetadata(name="test", version="1.0.0", description="Test", author="Author")
         data = original.to_dict()
         restored = PluginMetadata.from_dict(data)
         assert restored.name == original.name

@@ -219,9 +219,7 @@ def get_mac_address() -> str:
         import uuid
 
         mac = uuid.getnode()
-        return ":".join(
-            ["{:02x}".format((mac >> ele) & 0xFF) for ele in range(0, 8 * 6, 8)][::-1]
-        )
+        return ":".join(["{:02x}".format((mac >> ele) & 0xFF) for ele in range(0, 8 * 6, 8)][::-1])
     except Exception:
         return "unknown"
 

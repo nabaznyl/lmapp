@@ -84,10 +84,7 @@ class LlamafileBackend(LLMBackend):
 
         # For now, we'll download TinyLlama as a small, fast model
         # 🔖 BOOKMARK - In future, select model based on RAM
-        model_url = (
-            "https://huggingface.co/Mozilla/TinyLlama-1.1B-Chat-v1.0-llamafile/"
-            "resolve/main/TinyLlama-1.1B-Chat-v1.0.Q5_K_M.llamafile"
-        )
+        model_url = "https://huggingface.co/Mozilla/TinyLlama-1.1B-Chat-v1.0-llamafile/" "resolve/main/TinyLlama-1.1B-Chat-v1.0.Q5_K_M.llamafile"
         model_name = "tinyllama.llamafile"
         model_path = self.LLAMAFILE_DIR / model_name
 
@@ -107,9 +104,7 @@ class LlamafileBackend(LLMBackend):
                 stderr=subprocess.DEVNULL,
                 check=True,
             )
-            console.print(
-                "[green]✓ GPU detected (llamafile will use it automatically)[/green]"
-            )
+            console.print("[green]✓ GPU detected (llamafile will use it automatically)[/green]")
         except (subprocess.CalledProcessError, FileNotFoundError):
             console.print("[yellow]⚠ No GPU detected (running on CPU)[/yellow]")
 
@@ -193,9 +188,7 @@ class LlamafileBackend(LLMBackend):
         llamafiles = list(self.LLAMAFILE_DIR.glob("*.llamafile"))
         return [f.stem for f in llamafiles]
 
-    def chat(
-        self, prompt: str, model: str = "", temperature: float = 0.7, *args, **kwargs
-    ) -> str:
+    def chat(self, prompt: str, model: str = "", temperature: float = 0.7, *args, **kwargs) -> str:
         """Send a chat prompt to llamafile"""
         if not self.is_running():
             return ""

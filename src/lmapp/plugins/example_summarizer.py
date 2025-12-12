@@ -84,10 +84,7 @@ class SummarizerPlugin(BasePlugin):
 
         # Score and rank sentences
         doc_words = set(re.findall(r"\w+", text.lower()))
-        scores = [
-            (i, s, self._sentence_importance(s, doc_words))
-            for i, s in enumerate(sentences)
-        ]
+        scores = [(i, s, self._sentence_importance(s, doc_words)) for i, s in enumerate(sentences)]
 
         # Keep top sentences in original order
         top_sentences = sorted(

@@ -80,9 +80,7 @@ class BatchProcessor:
 
         self.end_time = datetime.utcnow()
         self.results["end_time"] = self.end_time.isoformat()
-        self.results["duration_seconds"] = (
-            self.end_time - self.start_time
-        ).total_seconds()
+        self.results["duration_seconds"] = (self.end_time - self.start_time).total_seconds()
 
         return self.results
 
@@ -97,11 +95,7 @@ class BatchProcessor:
             "items_completed": self.results["items_completed"],
             "items_failed": self.results["items_failed"],
             "duration_seconds": self.results.get("duration_seconds", 0),
-            "success_rate": (
-                self.results["items_completed"] / self.results["items_total"]
-                if self.results["items_total"] > 0
-                else 0
-            ),
+            "success_rate": (self.results["items_completed"] / self.results["items_total"] if self.results["items_total"] > 0 else 0),
         }
 
     def save_results(self, output_file: Path) -> None:

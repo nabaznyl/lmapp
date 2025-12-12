@@ -60,9 +60,7 @@ def retry_with_backoff(
 
             for attempt in range(max_retries + 1):
                 try:
-                    logger.debug(
-                        f"Executing {func.__name__} (attempt {attempt + 1}/{max_retries + 1})"
-                    )
+                    logger.debug(f"Executing {func.__name__} (attempt {attempt + 1}/{max_retries + 1})")
                     return func(*args, **kwargs)
                 except (ConnectionError, TimeoutError) as e:
                     last_exception = e
@@ -76,15 +74,10 @@ def retry_with_backoff(
                         else:
                             wait_time = 0
 
-                        logger.warning(
-                            f"{func.__name__} failed: {str(e)}. "
-                            f"Retrying in {wait_time:.1f}s... (attempt {attempt + 1}/{max_retries})"
-                        )
+                        logger.warning(f"{func.__name__} failed: {str(e)}. " f"Retrying in {wait_time:.1f}s... (attempt {attempt + 1}/{max_retries})")
                         time.sleep(wait_time)
                     else:
-                        logger.error(
-                            f"{func.__name__} failed after {max_retries} retries: {str(e)}"
-                        )
+                        logger.error(f"{func.__name__} failed after {max_retries} retries: {str(e)}")
                 except Exception as e:
                     logger.error(
                         f"{func.__name__} raised unretryable error: {str(e)}",
@@ -151,9 +144,7 @@ class BackendFallback:
                 except Exception as fallback_error:
                     logger.error(f"Fallback backend also failed: {str(fallback_error)}")
                     raise BackendError(
-                        f"Both primary and fallback backends failed.\n"
-                        f"Primary error: {str(e)}\n"
-                        f"Fallback error: {str(fallback_error)}"
+                        f"Both primary and fallback backends failed.\n" f"Primary error: {str(e)}\n" f"Fallback error: {str(fallback_error)}"
                     ) from e
             else:
                 raise
@@ -177,46 +168,24 @@ class ErrorRecovery:
 
         # Connection errors
         if "connection" in error_msg or "refused" in error_msg:
-            return (
-                "Backend is not running.\n"
-                "Try:\n"
-                "  1. lmapp install    # Install and start backend\n"
-                "  2. lmapp status     # Check backend status"
-            )
+            return "Backend is not running.\n" "Try:\n" "  1. lmapp install    # Install and start backend\n" "  2. lmapp status     # Check backend status"
 
         # Model not found
         if "model" in error_msg or "not found" in error_msg:
-            return (
-                "Model not found on backend.\n"
-                "Try:\n"
-                "  1. lmapp status     # See available models\n"
-                "  2. lmapp install    # Download a model"
-            )
+            return "Model not found on backend.\n" "Try:\n" "  1. lmapp status     # See available models\n" "  2. lmapp install    # Download a model"
 
         # Timeout
         if "timeout" in error_msg:
-            return (
-                "Request timed out (backend too slow).\n"
-                "Try:\n"
-                "  1. Use a smaller model\n"
-                "  2. lmapp status     # Check backend health"
-            )
+            return "Request timed out (backend too slow).\n" "Try:\n" "  1. Use a smaller model\n" "  2. lmapp status     # Check backend health"
 
         # Memory issues
         if "memory" in error_msg or "cuda" in error_msg:
-            return (
-                "Memory error (model too large for device).\n"
-                "Try:\n"
-                "  1. Use a smaller model\n"
-                "  2. Close other applications to free RAM"
-            )
+            return "Memory error (model too large for device).\n" "Try:\n" "  1. Use a smaller model\n" "  2. Close other applications to free RAM"
 
         return None
 
     @staticmethod
-    def format_error_with_recovery(
-        error: Exception, context: Optional[str] = None
-    ) -> str:
+    def format_error_with_recovery(error: Exception, context: Optional[str] = None) -> str:
         """
         Format error message with recovery suggestions
 

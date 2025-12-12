@@ -28,9 +28,7 @@ class ResponseCache:
     DEFAULT_TTL_HOURS = 24
     CACHE_DB_NAME = "response_cache.db"
 
-    def __init__(
-        self, cache_dir: Optional[Path] = None, ttl_hours: int = DEFAULT_TTL_HOURS
-    ):
+    def __init__(self, cache_dir: Optional[Path] = None, ttl_hours: int = DEFAULT_TTL_HOURS):
         """
         Initialize the response cache.
 
@@ -109,9 +107,7 @@ class ResponseCache:
         key_str = f"{query.strip()}|{model}|{backend}|{temperature}"
         return hashlib.sha256(key_str.encode()).hexdigest()
 
-    def get(
-        self, query: str, model: str, backend: str, temperature: float = 0.7
-    ) -> Optional[str]:
+    def get(self, query: str, model: str, backend: str, temperature: float = 0.7) -> Optional[str]:
         """
         Retrieve a cached response if available and not expired.
 
@@ -231,9 +227,7 @@ class ResponseCache:
             conn.commit()
             conn.close()
 
-            logger.debug(
-                f"Cached response for query hash {query_hash[:8]}... (expires in {self.ttl})"
-            )
+            logger.debug(f"Cached response for query hash {query_hash[:8]}... (expires in {self.ttl})")
             return True
 
         except Exception as e:
@@ -274,9 +268,7 @@ class ResponseCache:
 
             conn.close()
 
-            hit_rate = (
-                total_accesses / max(1, total_entries) if total_entries > 0 else 0
-            )
+            hit_rate = total_accesses / max(1, total_entries) if total_entries > 0 else 0
 
             return {
                 "total_entries": total_entries,

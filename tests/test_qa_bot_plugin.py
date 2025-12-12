@@ -119,9 +119,7 @@ class TestQABotPlugin:
         plugin = QABotPlugin()
         commands = plugin.get_commands()
 
-        result = commands["add-document"](
-            id="doc1", title="Title", content="Some content here."
-        )
+        result = commands["add-document"](id="doc1", title="Title", content="Some content here.")
 
         assert result["status"] == "success"
         assert "doc1" in plugin.documents

@@ -43,11 +43,11 @@ jobs:
         run: |
           VERSION=${{ steps.version.outputs.version }}
           
-          # Check setup.py
-          if grep -q "version=\"$VERSION\"" setup.py; then
-            echo "✅ setup.py has correct version"
+          # Check pyproject.toml
+          if grep -q "version = \"$VERSION\"" pyproject.toml; then
+            echo "✅ pyproject.toml has correct version"
           else
-            echo "❌ setup.py version mismatch"
+            echo "❌ pyproject.toml version mismatch"
             exit 1
           fi
           

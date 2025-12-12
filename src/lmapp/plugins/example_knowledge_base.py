@@ -109,9 +109,7 @@ class KnowledgeBasePlugin(BasePlugin):
         elif action == "stats":
             return self._get_stats()
         elif action == "update_importance":
-            return self._update_importance(
-                kwargs.get("entry_id", ""), kwargs.get("importance", 5)
-            )
+            return self._update_importance(kwargs.get("entry_id", ""), kwargs.get("importance", 5))
         return {"success": False, "error": f"Unknown action: {action}"}
 
     def _add_entry(

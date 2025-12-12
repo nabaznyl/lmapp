@@ -54,9 +54,7 @@ class HelpfulError:
             self.message,
         ]
 
-        if self.suggestions and (
-            verbose or self.severity in [ErrorSeverity.CRITICAL, ErrorSeverity.ERROR]
-        ):
+        if self.suggestions and (verbose or self.severity in [ErrorSeverity.CRITICAL, ErrorSeverity.ERROR]):
             lines.append("")
             lines.append("💡 Try these solutions:")
             for i, suggestion in enumerate(self.suggestions, 1):
@@ -83,9 +81,7 @@ class ErrorMessageLibrary:
     """Library of common errors and helpful messages."""
 
     @staticmethod
-    def model_not_found(
-        model_name: str, backend: str, available_models: Optional[List[str]] = None
-    ) -> HelpfulError:
+    def model_not_found(model_name: str, backend: str, available_models: Optional[List[str]] = None) -> HelpfulError:
         """Error when model is not available."""
         suggestions = [
             f"Download the model: lmapp download {model_name}",
@@ -93,10 +89,7 @@ class ErrorMessageLibrary:
         ]
 
         if available_models:
-            suggestions.append(
-                f"Available models: {', '.join(available_models[:3])}"
-                f"{' ...' if len(available_models) > 3 else ''}"
-            )
+            suggestions.append(f"Available models: {', '.join(available_models[:3])}" f"{' ...' if len(available_models) > 3 else ''}")
 
         return HelpfulError(
             title=f"Model '{model_name}' not found",
@@ -175,9 +168,7 @@ class ErrorMessageLibrary:
         )
 
     @staticmethod
-    def request_timeout(
-        operation: str = "request", timeout_seconds: int = 30
-    ) -> HelpfulError:
+    def request_timeout(operation: str = "request", timeout_seconds: int = 30) -> HelpfulError:
         """Error when request times out."""
         return HelpfulError(
             title="Request timeout",
@@ -228,9 +219,7 @@ class ErrorMessageLibrary:
         )
 
     @staticmethod
-    def version_mismatch(
-        current: str, required: str, component: str = "Backend"
-    ) -> HelpfulError:
+    def version_mismatch(current: str, required: str, component: str = "Backend") -> HelpfulError:
         """Error when version is incompatible."""
         return HelpfulError(
             title=f"{component} version mismatch",
@@ -298,9 +287,7 @@ class ErrorContextExtractor:
         """Suggest common fixes based on error text."""
         fixes = []
 
-        if any(
-            word in error_text.lower() for word in ["connection", "refused", "timeout"]
-        ):
+        if any(word in error_text.lower() for word in ["connection", "refused", "timeout"]):
             fixes.append("Ensure the backend is running: lmapp status")
 
         if any(word in error_text.lower() for word in ["memory", "out of", "exceeded"]):
@@ -309,16 +296,10 @@ class ErrorContextExtractor:
         if any(word in error_text.lower() for word in ["gpu", "cuda", "rocm"]):
             fixes.append("Check GPU setup: lmapp doctor --gpu")
 
-        if any(
-            word in error_text.lower() for word in ["permission", "denied", "access"]
-        ):
+        if any(word in error_text.lower() for word in ["permission", "denied", "access"]):
             fixes.append("Check file permissions: chmod u+rw ~/.lmapp")
 
         if any(word in error_text.lower() for word in ["not found", "not available"]):
             fixes.append("Download required model: lmapp download")
 
-        return (
-            fixes
-            if fixes
-            else ["Check logs: lmapp logs", "Run diagnostics: lmapp doctor"]
-        )
+        return fixes if fixes else ["Check logs: lmapp logs", "Run diagnostics: lmapp doctor"]

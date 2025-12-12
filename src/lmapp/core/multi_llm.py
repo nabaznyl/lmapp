@@ -59,23 +59,16 @@ class MultiLLMSession:
         # Verify all backends are running
         for backend, model in backends:
             if not backend.is_running():
-                raise ValueError(
-                    f"Backend '{backend.backend_display_name()}' is not running"
-                )
+                raise ValueError(f"Backend '{backend.backend_display_name()}' is not running")
 
         self.backends = backends
         self.history: List[ChatMessage] = []
         self.responses: List[LLMResponse] = []
         self.created_at = datetime.now()
 
-        logger.debug(
-            f"MultiLLMSession initialized with {len(backends)} backends: "
-            f"{[b.backend_name() for b, _ in backends]}"
-        )
+        logger.debug(f"MultiLLMSession initialized with {len(backends)} backends: " f"{[b.backend_name() for b, _ in backends]}")
 
-    def send_prompt(
-        self, prompt: str, temperature: float = 0.7, consensus_mode: bool = False
-    ) -> Dict[str, LLMResponse]:
+    def send_prompt(self, prompt: str, temperature: float = 0.7, consensus_mode: bool = False) -> Dict[str, LLMResponse]:
         """
         Send a prompt to all backends and collect responses
 
@@ -102,9 +95,7 @@ class MultiLLMSession:
         for backend, model in self.backends:
             try:
                 logger.debug(f"Querying {backend.backend_name()} with model {model}")
-                response_text = backend.chat(
-                    prompt=prompt, model=model, temperature=temperature
-                )
+                response_text = backend.chat(prompt=prompt, model=model, temperature=temperature)
 
                 response = LLMResponse(
                     backend_name=backend.backend_name(),

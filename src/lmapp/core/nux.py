@@ -24,9 +24,7 @@ def check_first_run() -> bool:
 
 def run_user_mode_setup():
     """Run User Mode setup (formerly Silent Setup)"""
-    console.print(
-        Panel.fit("[bold blue]Welcome to lmapp![/bold blue]", border_style="blue")
-    )
+    console.print(Panel.fit("[bold blue]Welcome to lmapp![/bold blue]", border_style="blue"))
     console.print("Initializing User Mode... (this will only happen once)")
 
     config_manager = get_config_manager()
@@ -61,9 +59,7 @@ def run_user_mode_setup():
         if not backends:
             # No backend found, default to mock but warn
             logger.warning("No AI backend detected. Using Mock backend.")
-            console.print(
-                "[yellow]![/yellow] No AI backend detected (Ollama/Llamafile). Using Mock backend."
-            )
+            console.print("[yellow]![/yellow] No AI backend detected (Ollama/Llamafile). Using Mock backend.")
             # In future: Auto-download llamafile here
         else:
             # Auto-select best
@@ -74,13 +70,9 @@ def run_user_mode_setup():
             if best:
                 config.backend = best.backend_name()
                 config_manager.save(config)
-                console.print(
-                    f"[green]✓[/green] Found backend: [bold]{best.backend_name()}[/bold]"
-                )
+                console.print(f"[green]✓[/green] Found backend: [bold]{best.backend_name()}[/bold]")
             else:
-                console.print(
-                    "[yellow]![/yellow] Backends found but none recommended. Using auto."
-                )
+                console.print("[yellow]![/yellow] Backends found but none recommended. Using auto.")
 
         progress.update(task2, completed=100)
 

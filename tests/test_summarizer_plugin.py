@@ -21,9 +21,7 @@ class TestSummarizerPlugin:
 
     def test_compression_ratio(self):
         plugin = SummarizerPlugin()
-        text = (
-            "Sentence one. Sentence two. Sentence three. Sentence four. Sentence five."
-        )
+        text = "Sentence one. Sentence two. Sentence three. Sentence four. Sentence five."
         result = plugin.execute(text=text)
 
         assert "compression_ratio" in result

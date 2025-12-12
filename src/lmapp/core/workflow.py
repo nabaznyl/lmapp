@@ -60,9 +60,7 @@ class WorkflowManager:
     def should_prompt(self) -> bool:
         """Check if we should prompt the user for setup."""
         config = self.config_manager.get()
-        return (not config.workflow_setup_completed) and (
-            not config.suppress_workflow_prompt
-        )
+        return (not config.workflow_setup_completed) and (not config.suppress_workflow_prompt)
 
     def run_setup_wizard(self):
         """Interactive wizard to configure workflow."""
@@ -90,9 +88,7 @@ class WorkflowManager:
         # 2. Tools
         console.print("\n[bold]2. Tool Awareness[/bold]")
         console.print(f"[dim]Current tools: {', '.join(rules.get('tools', []))}[/dim]")
-        if Confirm.ask(
-            "Would you like to edit the list of available tools?", default=False
-        ):
+        if Confirm.ask("Would you like to edit the list of available tools?", default=False):
             tools_str = Prompt.ask(
                 "Enter tools (comma separated)",
                 default=", ".join(rules.get("tools", [])),
@@ -123,12 +119,8 @@ class WorkflowManager:
 Your core operating rules are:
 """
         if rules.get("ask_first"):
-            prompt += (
-                "1. Ask specific clarifying questions before implementing changes.\n"
-            )
-            prompt += (
-                "2. Treat exploratory discussion as exploration, not authorization.\n"
-            )
+            prompt += "1. Ask specific clarifying questions before implementing changes.\n"
+            prompt += "2. Treat exploratory discussion as exploration, not authorization.\n"
 
         if rules.get("minimal_changes"):
             prompt += "3. Make minimal, targeted changes (do exactly what is asked, no more).\n"

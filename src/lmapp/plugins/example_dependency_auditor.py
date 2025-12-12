@@ -145,11 +145,7 @@ class DependencyAuditorPlugin(BasePlugin):
             self._check_license(package, version)
 
         # Filter by severity
-        filtered_vulns = [
-            v
-            for v in self.vulnerabilities
-            if self._severity_rank(v.severity) >= self._severity_rank(severity_filter)
-        ]
+        filtered_vulns = [v for v in self.vulnerabilities if self._severity_rank(v.severity) >= self._severity_rank(severity_filter)]
 
         return AuditResult(
             project_type=project_type,
@@ -157,9 +153,7 @@ class DependencyAuditorPlugin(BasePlugin):
             vulnerabilities=filtered_vulns,
             license_issues=self.license_issues,
             summary={
-                "critical": len(
-                    [v for v in filtered_vulns if v.severity == "critical"]
-                ),
+                "critical": len([v for v in filtered_vulns if v.severity == "critical"]),
                 "high": len([v for v in filtered_vulns if v.severity == "high"]),
                 "medium": len([v for v in filtered_vulns if v.severity == "medium"]),
                 "low": len([v for v in filtered_vulns if v.severity == "low"]),
@@ -169,9 +163,7 @@ class DependencyAuditorPlugin(BasePlugin):
 
     def _detect_project_type(self, project_path: Path) -> str:
         """Detect if project is Python, Node, or mixed"""
-        has_python = (project_path / "requirements.txt").exists() or (
-            project_path / "setup.py"
-        ).exists()
+        has_python = (project_path / "requirements.txt").exists() or (project_path / "setup.py").exists()
         has_node = (project_path / "package.json").exists()
 
         if has_python and has_node:
@@ -284,13 +276,7 @@ class DependencyAuditorPlugin(BasePlugin):
         try:
             # Parse versions as tuples of ints for comparison
             def parse_version(v_str):
-                parts = (
-                    v_str.replace("<", "")
-                    .replace(">", "")
-                    .replace("=", "")
-                    .strip()
-                    .split(".")
-                )
+                parts = v_str.replace("<", "").replace(">", "").replace("=", "").strip().split(".")
                 return tuple(int(p) for p in parts)
 
             v = parse_version(version)

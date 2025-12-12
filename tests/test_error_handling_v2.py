@@ -78,9 +78,7 @@ class TestErrorAnalyzer:
 
     def test_get_error_suggestion_with_context(self):
         """Test suggestion includes context information"""
-        context = ErrorContext(
-            operation="chat", backend_name="ollama", model_name="llama2"
-        )
+        context = ErrorContext(operation="chat", backend_name="ollama", model_name="llama2")
         error = ConnectionError("Connection refused")
         suggestion = ErrorAnalyzer.get_error_suggestion(error, context)
         assert "chat" in suggestion
@@ -93,9 +91,7 @@ class TestErrorContext:
 
     def test_create_error_context(self):
         """Test ErrorContext initialization"""
-        context = ErrorContext(
-            operation="generate_response", backend_name="ollama", model_name="mistral"
-        )
+        context = ErrorContext(operation="generate_response", backend_name="ollama", model_name="mistral")
         assert context.operation == "generate_response"
         assert context.backend_name == "ollama"
         assert context.model_name == "mistral"
@@ -130,9 +126,7 @@ class TestEnhancedErrorRecovery:
 
     def test_format_error_message_with_context(self):
         """Test error message with context"""
-        context = ErrorContext(
-            operation="generate", backend_name="ollama", model_name="neural"
-        )
+        context = ErrorContext(operation="generate", backend_name="ollama", model_name="neural")
         error = ConnectionError("Connection failed")
         message = EnhancedErrorRecovery.format_error_message(error, context)
         assert "generate" in message
@@ -192,9 +186,7 @@ class TestRetryDecorator:
                 raise ConnectionError("Failed")
             return "success"
 
-        decorated = retry_with_backoff(max_retries=3, strategy=RetryStrategy.IMMEDIATE)(
-            test_func
-        )
+        decorated = retry_with_backoff(max_retries=3, strategy=RetryStrategy.IMMEDIATE)(test_func)
         result = decorated()
         assert result == "success"
         assert call_count["count"] == 3
@@ -205,9 +197,7 @@ class TestRetryDecorator:
         def test_func():
             raise ConnectionError("Always fails")
 
-        decorated = retry_with_backoff(max_retries=2, strategy=RetryStrategy.IMMEDIATE)(
-            test_func
-        )
+        decorated = retry_with_backoff(max_retries=2, strategy=RetryStrategy.IMMEDIATE)(test_func)
 
         with pytest.raises(ConnectionError):
             decorated()
@@ -229,9 +219,7 @@ class TestRetryDecorator:
         def test_func():
             return "success"
 
-        decorated = retry_with_backoff(
-            max_retries=3, strategy=RetryStrategy.EXPONENTIAL, backoff_base=0.01
-        )(test_func)
+        decorated = retry_with_backoff(max_retries=3, strategy=RetryStrategy.EXPONENTIAL, backoff_base=0.01)(test_func)
         result = decorated()
         assert result == "success"
 
@@ -241,17 +229,13 @@ class TestRetryDecorator:
         def test_func():
             return "success"
 
-        decorated = retry_with_backoff(
-            max_retries=3, strategy=RetryStrategy.ADAPTIVE, backoff_base=0.01
-        )(test_func)
+        decorated = retry_with_backoff(max_retries=3, strategy=RetryStrategy.ADAPTIVE, backoff_base=0.01)(test_func)
         result = decorated()
         assert result == "success"
 
     def test_retry_with_context(self):
         """Test retry with error context"""
-        context = ErrorContext(
-            operation="test_op", backend_name="test_backend", model_name="test_model"
-        )
+        context = ErrorContext(operation="test_op", backend_name="test_backend", model_name="test_model")
 
         def test_func():
             return "success"
@@ -288,9 +272,7 @@ class TestErrorHandlingIntegration:
     def test_full_error_handling_flow(self):
         """Test complete error handling flow"""
         error = ConnectionError("Backend connection failed")
-        context = ErrorContext(
-            operation="chat", backend_name="ollama", model_name="mistral"
-        )
+        context = ErrorContext(operation="chat", backend_name="ollama", model_name="mistral")
 
         # Categorize
         category = ErrorAnalyzer.categorize_error(error)

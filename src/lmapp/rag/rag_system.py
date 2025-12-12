@@ -168,7 +168,7 @@ class SimpleVectorizer:
         if not tokens:
             return {}
 
-        freq = {}
+        freq: Dict[str, int] = {}
         for token in tokens:
             freq[token] = freq.get(token, 0) + 1
 
@@ -308,9 +308,7 @@ class DocumentIndex:
         results.sort(key=lambda r: r.relevance_score, reverse=True)
         return results[:top_k]
 
-    def _extract_matched_text(
-        self, query_tokens: List[str], content: str, context_chars: int = 100
-    ) -> Optional[str]:
+    def _extract_matched_text(self, query_tokens: List[str], content: str, context_chars: int = 100) -> Optional[str]:
         """Extract a text excerpt showing matched terms."""
         import re
 
@@ -350,9 +348,7 @@ class RAGSystem:
         self.index = DocumentIndex(index_dir)
         self.chunker = Chunker(chunk_size=1000, overlap=100)
 
-    def index_file(
-        self, file_path: Path, doc_title: Optional[str] = None
-    ) -> Optional[str]:
+    def index_file(self, file_path: Path, doc_title: Optional[str] = None) -> Optional[str]:
         """
         Index a single file.
 
@@ -411,9 +407,7 @@ class RAGSystem:
         except (IOError, UnicodeDecodeError):
             return None
 
-    def index_directory(
-        self, directory: Path, extensions: Optional[List[str]] = None
-    ) -> int:
+    def index_directory(self, directory: Path, extensions: Optional[List[str]] = None) -> int:
         """
         Index all files in a directory.
 
@@ -507,16 +501,12 @@ class RAGSystem:
     def get_index_stats(self) -> Dict[str, Any]:
         """Get statistics about the index."""
         total_docs = len(self.index.documents)
-        total_content_size = sum(
-            len(doc.content) for doc in self.index.documents.values()
-        )
+        total_content_size = sum(len(doc.content) for doc in self.index.documents.values())
 
         return {
             "total_documents": total_docs,
             "total_content_size": total_content_size,
-            "average_doc_size": (
-                total_content_size // total_docs if total_docs > 0 else 0
-            ),
+            "average_doc_size": (total_content_size // total_docs if total_docs > 0 else 0),
         }
 
     @staticmethod

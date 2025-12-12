@@ -101,7 +101,8 @@ class DocumentChunker:
 
         # Set total chunks in metadata
         for chunk in chunks:
-            chunk.metadata["total_chunks"] = len(chunks)
+            if chunk.metadata:
+                chunk.metadata["total_chunks"] = len(chunks)
 
         return chunks
 
@@ -259,9 +260,7 @@ class RAGSystem:
             {
                 "document": doc.to_dict(),
                 "relevance": score,
-                "preview": (
-                    doc.content[:100] + "..." if len(doc.content) > 100 else doc.content
-                ),
+                "preview": (doc.content[:100] + "..." if len(doc.content) > 100 else doc.content),
             }
             for doc, score in results
         ]
@@ -317,11 +316,7 @@ class RAGSystem:
     def _save_index(self) -> None:
         """Save index to disk."""
         index_file = self.index_dir / "index.json"
-        data = {
-            "documents": {
-                doc_id: doc.to_dict() for doc_id, doc in self.index.documents.items()
-            }
-        }
+        data = {"documents": {doc_id: doc.to_dict() for doc_id, doc in self.index.documents.items()}}
         index_file.write_text(json.dumps(data, indent=2))
 
     def _load_index(self) -> None:

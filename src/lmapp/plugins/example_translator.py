@@ -191,17 +191,13 @@ class TranslatorPlugin(BasePlugin):
             if reverse_pair not in TRANSLATION_DICT:
                 return text  # No translation available
 
-        translation_dict = TRANSLATION_DICT.get(
-            lang_pair, TRANSLATION_DICT.get(reverse_pair, {})
-        )
+        translation_dict = TRANSLATION_DICT.get(lang_pair, TRANSLATION_DICT.get(reverse_pair, {}))
 
         # Translate each word/phrase in text
         result = text.lower()
 
         # Sort by length (longest first) to handle multi-word phrases
-        sorted_phrases = sorted(
-            translation_dict.items(), key=lambda x: len(x[0]), reverse=True
-        )
+        sorted_phrases = sorted(translation_dict.items(), key=lambda x: len(x[0]), reverse=True)
 
         for source_phrase, target_phrase in sorted_phrases:
             result = result.replace(source_phrase, target_phrase)

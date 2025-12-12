@@ -93,7 +93,7 @@ class AnalysisResult:
 
     def _count_by_type(self) -> Dict[str, int]:
         """Count issues by type."""
-        counts = {}
+        counts: Dict[str, int] = {}
         for issue in self.issues:
             counts[issue.issue_type] = counts.get(issue.issue_type, 0) + 1
         return counts
@@ -269,8 +269,8 @@ class CodeAnalyzerPlugin(BasePlugin):
                                 issue_type="bug",
                                 line=line_no,
                                 column=len(line) - len(line.lstrip()),
-                                message=issue_def["message"],
-                                suggestion=issue_def["suggestion"],
+                                message=str(issue_def["message"]),
+                                suggestion=str(issue_def["suggestion"]),
                                 pattern=issue_name,
                             )
                         )
@@ -286,8 +286,8 @@ class CodeAnalyzerPlugin(BasePlugin):
                                 issue_type="bug",
                                 line=line_no,
                                 column=len(line) - len(line.lstrip()),
-                                message=issue_def["message"],
-                                suggestion=issue_def["suggestion"],
+                                message=str(issue_def["message"]),
+                                suggestion=str(issue_def["suggestion"]),
                                 pattern=issue_name,
                             )
                         )
@@ -304,8 +304,8 @@ class CodeAnalyzerPlugin(BasePlugin):
                                     issue_type="performance",
                                     line=line_no,
                                     column=len(line) - len(line.lstrip()),
-                                    message=issue_def["message"],
-                                    suggestion=issue_def["suggestion"],
+                                    message=str(issue_def["message"]),
+                                    suggestion=str(issue_def["suggestion"]),
                                     pattern=issue_name,
                                 )
                             )
@@ -322,8 +322,8 @@ class CodeAnalyzerPlugin(BasePlugin):
                                     issue_type="style",
                                     line=line_no,
                                     column=len(line) - len(line.lstrip()),
-                                    message=issue_def["message"],
-                                    suggestion=issue_def["suggestion"],
+                                    message=str(issue_def["message"]),
+                                    suggestion=str(issue_def["suggestion"]),
                                     pattern=issue_name,
                                 )
                             )

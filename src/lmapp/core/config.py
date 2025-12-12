@@ -19,13 +19,9 @@ class LMAppConfig(BaseModel):
 
     model_config = ConfigDict(validate_assignment=True)
 
-    backend: str = Field(
-        default="auto", description="LLM backend: auto|ollama|llamafile|mock"
-    )
+    backend: str = Field(default="auto", description="LLM backend: auto|ollama|llamafile|mock")
     model: str = Field(default="tinyllama", description="Model name to use")
-    temperature: float = Field(
-        default=0.7, ge=0.0, le=1.0, description="Temperature (0.0-1.0)"
-    )
+    temperature: float = Field(default=0.7, ge=0.0, le=1.0, description="Temperature (0.0-1.0)")
     debug: bool = Field(default=False, description="Enable debug logging")
     developer_mode: bool = Field(
         default=False,
@@ -39,28 +35,18 @@ class LMAppConfig(BaseModel):
         default=False,
         description="Whether first-run wizard has been completed",
     )
-    default_model: Optional[str] = Field(
-        default=None, description="Default model to use across sessions"
-    )
+    default_model: Optional[str] = Field(default=None, description="Default model to use across sessions")
 
     # Advanced settings (future)
-    max_tokens: Optional[int] = Field(
-        default=None, description="Maximum tokens in response"
-    )
+    max_tokens: Optional[int] = Field(default=None, description="Maximum tokens in response")
     timeout: int = Field(default=300, description="Request timeout in seconds")
-    
+
     # Runtime flags (not saved to disk usually, but part of config object)
-    assume_yes: bool = Field(
-        default=False, description="Skip confirmation prompts (assume yes)"
-    )
+    assume_yes: bool = Field(default=False, description="Skip confirmation prompts (assume yes)")
 
     # Workflow / Calibration Settings
-    workflow_setup_completed: bool = Field(
-        default=False, description="Whether workflow calibration wizard has run"
-    )
-    suppress_workflow_prompt: bool = Field(
-        default=False, description="Suppress the startup workflow prompt"
-    )
+    workflow_setup_completed: bool = Field(default=False, description="Whether workflow calibration wizard has run")
+    suppress_workflow_prompt: bool = Field(default=False, description="Suppress the startup workflow prompt")
     workflow_role: str = Field(
         default="default",
         description="Default role to use (default, architect, custom)",

@@ -27,9 +27,7 @@ class TestOllamaBackendIntegration:
             assert version is not None
             assert len(version) > 0
 
-    @pytest.mark.skipif(
-        not OllamaBackend().is_installed(), reason="Ollama not installed"
-    )
+    @pytest.mark.skipif(not OllamaBackend().is_installed(), reason="Ollama not installed")
     def test_ollama_service_status(self, ollama_backend):
         """Test checking Ollama service status"""
         is_running = ollama_backend.is_running()
@@ -70,9 +68,7 @@ class TestOllamaBackendIntegration:
         if ollama_backend.is_installed():
             assert info.version is not None
 
-    @pytest.mark.skipif(
-        not OllamaBackend().is_installed(), reason="Ollama not installed"
-    )
+    @pytest.mark.skipif(not OllamaBackend().is_installed(), reason="Ollama not installed")
     def test_ollama_start_stop(self, ollama_backend):
         """Test starting and stopping Ollama service"""
         # This test only checks that the methods execute without error

@@ -1,12 +1,14 @@
 {
   "project": "lmapp",
-  "fix": [
-    "black src/ tests/"
-  ],
+  "fix": {
+    "commands": [
+      ".venv/bin/black src/ tests/"
+    ]
+  },
   "lint": {
     "commands": [
-      "flake8 src/ tests/",
-      "black --check src/ tests/"
+      ".venv/bin/flake8 src/ tests/",
+      ".venv/bin/black --check src/ tests/"
     ]
   },
   "cleanup": [
@@ -20,19 +22,25 @@
     "htmlcov"
   ],
   "test": {
-    "command": "pytest",
+    "command": ".venv/bin/pytest",
     "args": ["-v"]
   },
+  "systematic": {
+    "description": "Run systematic CLI tests",
+    "commands": [
+      ".venv/bin/python scripts/systematic_test.py"
+    ]
+  },
   "coverage": {
-    "command": "pytest",
+    "command": ".venv/bin/pytest",
     "args": ["--cov=lmapp", "tests/", "--cov-report=term-missing"]
   },
   "install": {
-    "command": "pip",
+    "command": ".venv/bin/pip",
     "args": ["install", "-e", "."]
   },
   "dev": {
-    "command": "pip",
+    "command": ".venv/bin/pip",
     "args": ["install", "-e", ".[dev]"]
   },
   "rebuild": {

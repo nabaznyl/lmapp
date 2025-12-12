@@ -109,12 +109,8 @@ class CodeRefactoringPlugin(BasePlugin):
             "medium": sum(1 for i in result.issues if i.severity == "medium"),
             "low": sum(1 for i in result.issues if i.severity == "low"),
             "lines_of_code": len(code.split("\n")),
-            "functions": sum(
-                1 for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)
-            ),
-            "classes": sum(
-                1 for node in ast.walk(tree) if isinstance(node, ast.ClassDef)
-            ),
+            "functions": sum(1 for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)),
+            "classes": sum(1 for node in ast.walk(tree) if isinstance(node, ast.ClassDef)),
         }
 
         return {
@@ -301,9 +297,7 @@ class CodeRefactoringPlugin(BasePlugin):
             if isinstance(node, ast.Name):
                 if len(node.id) == 1 and node.id.islower():
                     if node.id not in {"_", "i", "j", "k", "x", "y", "z"}:
-                        short_vars[node.id] = (
-                            f"Use a more descriptive name instead of '{node.id}'"
-                        )
+                        short_vars[node.id] = f"Use a more descriptive name instead of '{node.id}'"
 
         suggestions["short_variable_names"] = short_vars
 
@@ -325,19 +319,13 @@ class CodeRefactoringPlugin(BasePlugin):
                 complexity = self._calculate_complexity(node)
                 complexity_map[node.name] = complexity
 
-        avg_complexity = (
-            sum(complexity_map.values()) / len(complexity_map) if complexity_map else 0
-        )
+        avg_complexity = sum(complexity_map.values()) / len(complexity_map) if complexity_map else 0
 
         return {
             "success": True,
             "functions": complexity_map,
             "average_complexity": avg_complexity,
-            "status": (
-                "Good"
-                if avg_complexity < 5
-                else "Moderate" if avg_complexity < 10 else "High"
-            ),
+            "status": ("Good" if avg_complexity < 5 else "Moderate" if avg_complexity < 10 else "High"),
         }
 
     def _find_duplicates(self, code: str) -> Dict[str, Any]:
@@ -346,7 +334,7 @@ class CodeRefactoringPlugin(BasePlugin):
         duplicates = []
 
         # Look for repeated lines
-        seen_lines = {}
+        seen_lines: Dict[str, int] = {}
         for i, line in enumerate(lines):
             stripped = line.strip()
             if stripped and not stripped.startswith("#"):

@@ -23,11 +23,7 @@ class Document:
 
     def extract_passages(self, min_length: int = 20) -> None:
         """Extract sentences as passages."""
-        self.passages = [
-            p.strip()
-            for p in re.split(r"[.!?]+", self.content)
-            if p.strip() and len(p.strip()) > min_length
-        ]
+        self.passages = [p.strip() for p in re.split(r"[.!?]+", self.content) if p.strip() and len(p.strip()) > min_length]
 
 
 class QABotPlugin(BasePlugin):
@@ -106,14 +102,9 @@ class QABotPlugin(BasePlugin):
 
         return {
             "question": question,
-            "answers": [
-                {"relevance": round(score, 3), "document": title, "passage": passage}
-                for score, doc_id, title, passage in top_passages
-            ],
+            "answers": [{"relevance": round(score, 3), "document": title, "passage": passage} for score, doc_id, title, passage in top_passages],
             "num_documents_searched": len(self.documents),
-            "num_passages_searched": sum(
-                len(d.passages) for d in self.documents.values()
-            ),
+            "num_passages_searched": sum(len(d.passages) for d in self.documents.values()),
         }
 
     def cleanup(self) -> None:

@@ -35,11 +35,7 @@ class PluginRegistry:
         query = query.lower()
         results = []
         for plugin in self.plugins.values():
-            if (
-                query in plugin.name.lower()
-                or query in plugin.description.lower()
-                or any(query in tag.lower() for tag in plugin.tags)
-            ):
+            if query in plugin.name.lower() or query in plugin.description.lower() or any(query in tag.lower() for tag in plugin.tags):
                 results.append(plugin)
         return results
 
@@ -76,9 +72,7 @@ class PluginRegistry:
     @staticmethod
     def from_dict(data: Dict) -> "PluginRegistry":
         """Deserialize registry from dictionary."""
-        registry = PluginRegistry(
-            name=data["name"], url=data["url"], description=data["description"]
-        )
+        registry = PluginRegistry(name=data["name"], url=data["url"], description=data["description"])
         for name, plugin_data in data.get("plugins", {}).items():
             registry.add_plugin(PluginMarketplaceEntry.from_dict(plugin_data))
         return registry
@@ -143,7 +137,7 @@ class PluginMarketplaceEntry:
 class PluginMarketplace:
     """Main marketplace manager - handles registries and plugin discovery."""
 
-    def __init__(self, storage_path: Path = None):
+    def __init__(self, storage_path: Optional[Path] = None):
         """Initialize marketplace."""
         self.storage_path = storage_path or Path.home() / ".lmapp" / "marketplace"
         self.storage_path.mkdir(parents=True, exist_ok=True)
@@ -189,9 +183,7 @@ class PluginMarketplace:
             for entry in registry.search(query):
                 results.append((registry_name, entry))
         # Sort by rating and downloads
-        results.sort(
-            key=lambda x: (x[1].verified, x[1].rating, x[1].downloads), reverse=True
-        )
+        results.sort(key=lambda x: (x[1].verified, x[1].rating, x[1].downloads), reverse=True)
         return results
 
     def install_plugin(self, plugin_name: str, registry: str = "official") -> bool:
@@ -249,15 +241,11 @@ class PluginMarketplace:
             except Exception:
                 pass  # Skip corrupted registries
 
-    def list_plugins(
-        self, registry: str = None, certified_only: bool = False
-    ) -> List[PluginMarketplaceEntry]:
+    def list_plugins(self, registry: Optional[str] = None, certified_only: bool = False) -> List[PluginMarketplaceEntry]:
         """List all plugins in registry."""
         plugins = []
 
-        registries_to_search = (
-            {registry: self.registries[registry]} if registry else self.registries
-        )
+        registries_to_search = {registry: self.registries[registry]} if registry else self.registries
 
         for reg in registries_to_search.values():
             for plugin in reg.plugins.values():
@@ -265,9 +253,7 @@ class PluginMarketplace:
                     continue
                 plugins.append(plugin)
 
-        return sorted(
-            plugins, key=lambda p: (p.verified, p.rating, p.downloads), reverse=True
-        )
+        return sorted(plugins, key=lambda p: (p.verified, p.rating, p.downloads), reverse=True)
 
 
 # Global marketplace instance

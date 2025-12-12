@@ -25,9 +25,7 @@ class TestLMAppConfig:
 
     def test_config_creation_custom(self):
         """Test creating config with custom values"""
-        cfg = LMAppConfig(
-            backend="ollama", model="mistral", temperature=0.5, debug=True
-        )
+        cfg = LMAppConfig(backend="ollama", model="mistral", temperature=0.5, debug=True)
         assert cfg.backend == "ollama"
         assert cfg.model == "mistral"
         assert cfg.temperature == 0.5

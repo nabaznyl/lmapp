@@ -67,13 +67,9 @@ def main(ctx, version, debug, dev, yes):
             db = ErrorDB()
             solution = db.log_error(exc_value)
 
-            console.print(
-                f"\n[bold red]An unexpected error occurred:[/bold red] {exc_value}"
-            )
+            console.print(f"\n[bold red]An unexpected error occurred:[/bold red] {exc_value}")
             if solution:
-                console.print(
-                    f"\n[bold green]Suggested Solution:[/bold green] {solution}"
-                )
+                console.print(f"\n[bold green]Suggested Solution:[/bold green] {solution}")
 
             # Silent logging as requested
             # console.print(f"\n[dim]Error has been logged to the database. Run 'lmapp errors' to view history.[/dim]")
@@ -92,9 +88,7 @@ def main(ctx, version, debug, dev, yes):
     sys.excepthook = handle_exception
 
     if version:
-        console.print(
-            f"[bold cyan]lmapp[/bold cyan] version [yellow]{__version__}[/yellow]"
-        )
+        console.print(f"[bold cyan]lmapp[/bold cyan] version [yellow]{__version__}[/yellow]")
         sys.exit(0)
 
     # NUX Check
@@ -110,12 +104,7 @@ def main(ctx, version, debug, dev, yes):
     # Only prompt for workflow on main menu or chat command
     # Prevents annoying prompts on utility commands like 'server', 'status', etc.
     allowed_commands = [None, "chat"]
-    should_check_workflow = (
-        is_interactive 
-        and not is_help 
-        and not is_test 
-        and ctx.invoked_subcommand in allowed_commands
-    )
+    should_check_workflow = is_interactive and not is_help and not is_test and ctx.invoked_subcommand in allowed_commands
 
     if should_check_workflow:
         from lmapp.core.workflow import WorkflowManager
@@ -181,9 +170,7 @@ def chat(model):
     if not backend:
         # No running backend found
         available = detector.detect_all()
-        logger.warning(
-            f"No running backend found. Available: {[b.backend_name() for b in available]}"
-        )
+        logger.warning(f"No running backend found. Available: {[b.backend_name() for b in available]}")
 
         if not available:
             console.print("[red]✗ No LLM backends installed[/red]")
@@ -192,9 +179,7 @@ def chat(model):
             sys.exit(1)
 
         # Backend installed but not running
-        console.print(
-            f"[yellow]⚠️  Backend '{available[0].backend_display_name()}' is not running[/yellow]"
-        )
+        console.print(f"[yellow]⚠️  Backend '{available[0].backend_display_name()}' is not running[/yellow]")
         console.print("\nTo start it, run:")
         console.print("  [bold]lmapp install[/bold]")
         sys.exit(1)
@@ -217,9 +202,7 @@ def chat(model):
 
     try:
         # Create and launch chat session
-        logger.debug(
-            f"Creating ChatSession with backend={backend.backend_name()}, model={chat_model}"
-        )
+        logger.debug(f"Creating ChatSession with backend={backend.backend_name()}, model={chat_model}")
         session = ChatSession(backend, model=chat_model)
         logger.debug("ChatSession created, launching chat UI")
         launch_chat(session)
@@ -260,9 +243,7 @@ def errors():
     for entry in history[-10:]:  # Show last 10
         ts = entry.get("timestamp", 0)
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ts))
-        error_msg = entry.get("message", "") or entry.get(
-            "error", ""
-        )  # Handle both keys if schema changed
+        error_msg = entry.get("message", "") or entry.get("error", "")  # Handle both keys if schema changed
         solution = entry.get("solution", "") or "-"
 
         # Truncate long error messages
@@ -272,9 +253,7 @@ def errors():
         table.add_row(timestamp, error_msg, solution)
 
     console.print(table)
-    console.print(
-        f"\n[dim]Showing last {min(len(history), 10)} of {len(history)} errors. Log file: {db.db_file}[/dim]"
-    )
+    console.print(f"\n[dim]Showing last {min(len(history), 10)} of {len(history)} errors. Log file: {db.db_file}[/dim]")
 
 
 @main.command()
@@ -291,9 +270,7 @@ def install():
         logger.debug("System checks passed")
     else:
         logger.error("System checks failed")
-        console.print(
-            "\n[red]✗ System checks failed. Please address issues above.[/red]"
-        )
+        console.print("\n[red]✗ System checks failed. Please address issues above.[/red]")
         sys.exit(1)
 
     # Step 2: Backend installation (automated)
@@ -334,9 +311,7 @@ def model(ctx):
             return
 
         if not backend.is_running():
-            console.print(
-                f"[yellow]Backend {backend.backend_display_name()} is not running.[/yellow]"
-            )
+            console.print(f"[yellow]Backend {backend.backend_display_name()} is not running.[/yellow]")
             return
 
         models = backend.list_models()
@@ -359,9 +334,7 @@ def download():
         return
 
     if not backend.is_running():
-        console.print(
-            f"[yellow]Backend {backend.backend_display_name()} is not running. Starting it...[/yellow]"
-        )
+        console.print(f"[yellow]Backend {backend.backend_display_name()} is not running. Starting it...[/yellow]")
         if not backend.start():
             console.print("[red]Failed to start backend.[/red]")
             return
@@ -472,7 +445,7 @@ def server_list():
     pid = _get_server_pid()
     if pid:
         console.print(f"[green]●[/green] Server running on port 8000 (PID: {pid})")
-        console.print(f"  URL: http://localhost:8000")
+        console.print("  URL: http://localhost:8000")
     else:
         console.print("[dim]No server running[/dim]")
 
@@ -483,6 +456,7 @@ def server_kill(kill_all):
     """Force kill server processes"""
     if kill_all:
         import subprocess
+
         try:
             subprocess.run(["pkill", "-f", "lmapp server"], check=False)
             console.print("[green]Killed all lmapp server instances[/green]")
@@ -527,6 +501,21 @@ def status():
     logger.debug("Status command completed")
 
 
+@main.command(name="check", hidden=True)
+def check():
+    """Alias for status"""
+    ctx = click.get_current_context()
+    ctx.invoke(status)
+
+
+@main.command()
+def update():
+    """Check for lmapp updates"""
+    from lmapp.auto_update import check_for_updates
+
+    check_for_updates(__version__)
+
+
 @main.group()
 def workflow():
     """Manage AI Roles & Workflows"""
@@ -556,7 +545,7 @@ def config_show():
     manager = get_config_manager()
     config = manager.load()
 
-    content = f"[bold]Current Configuration:[/bold]\n"
+    content = "[bold]Current Configuration:[/bold]\n"
     content += f"backend: {config.backend}\n"
     content += f"model: {config.model}\n"
     content += f"temperature: {config.temperature}\n"
@@ -564,11 +553,11 @@ def config_show():
     content += f"developer_mode: {config.developer_mode}"
 
     console.print(Panel.fit(content))
-    
+
     # Format paths for display (replace home with ~)
     config_path = str(manager.config_file).replace(str(Path.home()), "~")
     log_path = str(LOG_FILE).replace(str(Path.home()), "~")
-    
+
     console.print(f"[dim]Configuration file: {config_path}[/dim]")
     console.print(f"[dim]Log file: {log_path}[/dim]")
 
@@ -665,21 +654,12 @@ def plugin_install(plugin_name, registry):
     from lmapp.plugins.plugin_marketplace import get_plugin_marketplace
 
     marketplace = get_plugin_marketplace()
-    console.print(
-        f"Installing [cyan]{plugin_name}[/cyan] from [magenta]{registry}[/magenta]..."
-    )
+    console.print(f"Installing [cyan]{plugin_name}[/cyan] from [magenta]{registry}[/magenta]...")
 
     if marketplace.install_plugin(plugin_name, registry):
         console.print(f"[green]Successfully installed {plugin_name}![/green]")
     else:
-        console.print(
-            f"[red]Failed to install {plugin_name}. Check logs for details.[/red]"
-        )
-
-    console.print(manager.show())
-    console.print()
-    console.print("[dim]Configuration location: ~/.config/lmapp/config.json[/dim]")
-    console.print("[dim]Log location: ~/.local/share/lmapp/logs/lmapp.log[/dim]")
+        console.print(f"[red]Failed to install {plugin_name}. Check logs for details.[/red]")
 
 
 @config.command(name="set")
@@ -722,9 +702,7 @@ def config_set(key, value):
         console.print("\n[cyan]Valid keys:[/cyan]")
         for field_name in cfg.model_dump().keys():
             field_value = getattr(cfg, field_name)
-            console.print(
-                f"  [yellow]{field_name:15}[/yellow] (current: {field_value})"
-            )
+            console.print(f"  [yellow]{field_name:15}[/yellow] (current: {field_value})")
         logger.warning(f"Invalid config key: {key}")
         return
 
@@ -804,7 +782,7 @@ def tests(args):
     """Run the test suite (pytest wrapper)"""
     import subprocess
 
-    cmd = ["pytest"] + list(args)
+    cmd = [sys.executable, "-m", "pytest"] + list(args)
     console.print(f"[dim]Running: {' '.join(cmd)}[/dim]")
     sys.exit(subprocess.call(cmd))
 
@@ -817,7 +795,7 @@ def src(args):
 
     # Default to src/ if no args provided, otherwise pass args to flake8
     target = list(args) if args else ["src/"]
-    cmd = ["flake8"] + target
+    cmd = [sys.executable, "-m", "flake8"] + target
     console.print(f"[dim]Running: {' '.join(cmd)}[/dim]")
     sys.exit(subprocess.call(cmd))
 
@@ -829,7 +807,7 @@ def format(args):
     import subprocess
 
     target = list(args) if args else ["src/", "tests/"]
-    cmd = ["black"] + target
+    cmd = [sys.executable, "-m", "black"] + target
     console.print(f"[dim]Running: {' '.join(cmd)}[/dim]")
     sys.exit(subprocess.call(cmd))
 
@@ -841,7 +819,7 @@ def lint(args):
     import subprocess
 
     target = list(args) if args else ["src/", "tests/"]
-    cmd = ["flake8"] + target
+    cmd = [sys.executable, "-m", "flake8"] + target
     console.print(f"[dim]Running: {' '.join(cmd)}[/dim]")
     sys.exit(subprocess.call(cmd))
 
@@ -853,7 +831,7 @@ def types(args):
     import subprocess
 
     target = list(args) if args else ["src/"]
-    cmd = ["mypy"] + target
+    cmd = [sys.executable, "-m", "mypy"] + target
     console.print(f"[dim]Running: {' '.join(cmd)}[/dim]")
     sys.exit(subprocess.call(cmd))
 

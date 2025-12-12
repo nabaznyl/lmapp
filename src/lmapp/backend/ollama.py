@@ -36,9 +36,7 @@ class OllamaBackend(LLMBackend):
         if not self.is_installed():
             return None
         try:
-            result = subprocess.run(
-                ["ollama", "--version"], capture_output=True, text=True, timeout=5
-            )
+            result = subprocess.run(["ollama", "--version"], capture_output=True, text=True, timeout=5)
             if result.returncode == 0:
                 # Parse version from output (e.g., "ollama version 0.1.14")
                 return result.stdout.strip().split()[-1]
@@ -79,9 +77,7 @@ class OllamaBackend(LLMBackend):
                 return False
             # Run installer
             console.print("[dim]Running installer...[/dim]")
-            install_result = subprocess.run(
-                ["sh"], input=result.stdout, capture_output=True, text=True, timeout=120
-            )
+            install_result = subprocess.run(["sh"], input=result.stdout, capture_output=True, text=True, timeout=120)
             if install_result.returncode == 0:
                 console.print("[green]✓ Ollama installed successfully[/green]")
                 # Wait for service to start
@@ -89,9 +85,7 @@ class OllamaBackend(LLMBackend):
                 time.sleep(5)
                 return True
             else:
-                console.print(
-                    f"[red]Installation failed: {install_result.stderr}[/red]"
-                )
+                console.print(f"[red]Installation failed: {install_result.stderr}[/red]")
                 return False
         except Exception as e:
             console.print(f"[red]Installation error: {e}[/red]")
@@ -191,9 +185,7 @@ class OllamaBackend(LLMBackend):
         except Exception:
             return False
 
-    def chat(
-        self, prompt: str, model: str = "", temperature: float = 0.7, *args, **kwargs
-    ) -> str:
+    def chat(self, prompt: str, model: str = "", temperature: float = 0.7, *args, **kwargs) -> str:
         """Send a chat prompt to Ollama"""
         if not self.is_running():
             return ""

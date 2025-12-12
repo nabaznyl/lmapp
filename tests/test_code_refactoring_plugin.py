@@ -91,9 +91,7 @@ class my_class:
         result = plugin.execute("analyze", code=code)
         assert result["success"] is True
         naming_issues = [i for i in result["issues"] if i["type"] == "naming"]
-        assert (
-            len(naming_issues) >= 2
-        )  # MyFunction should be my_function, my_class should be MyClass
+        assert len(naming_issues) >= 2  # MyFunction should be my_function, my_class should be MyClass
 
     def test_detect_high_complexity(self, plugin):
         """Test detection of high cyclomatic complexity."""
@@ -299,12 +297,7 @@ except:
         result = plugin.execute("analyze", code=code)
         assert result["success"] is True
         total = result["metrics"]["total_issues"]
-        by_severity = (
-            result["metrics"]["critical"]
-            + result["metrics"]["high"]
-            + result["metrics"]["medium"]
-            + result["metrics"]["low"]
-        )
+        by_severity = result["metrics"]["critical"] + result["metrics"]["high"] + result["metrics"]["medium"] + result["metrics"]["low"]
         assert total == by_severity
 
     def test_complex_duplicate_detection(self, plugin):

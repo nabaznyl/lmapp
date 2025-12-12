@@ -160,9 +160,7 @@ class PluginManager:
 
         return sorted(plugins)
 
-    def load_plugin(
-        self, plugin_path: Path, config: Optional[Dict[str, Any]] = None
-    ) -> Optional[PluginInfo]:
+    def load_plugin(self, plugin_path: Path, config: Optional[Dict[str, Any]] = None) -> Optional[PluginInfo]:
         """
         Load a single plugin.
 
@@ -324,7 +322,7 @@ class PluginManager:
 
     def get_plugin_stats(self) -> Dict[str, Any]:
         """Get statistics about loaded plugins."""
-        statuses = {}
+        statuses: Dict[str, int] = {}
         for info in self.loaded_plugins.values():
             status = info.status.value
             statuses[status] = statuses.get(status, 0) + 1
@@ -332,18 +330,10 @@ class PluginManager:
         return {
             "total_plugins": len(self.loaded_plugins),
             "by_status": statuses,
-            "with_errors": len(
-                [
-                    p
-                    for p in self.loaded_plugins.values()
-                    if p.status == PluginStatus.ERROR
-                ]
-            ),
+            "with_errors": len([p for p in self.loaded_plugins.values() if p.status == PluginStatus.ERROR]),
         }
 
-    def _load_plugin_class(
-        self, plugin_path: Path, metadata: PluginMetadata
-    ) -> Optional[BasePlugin]:
+    def _load_plugin_class(self, plugin_path: Path, metadata: PluginMetadata) -> Optional[BasePlugin]:
         """Load the plugin class from module."""
         try:
             # Add plugin path to sys.path temporarily

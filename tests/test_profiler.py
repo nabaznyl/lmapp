@@ -21,9 +21,7 @@ class TestOperationMetrics:
 
     def test_metrics_initialization(self):
         """Test metrics initialization"""
-        metrics = OperationMetrics(
-            operation_name="test_op", start_time=0.0, end_time=1.0
-        )
+        metrics = OperationMetrics(operation_name="test_op", start_time=0.0, end_time=1.0)
         assert metrics.operation_name == "test_op"
         assert metrics.duration_ms == 1000.0
         assert metrics.success is True
@@ -140,10 +138,7 @@ class TestPerformanceProfiler:
 
         assert "fast_op" in summary["operations"]
         assert "slow_op" in summary["operations"]
-        assert (
-            summary["operations"]["slow_op"]["avg_ms"]
-            > summary["operations"]["fast_op"]["avg_ms"]
-        )
+        assert summary["operations"]["slow_op"]["avg_ms"] > summary["operations"]["fast_op"]["avg_ms"]
 
     def test_profile_function_decorator(self):
         """Test function profiling decorator"""

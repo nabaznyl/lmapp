@@ -32,26 +32,20 @@ class TestLlamafileBackendIntegration:
         assert llamafile_dir.exists()
         assert llamafile_dir.is_dir()
 
-    @pytest.mark.skipif(
-        not LlamafileBackend().is_installed(), reason="Llamafile not installed"
-    )
+    @pytest.mark.skipif(not LlamafileBackend().is_installed(), reason="Llamafile not installed")
     def test_llamafile_service_status(self, llamafile_backend):
         """Test checking llamafile service status"""
         is_running = llamafile_backend.is_running()
         assert isinstance(is_running, bool)
 
-    @pytest.mark.skipif(
-        not LlamafileBackend().is_installed(), reason="Llamafile not installed"
-    )
+    @pytest.mark.skipif(not LlamafileBackend().is_installed(), reason="Llamafile not installed")
     def test_llamafile_list_models(self, llamafile_backend):
         """Test listing llamafile models"""
         models = llamafile_backend.list_models()
         assert isinstance(models, list)
         assert len(models) > 0  # Should have at least one if installed
 
-    @pytest.mark.skipif(
-        not LlamafileBackend().is_running(), reason="Llamafile not running"
-    )
+    @pytest.mark.skipif(not LlamafileBackend().is_running(), reason="Llamafile not running")
     def test_llamafile_chat_response(self, llamafile_backend):
         """Test getting a chat response from llamafile"""
         response = llamafile_backend.chat("Say hello")
@@ -69,9 +63,7 @@ class TestLlamafileBackendIntegration:
         if llamafile_backend.is_installed():
             assert info.version is not None
 
-    @pytest.mark.skipif(
-        not LlamafileBackend().is_installed(), reason="Llamafile not installed"
-    )
+    @pytest.mark.skipif(not LlamafileBackend().is_installed(), reason="Llamafile not installed")
     def test_llamafile_start_stop(self, llamafile_backend):
         """Test starting and stopping llamafile"""
         # This test may take some time as llamafile needs to load
