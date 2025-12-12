@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.4] - 2025-12-12
+
+### Security
+- **CSRF Protection**: Added host validation to `/admin/shutdown` endpoint to prevent unauthorized remote shutdowns.
+
+### Changed
+- **Performance**: Refactored `create_completion` and `health_check` endpoints to be non-blocking (synchronous functions run in threadpool), improving concurrency handling.
+- **Dependencies**: Bumped version to 0.3.4.
+
+---
+
 ## [0.3.3] - 2025-12-12
 
 ### Added
