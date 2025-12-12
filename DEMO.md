@@ -198,5 +198,5 @@ lmapp chat
 
 ---
 
-*Version 0.2.6 (Current) - Production Ready*  
+*Version 0.3.0-beta (Current) - Production Ready*  
 *License: MIT*

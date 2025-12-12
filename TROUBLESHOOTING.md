@@ -783,7 +783,7 @@ python3 -m cProfile -s cumulative -m lmapp.cli chat
 
 ---
 
-**Version:** 0.2.6  
+**Version:** 0.3.0-beta  
 **Last Updated:** Dec 11, 2025  
 **Status:** ✅ Production Ready
 

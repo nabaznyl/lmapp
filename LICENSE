@@ -1,5 +1,6 @@
 MIT License
 
+Project version: 0.3.0-beta (for reference)
 Copyright (c) 2025 lmapp Contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,16 +29,9 @@ This project incorporates components from the following projects:
 
 1. Ollama (https://github.com/ollama/ollama)
    License: MIT License
-   Copyright (c) Ollama
 
 2. llamafile (https://github.com/Mozilla-Ocho/llamafile)
    License: Apache License 2.0
-   Copyright (c) Mozilla
 
-3. shell_gpt (https://github.com/TheR1D/shell_gpt)
-   License: GNU General Public License v3.0
-   Copyright (c) TheR1D
-
-AI models distributed with or used by this software are subject to their
-respective licenses. Users must comply with individual model licenses.
-See MODELS.md for detailed license information.
+AI models you download or use with lmapp are subject to their own licenses.
+Please review each model provider's license before use.

@@ -18,14 +18,6 @@
 
 ## Quick Installation
 
-### Option 1: Automated Installer (Coming Soon)
-
-```bash
-wget https://github.com/yourusername/lmapp/releases/latest/download/lmapp-installer.sh
-chmod +x lmapp-installer.sh
-./lmapp-installer.sh
-```
-
 ### Option 2: Manual Installation (Current)
 
 1. **Install Python dependencies**:
@@ -36,7 +28,7 @@ sudo apt install -y python3 python3-pip python3-venv curl wget git
 
 2. **Clone repository**:
 ```bash
-git clone https://github.com/yourusername/lmapp.git
+git clone https://github.com/nabaznyl/lmapp.git
 cd lmapp
 ```
 

@@ -5,7 +5,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/) [![Tests](https://img.shields.io/badge/Tests-587%2F587%20passing-brightgreen.svg)]() [![Status](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
 
-**v0.2.6** - Production Ready. Fully Featured. Free.
+**v0.3.0-beta** - Production Ready. Fully Featured. Free.
 
 See [**Demo & Features**](DEMO.md) for examples and use cases.
 
@@ -332,19 +332,19 @@ lmapp chat
 | Document | Purpose |
 |----------|---------|
 | **[QUICKSTART.md](QUICKSTART.md)** | 5-minute setup guide ⭐ Start here |
-| **[INSTALL.md](INSTALL.md)** | Installation methods for all platforms |
-| **[CONTRIBUTING.md](CONTRIBUTING.md)** | Developer guidelines and contribution workflow |
+| **[docs/installation.md](docs/installation.md)** | Installation methods for all platforms |
+| **[docs/CONFIGURATION.md](docs/CONFIGURATION.md)** | Configuration, environment, and settings |
+| **[docs/development.md](docs/development.md)** | Developer workflow and tips |
 | **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** | Solutions for common issues |
 | **[SECURITY.md](SECURITY.md)** | Security policy and vulnerability reporting |
-| **[API_REFERENCE.md](API_REFERENCE.md)** | REST API endpoint documentation |
-| **[CHANGELOG.md](CHANGELOG.md)** | Complete release history |
+| **[CHANGELOG.md](CHANGELOG.md)** | Release history |
+| **[CONTRIBUTING.md](CONTRIBUTING.md)** | Contribution guidelines |
 | **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** | Community standards |
-| **[FILE_ORGANIZATION_GUIDE.md](FILE_ORGANIZATION_GUIDE.md)** | Where to find documentation |
+| **[LICENSE](LICENSE)** | License terms |
+| **[DEMO.md](DEMO.md)** | Live examples and feature tour |
 
-### Additional Resources
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Production deployment (Docker, Kubernetes, Nginx)
-- **[PLUGIN_DEVELOPER_GUIDE.md](src/lmapp/plugins/PLUGIN_DEVELOPER_GUIDE.md)** - Build your own plugins
-- **[ROADMAP.md](ROADMAP.md)** - Feature roadmap and future plans
+Additional references:
+- **[docs/ERROR_DATABASE.md](docs/ERROR_DATABASE.md)** - Known errors and fixes
 
 ---
 
