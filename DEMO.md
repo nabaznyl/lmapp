@@ -143,34 +143,13 @@ Results:
 
 ---
 
-### Demo 3: Daily Workflow
-
-Morning check-in:
-```
-Welcome back! 
-Last 5 conversations:
-• "Review payment handler" (Today, 2:34pm)
-• "Translate docs to Spanish" (Dec 10, 11:20am)
-• "Explain async/await" (Dec 10, 9:15am)
-```
-
-Click one, continue:
-```
-You: "Now do the same translation for French"
-Model: "Sure, here's the French version..."
-```
-
----
-
 ## Enterprise Setup (For Teams)
 
 ```bash
 docker run -p 8000:8000 anonmaly/lmapp web
 ```
 
-Deploy to `https://lmapp.internal.company.com`
-
-All conversations stay in your network.
+Deploy to your infrastructure. All data stays in your network.
 
 ---
 
@@ -186,7 +165,7 @@ All conversations stay in your network.
 → Your machine, your control. Want team infrastructure? Deploy to Docker/K8s. Your choice.
 
 **"Some setup required"**
-→ 5 minutes (install → model download → ready). Faster installers coming.
+→ ~8 minutes total (install, download model, ready to use). Faster installers coming.
 
 **"It's DIY"**
 → You control everything. Want managed support? Coming soon.
@@ -211,8 +190,6 @@ All conversations stay in your network.
 **LMAPP is the answer to:**
 
 "I need AI tools for my work, but I want to own the stack."
-
-Easy as 1, 2, 3... Download it. Install it. Run it.
 
 ```bash
 pip install lmapp
