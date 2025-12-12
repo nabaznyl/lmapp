@@ -7,19 +7,20 @@
 
 **v0.3.0-beta** - Web UI, 8 Plugins, RAG System, Batch Processing, Sessions, 587 Tests
 
-**[→ See Demo & Features](DEMO.md)** | [![Run on Replit](https://replit.com/badge/github/nabaznyl/lmapp)](https://replit.com/github/nabaznyl/lmapp)
+**[🎬 Try Now in Browser (No Account)](demo/index.html)** | **[📖 See Demo & Features](DEMO.md)**
 
 ---
 
 ## 🚀 Quick Start (30 seconds)
 
-**Try it now** in your browser (no account required):
-```bash
-# Click "Run on Replit" above, then in the terminal:
-lmapp chat
+### Try in Browser (No Installation)
+Click the **"Try Now in Browser"** button above to run lmapp in your terminal right now—no account, no installation, works on mobile.
 
-# Or install locally:
+### Install Locally
+```bash
 pip install lmapp
+lmapp install  # Automatically installs and configures Ollama
+lmapp chat     # Start chatting!
 ```
 
 ### Terminal Demo
