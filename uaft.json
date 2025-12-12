@@ -8,7 +8,8 @@
   "lint": {
     "commands": [
       ".venv/bin/flake8 src/ tests/",
-      ".venv/bin/black --check src/ tests/"
+      ".venv/bin/black --check src/ tests/",
+      ".venv/bin/mypy src/"
     ]
   },
   "cleanup": [
@@ -19,7 +20,8 @@
     "*.egg-info",
     ".pytest_cache",
     ".coverage",
-    "htmlcov"
+    "htmlcov",
+    ".mypy_cache"
   ],
   "test": {
     "command": ".venv/bin/pytest",
