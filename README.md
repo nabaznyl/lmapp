@@ -1,14 +1,11 @@
 # lmapp - Local LLM CLI
 
-> **Private AI in your terminal. No cloud. No subscriptions. Just you and your models.**  
-> Download once. Run anywhere. Own your data.
+> **Beautiful AI. Complete control. Your data, always.**  
+> Easy as 1, 2, 3... Download it. Install it. Run it.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/) [![Tests](https://img.shields.io/badge/Tests-587%2F587%20passing-brightgreen.svg)]() [![Status](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
 
-**v0.4.0-beta** - 30-Day Full-Feature Trial, Freemium Model, Desktop GUI, Web UI
-
-> 🎉 **Try all features for 30 days, free. Then enjoy powerful free tier forever.**  
-> See [Trial & Freemium Model](TRIAL_AND_FREEMIUM.md) | [Advanced Mode](ADVANCED_MODE.md) | [Legal Terms](LEGAL_TERMS.md)
+**v0.2.6** - Production Ready. Fully Featured. Always Free.
 
 See [**Demo & Features**](DEMO.md) for examples and use cases.
 
@@ -21,23 +18,23 @@ See [**Demo & Features**](DEMO.md) for examples and use cases.
 ```bash
 pip install lmapp
 lmapp install  # Automatically installs and configures Ollama
-lmapp chat     # Start chatting! (30-day trial begins)
+lmapp chat     # Start chatting!
 ```
 
-### Check Trial Status
+### Check Status
 
 ```bash
 lmapp status
 ```
 
-**Output (first run):**
+**Output:**
 ```
 LMAPP Status Report
 ===================
-Version: v0.4.0
-Trial Status: Active
-Days Remaining: 30 days
-Advanced Mode: ON
+Version: v0.2.6
+Status: Ready
+Backend: Ollama
+Plugins: Enabled
 ```
 
 ### Example

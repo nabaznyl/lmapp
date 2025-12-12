@@ -359,27 +359,14 @@ def status():
     logger.debug("status command started")
     console.print("[bold]LMAPP Status Report[/bold]\n")
     
-    # Show trial status
-    from lmapp.core.trial import get_trial_info
-    trial_info = get_trial_info()
-    
-    console.print("[bold]Trial & License[/bold]\n")
-    if trial_info["is_active"]:
-        console.print(f"  Trial Status: [green]Active[/green]")
-        console.print(f"  Days Remaining: [cyan]{trial_info['days_remaining']} days[/cyan]")
-    else:
-        console.print(f"  Trial Status: [yellow]Expired[/yellow]")
-        console.print(f"  Days Remaining: 0 days")
-    console.print(f"  Renewal Count: {trial_info['renewal_count']}")
-    
     # Show version and config
     from lmapp.core.config import get_config_manager
     config = get_config_manager().get()
     
-    console.print(f"\n[bold]Version & Mode[/bold]\n")
-    console.print(f"  Version: {__version__ if hasattr(__name__, '__version__') else 'v0.4.0'}")
-    console.print(f"  Advanced Mode: [cyan]{'ON' if config.advanced_mode else 'OFF'}[/cyan]")
-    console.print(f"  Status: [green]{'Trial Tier' if trial_info['is_active'] else 'Free Tier'}[/green]")
+    console.print(f"[bold]Version[/bold]\n")
+    console.print(f"  Version: {__version__}")
+    console.print(f"  Status: [green]Production Ready[/green]")
+    console.print(f"  License: [cyan]MIT (Free)[/cyan]")
 
     checker = SystemCheck()
     checker.run_all_checks()
