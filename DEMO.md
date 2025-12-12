@@ -69,28 +69,6 @@ You try the Auditor plugin. It reviews your code in 2 seconds.
 
 ---
 
-## Why LMAPP?
-
-You need AI tools. Right now you're choosing between:
-
-1. **Cloud APIs** → Pay per use, data leaves your machine, vendor lock-in
-2. **Bare Ollama** → Works, but no UI, no plugins, you start from zero
-3. **Build it yourself** → Months of work
-
-**LMAPP:** Ollama + beautiful UI + 8 plugins + REST API. Everything works together. Free. Local.
-
-Out of the box, you get:
-- ✅ **Local First** - All data stays on your machine
-- ✅ **Offline Ready** - Works without internet
-- ✅ **Privacy** - No telemetry, no tracking
-- ✅ **Free** - No subscriptions, no costs
-- ✅ **Plugins Enabled** - 8 tools ready to use
-- ✅ **Web UI** - Beautiful interface at localhost:8000
-
-Easy as 1, 2, 3... Download it. Install it. Run it.
-
----
-
 ## Real Demonstrations
 
 ### Demo 1: Code Review
@@ -150,6 +128,28 @@ docker run -p 8000:8000 anonmaly/lmapp web
 ```
 
 Deploy to your infrastructure. All data stays in your network.
+
+---
+
+## Why LMAPP?
+
+You need AI tools. Right now you're choosing between:
+
+1. **Cloud APIs** → Pay per use, data leaves your machine, vendor lock-in
+2. **Bare Ollama** → Works, but no UI, no plugins, you start from zero
+3. **Build it yourself** → Months of work
+
+**LMAPP:** Ollama + beautiful UI + 8 plugins + REST API. Everything works together. Free. Local.
+
+Out of the box, you get:
+- ✅ **Local First** - All data stays on your machine
+- ✅ **Offline Ready** - Works without internet
+- ✅ **Privacy** - No telemetry, no tracking
+- ✅ **Free** - No subscriptions, no costs
+- ✅ **Plugins Enabled** - 8 tools ready to use
+- ✅ **Web UI** - Beautiful interface at localhost:8000
+
+Easy as 1, 2, 3... Download it. Install it. Run it.
 
 ---
 
