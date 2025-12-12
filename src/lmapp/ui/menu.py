@@ -65,7 +65,7 @@ class MainMenu:
                 MenuItem("C", "Models", self.manage_models),
                 MenuItem("D", "API & Integration", self.show_api),
                 MenuItem("E", "Settings", self.configure),
-                MenuItem("F", "Calibrations", self.calibrate_workflow),
+                MenuItem("F", "Roles & Workflows", self.calibrate_workflow),
                 MenuItem("G", "Developer Tools", self.show_dev_tools),
                 MenuItem("H", "Help & Documentation", self.show_help),
                 MenuItem("I", "About", self.show_about),
@@ -75,7 +75,7 @@ class MainMenu:
             items.extend([
                 MenuItem("B", "Plugins", self.manage_plugins),
                 MenuItem("C", "Settings", self.configure),
-                MenuItem("D", "Calibrations", self.calibrate_workflow),
+                MenuItem("D", "Roles & Workflows", self.calibrate_workflow),
                 MenuItem("E", "Help & Documentation", self.show_help),
                 MenuItem("F", "About", self.show_about),
             ])
@@ -747,7 +747,7 @@ Beautiful AI. Complete control. Your data, always.
         questions = [
             inquirer.List(
                 "action",
-                message="Workflow Calibration",
+                message="Roles & Workflows",
                 choices=[
                     ("Run Setup Wizard", "wizard"),
                     ("Edit Rules Manually", "edit"),

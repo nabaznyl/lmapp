@@ -104,11 +104,11 @@ def main(ctx, version, debug, dev):
     
     workflow_mgr = WorkflowManager()
     if workflow_mgr.should_prompt():
-        console.print("\n[bold cyan]AI Workflow Calibration[/bold cyan]")
-        console.print("Would you like to calibrate your AI assistant's behavior?")
+        console.print("\n[bold cyan]Roles & Workflows Setup[/bold cyan]")
+        console.print("Would you like to configure your AI assistant's behavior?")
         console.print("[dim](Operating rules, tool awareness, etc.)[/dim]")
         
-        if Confirm.ask("Run calibration wizard?", default=True):
+        if Confirm.ask("Run setup wizard?", default=True):
             workflow_mgr.run_setup_wizard()
         else:
             # Suppress future prompts?
@@ -396,13 +396,13 @@ def status():
 
 
 @main.group()
-def calibration():
-    """Manage AI workflow calibrations"""
+def workflow():
+    """Manage AI Roles & Workflows"""
     pass
 
-@calibration.command(name="setup")
-def calibration_setup():
-    """Run the interactive calibration wizard"""
+@workflow.command(name="setup")
+def workflow_setup():
+    """Run the interactive Roles & Workflows wizard"""
     from lmapp.core.workflow import WorkflowManager
     WorkflowManager().run_setup_wizard()
 

@@ -11,6 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.1] - 2025-12-12
+
+### Changed
+- **Roles & Workflows**: Renamed "Calibrations" feature to "Roles & Workflows" for clarity.
+- **Documentation**: Renamed `ROLE_QUICKSTART.md` to `ROLE_WORKFLOW_QUICKSTART.md`.
+- **UI**: Updated Main Menu and CLI prompts to use "Roles & Workflows" terminology.
+
+### Added
+- **Workflow Manager**: New `WorkflowManager` class to handle user preference persistence (`workflow_rules.json`).
+- **Architect Role**: Added "Architect" system prompt role with specific communication protocols (Ask First).
+
+---
+
 ## [0.3.0-beta] - 2025-12-11 (PHASE 1 COMPLETE ✅)
 
 ### Added

@@ -53,7 +53,7 @@ class WorkflowManager:
 
     def run_setup_wizard(self):
         """Interactive wizard to configure workflow."""
-        console.print(Panel("[bold cyan]AI Workflow Calibration[/bold cyan]\n\nLet's configure how your AI assistant behaves.", border_style="cyan"))
+        console.print(Panel("[bold cyan]Roles & Workflows Setup[/bold cyan]\n\nLet's configure how your AI assistant behaves.", border_style="cyan"))
         
         rules = self.load_rules()
         
@@ -89,7 +89,7 @@ class WorkflowManager:
         # Update Config
         self.config_manager.update(workflow_setup_completed=True)
         
-        console.print("\n[bold green]✓ Calibration Complete![/bold green]")
+        console.print("\n[bold green]✓ Roles & Workflows Setup Complete![/bold green]")
         console.print(f"Rules saved to: {self.rules_file}")
 
     def generate_system_prompt(self) -> str:
