@@ -1,15 +1,11 @@
-# Phase 1: Trial & Freemium System - Implementation Summary
+> This document has been archived.
 
-**Status:** ✅ COMPLETE  
-**Date:** December 11, 2025  
-**Version:** LMAPP v0.4.0-beta  
-**Commits:** 3 (9431dd4 → a41d5ef)
+# MOVED TO ARCHIVE (2025-12-12)
 
----
+Original path: IMPLEMENTATION_NOTES_PHASE1.md
+Reason: Outdated content (trial/freemium) not part of public messaging.
 
-## Overview
-
-Phase 1 of LMAPP's trial & freemium model has been successfully implemented. The system provides a 30-day free trial with all features enabled, followed by a limited free tier with core chat functionality.
+Please see: `_archive/moved-2025-12/IMPLEMENTATION_NOTES_PHASE1.md`
 
 ---
 

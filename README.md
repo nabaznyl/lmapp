@@ -3,7 +3,7 @@
 > **Local LLM CLI** – AI everywhere. Easy, simple, and undeniable.  
 > Online or offline. The future is yours to command.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/) [![CI](https://github.com/nabaznyl/lmapp/actions/workflows/tests.yml/badge.svg)](https://github.com/nabaznyl/lmapp/actions/workflows/tests.yml) [![Status](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/) [![CI](https://github.com/nabaznyl/lmapp/actions/workflows/tests.yml/badge.svg)](https://github.com/nabaznyl/lmapp/actions/workflows/tests.yml) [![codecov](https://codecov.io/gh/nabaznyl/lmapp/branch/mother/graph/badge.svg)](https://codecov.io/gh/nabaznyl/lmapp) [![Status](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
 
 **v0.3.0-beta** - Production Ready. Fully Featured. Free.
 
@@ -342,6 +342,7 @@ lmapp chat
 | **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** | Community standards |
 | **[LICENSE](LICENSE)** | License terms |
 | **[DEMO.md](DEMO.md)** | Live examples and feature tour |
+| **[API_REFERENCE.md](API_REFERENCE.md)** | Lightweight CLI + HTTP API reference |
 
 Additional references:
 - **[docs/ERROR_DATABASE.md](docs/ERROR_DATABASE.md)** - Known errors and fixes

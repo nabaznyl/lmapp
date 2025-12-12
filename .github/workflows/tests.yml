@@ -2,9 +2,9 @@ name: Tests & Quality Checks
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, mother ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, develop, mother ]
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
