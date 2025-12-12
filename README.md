@@ -3,7 +3,7 @@
 > **Local LLM CLI** – AI everywhere. Easy, simple, and undeniable.  
 > Online or offline. The future is yours to command.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/) [![Tests](https://img.shields.io/badge/Tests-587%2F587%20passing-brightgreen.svg)]() [![Status](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/) [![CI](https://github.com/nabaznyl/lmapp/actions/workflows/tests.yml/badge.svg)](https://github.com/nabaznyl/lmapp/actions/workflows/tests.yml) [![Status](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
 
 **v0.3.0-beta** - Production Ready. Fully Featured. Free.
 
