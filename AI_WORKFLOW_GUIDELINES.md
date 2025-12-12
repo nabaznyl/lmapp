@@ -28,6 +28,13 @@ This document defines the operational parameters for AI assistants working on th
     *   If uncertain, ask.
     *   If the user says "no", undo immediately without pushback.
 
+### Communication Standards
+1.  **Pre-Action Explanation:**
+    *   Provide a detailed explanation of the changes you are about to make *prior* to doing them.
+2.  **Post-Action Summary:**
+    *   Provide a detailed summary of the updates and changes you made at the end of the conversation.
+    *   Make it easy to read and follow.
+
 ## 2. Tool Configuration
 
 The following tools are integrated or available for the AI workflow:
