@@ -7,11 +7,66 @@
 
 **v0.3.0-beta** - Web UI, 8 Plugins, RAG System, Batch Processing, Sessions, 587 Tests
 
-**[→ See Demo & Features](DEMO.md)**
+**[→ See Demo & Features](DEMO.md)** | [![Open in Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/nabaznyl/lmapp)
 
 ---
 
 ## 🚀 Quick Start (30 seconds)
+
+**Try it now** in your browser:
+```bash
+# In Codespaces, lmapp is already installed:
+lmapp chat
+
+# Or install locally:
+pip install lmapp
+```
+
+### Terminal Demo
+
+See what lmapp feels like:
+
+```bash
+$ lmapp chat
+╔════════════════════════════════════════════╗
+║           LMAPP Chat Interface             ║
+║  Type 'help' for commands, 'exit' to quit  ║
+╚════════════════════════════════════════════╝
+
+You: What is machine learning?
+
+AI: Machine learning is a subset of artificial intelligence that 
+focuses on enabling computer systems to learn and improve from 
+experience without explicit programming...
+
+---
+
+You: Give me a Python example
+
+AI: Here's a simple ML example:
+
+```python
+from sklearn.datasets import load_iris
+from sklearn.tree import DecisionTreeClassifier
+
+# Load data
+iris = load_iris()
+X, y = iris.data, iris.target
+
+# Train model
+clf = DecisionTreeClassifier()
+clf.fit(X, y)
+
+# Predict
+prediction = clf.predict([[5.1, 3.5, 1.4, 0.2]])
+print(f"Predicted: {iris.target_names[prediction[0]]}")
+```
+
+---
+
+You: exit
+Goodbye! 👋
+```
 
 ### Installation
 
@@ -37,39 +92,132 @@ See [Installation Guide](./INSTALL.md) for more options or [QUICKSTART.md](QUICK
 
 ---
 
-## 🎯 Core Features
+## 🎯 Core Features with Examples
 
 ### 💬 Chat
 ```bash
-lmapp chat                          # Start interactive chat
-lmapp chat --model mistral          # Use specific model
-lmapp c "What is AI?"               # Shortcut: lmapp c for chat
+$ lmapp chat --model mistral
+╔════════════════════════════════════════════╗
+║        Chat with Mistral (Local)           ║
+╚════════════════════════════════════════════╝
+
+You: Explain quantum computing in simple terms
+
+AI: Quantum computers use quantum bits (qubits) instead of regular bits.
+While regular bits are 0 or 1, qubits can be both at once (superposition).
+This lets them solve certain problems exponentially faster...
+
+You: What are the use cases?
+
+AI: Key use cases include:
+  • Drug discovery (molecular simulation)
+  • Finance (portfolio optimization)
+  • Cryptography (breaking encryption)
+  • Machine learning (optimization)
 ```
 
 ### 🔍 RAG (Semantic Search)
 ```bash
-lmapp rag index ~/documents         # Index your documents
-lmapp rag search "Python tips"      # Find relevant content
-lmapp chat --with-context "Help"    # Use RAG in conversation
+$ lmapp rag index ~/my_docs
+📁 Indexing documents...
+✓ Processed: README.md (1,234 tokens)
+✓ Processed: GUIDE.pdf (5,678 tokens)
+✓ Processed: NOTES.txt (892 tokens)
+✓ Index created: 7,804 tokens in 12 documents
+
+$ lmapp rag search "how to optimize python code"
+📊 Search Results (3 matches):
+
+1. GUIDE.pdf - Line 45 (score: 0.92)
+   "Optimization techniques include: list comprehensions,
+    caching, and using built-in functions instead of loops"
+
+2. NOTES.txt - Line 12 (score: 0.88)
+   "Profile code with cProfile before optimizing"
+
+3. README.md - Line 89 (score: 0.81)
+   "Performance tips for production code"
+
+$ lmapp chat --with-context
+You: Summarize the best Python optimization tips from my docs
+
+AI: Based on your documents, here are the key optimization tips:
+  1. Use list comprehensions instead of loops
+  2. Profile with cProfile before optimizing
+  3. Leverage built-in functions (map, filter, etc.)
+  4. Implement caching for expensive operations
 ```
 
 ### 📦 Batch Processing
 ```bash
-lmapp batch create inputs.json      # Process multiple queries
-lmapp batch results job_id --json   # Export results
+$ lmapp batch create inputs.json
+Processing 5 queries in batch...
+[████████████████████] 100% (5/5)
+
+Job created: batch_20250211_143022
+Estimated time: 45 seconds
+
+$ lmapp batch results batch_20250211_143022 --json
+{
+  "job_id": "batch_20250211_143022",
+  "status": "completed",
+  "results": [
+    {"input": "Explain AI", "output": "AI is..."},
+    {"input": "What is ML?", "output": "Machine learning..."},
+    ...
+  ],
+  "completed_at": "2025-02-11T14:30:47Z"
+}
 ```
 
 ### 🔌 Plugins
 ```bash
-lmapp plugin list                   # See installed plugins
-lmapp plugin install translator     # Add new plugin
+$ lmapp plugin list
+Available Plugins:
+  ✓ translator     - Real-time translation (8 languages)
+  ✓ summarizer     - Extract key points from long text
+  ✓ code-reviewer  - Analyze code and suggest improvements
+  ✓ sql-generator  - Write SQL queries from descriptions
+  ✓ regex-helper   - Build and test regex patterns
+  ✓ json-validator - Validate and format JSON
+  ✓ git-helper     - Explain git commands and operations
+  ✓ api-tester     - Test REST APIs interactively
+
+$ lmapp plugin install translator
+Installing translator plugin...
+✓ Downloaded (245 KB)
+✓ Installed successfully
+Ready to use: lmapp translate --help
+
+$ lmapp translate --text "Hello World" --to spanish
+Translation (Spanish):
+"¡Hola Mundo!"
 ```
 
 ### ⚙️ Configuration
 ```bash
-lmapp config show                   # View all settings
-lmapp config set temperature 0.3    # Customize behavior
-lmapp config --set-prompt           # Custom system prompt
+$ lmapp config show
+Current Configuration:
+  Model: mistral (7B)
+  Temperature: 0.7
+  Max Tokens: 2048
+  Context Size: 4096
+  System Prompt: You are a helpful AI assistant
+
+$ lmapp config set temperature 0.3
+✓ Configuration updated
+
+$ lmapp config --set-prompt
+Enter your custom system prompt:
+> You are a Python expert. Help with code, explain concepts clearly.
+✓ System prompt saved
+
+$ lmapp status
+Status Report:
+  ✓ Backend: Ollama (running)
+  ✓ Model: mistral (7.4B)
+  ✓ Memory: 6.2 GB / 16 GB
+  ✓ Performance: 45 tokens/sec
 ```
 
 ---
