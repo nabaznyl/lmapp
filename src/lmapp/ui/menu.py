@@ -65,17 +65,19 @@ class MainMenu:
                 MenuItem("C", "Models", self.manage_models),
                 MenuItem("D", "API & Integration", self.show_api),
                 MenuItem("E", "Settings", self.configure),
-                MenuItem("F", "Developer Tools", self.show_dev_tools),
-                MenuItem("G", "Help & Documentation", self.show_help),
-                MenuItem("H", "About", self.show_about),
+                MenuItem("F", "Calibrations", self.calibrate_workflow),
+                MenuItem("G", "Developer Tools", self.show_dev_tools),
+                MenuItem("H", "Help & Documentation", self.show_help),
+                MenuItem("I", "About", self.show_about),
             ])
         else:
             # Beginner Mode: Simplified menus
             items.extend([
                 MenuItem("B", "Plugins", self.manage_plugins),
                 MenuItem("C", "Settings", self.configure),
-                MenuItem("D", "Help & Documentation", self.show_help),
-                MenuItem("E", "About", self.show_about),
+                MenuItem("D", "Calibrations", self.calibrate_workflow),
+                MenuItem("E", "Help & Documentation", self.show_help),
+                MenuItem("F", "About", self.show_about),
             ])
 
         items.append(MenuItem("Q", "Quit", self.quit))
@@ -735,6 +737,40 @@ Beautiful AI. Complete control. Your data, always.
                 console.print(Panel(info, border_style="green", title="System Details"))
                 console.input("\n[dim]Press Enter to continue...[/dim]")
 
+
+    def calibrate_workflow(self):
+        """Run the workflow calibration wizard"""
+        from lmapp.core.workflow import WorkflowManager
+        
+        manager = WorkflowManager()
+        
+        questions = [
+            inquirer.List(
+                "action",
+                message="Workflow Calibration",
+                choices=[
+                    ("Run Setup Wizard", "wizard"),
+                    ("Edit Rules Manually", "edit"),
+                    ("Back to Main Menu", "back"),
+                ],
+            )
+        ]
+        
+        answer = inquirer.prompt(questions)
+        if not answer:
+            return
+            
+        action = answer["action"]
+        
+        if action == "wizard":
+            manager.run_setup_wizard()
+            console.input("\n[dim]Press Enter to continue...[/dim]")
+        elif action == "edit":
+            console.print(f"\n[bold]Manual Edit[/bold]")
+            console.print(f"Edit the rules file at: [cyan]{manager.rules_file}[/cyan]")
+            console.print("\nExample structure:")
+            console.print(json.dumps(manager.default_rules, indent=2))
+            console.input("\n[dim]Press Enter to continue...[/dim]")
 
     def quit(self):
         """Exit application"""

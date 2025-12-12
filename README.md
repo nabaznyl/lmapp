@@ -14,6 +14,7 @@ See [**Demo & Features**](DEMO.md) for examples and use cases.
 ## 🚀 Quick Start
 
 Full installation and setup: see [QUICKSTART.md](QUICKSTART.md).
+Customize your AI's behavior: see [Role & Workflow Guide](docs/ROLE_QUICKSTART.md).
 
 Everyday commands:
 ```bash

@@ -49,6 +49,17 @@ class LMAppConfig(BaseModel):
     )
     timeout: int = Field(default=300, description="Request timeout in seconds")
 
+    # Workflow / Calibration Settings
+    workflow_setup_completed: bool = Field(
+        default=False, description="Whether workflow calibration wizard has run"
+    )
+    suppress_workflow_prompt: bool = Field(
+        default=False, description="Suppress the startup workflow prompt"
+    )
+    workflow_role: str = Field(
+        default="default", description="Default role to use (default, architect, custom)"
+    )
+
     @field_validator("backend")
     @classmethod
     def validate_backend(cls, v):

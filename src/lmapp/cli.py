@@ -98,6 +98,23 @@ def main(ctx, version, debug, dev):
     if check_first_run():
         run_user_mode_setup()
 
+    # Workflow Calibration Check
+    from lmapp.core.workflow import WorkflowManager
+    from rich.prompt import Confirm
+    
+    workflow_mgr = WorkflowManager()
+    if workflow_mgr.should_prompt():
+        console.print("\n[bold cyan]AI Workflow Calibration[/bold cyan]")
+        console.print("Would you like to calibrate your AI assistant's behavior?")
+        console.print("[dim](Operating rules, tool awareness, etc.)[/dim]")
+        
+        if Confirm.ask("Run calibration wizard?", default=True):
+            workflow_mgr.run_setup_wizard()
+        else:
+            # Suppress future prompts?
+            if Confirm.ask("Suppress this prompt in the future?", default=True):
+                get_config_manager().update(suppress_workflow_prompt=True)
+
     # Handle Developer Mode flag
     if dev:
         config_manager = get_config_manager()
@@ -377,6 +394,17 @@ def status():
     detector.show_status_table()
     logger.debug("Status command completed")
 
+
+@main.group()
+def calibration():
+    """Manage AI workflow calibrations"""
+    pass
+
+@calibration.command(name="setup")
+def calibration_setup():
+    """Run the interactive calibration wizard"""
+    from lmapp.core.workflow import WorkflowManager
+    WorkflowManager().run_setup_wizard()
 
 @main.group()
 def config():
