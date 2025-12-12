@@ -44,7 +44,7 @@ lmapp chat
 # 4. Response streams in real-time
 ```
 
-## Web UI (1 minute - v0.2.6+)
+## Web UI (1 minute - v0.3.0-beta+)
 
 ```bash
 # Start the web server
@@ -147,6 +147,6 @@ lmapp plugin install translator
 
 ---
 
-**Version:** 0.2.6  
+**Version:** 0.3.0-beta  
 **Last Updated:** Dec 11, 2025  
 **Status:** ✅ Production Ready
