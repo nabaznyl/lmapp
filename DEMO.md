@@ -415,21 +415,31 @@ lmapp chat
 # Uses a different model
 ```
 
-### Multiple Backends Available
+---
 
-LMAPP supports multiple backends for flexibility:
+## Available Backends
 
-**Primary: Ollama**
+LMAPP supports multiple backends for maximum flexibility:
+
+### Primary: Ollama
 - Most popular, widest model selection
 - Easy installation and management
 - Excellent performance
+- Recommended for most users
 
-**Fallback: llamafile**
+### Fallback: llamafile
 - Single-file executable model
-- Zero dependencies
+- Zero dependencies beyond the binary
 - Perfect for offline, fail-safe access
+- Great for distribution and portability
+- Fastest setup for isolated environments
 
-See QUICKSTART.md for backend configuration.
+### Other Compatible Backends
+- OpenAI-compatible endpoints (custom API servers)
+- Additional integrations available via plugin system
+- Extensible plugin architecture for custom backends
+
+See QUICKSTART.md for backend configuration details.
 
 ---
 
@@ -482,7 +492,7 @@ See QUICKSTART.md for backend configuration.
 **Data:**
 - Stored: `~/.local/share/lmapp/` (Linux/Mac) or `AppData/lmapp` (Windows)
 - Local-only by default
-- Optional sync available (your infrastructure)
+- Optional infrastructure available (your control)
 
 ### Why This Matters
 
@@ -494,18 +504,56 @@ See QUICKSTART.md for backend configuration.
 
 ---
 
-## Pricing (Simple)
+## Advanced Setup (Optional)
 
-**Software:** Free (MIT License)
-**Hosting:** Free (runs on your machine)
-**Models:** Free (open source, included)
+### Multi-Device Synchronization
 
-**Total cost:** $0
+Want LMAPP running on your laptop AND desktop with shared sessions?
 
-Optional hardware (your choice):
-- GPU: $500-5,000 (one-time, makes AI faster)
+```bash
+# Configure on primary machine
+lmapp config set sync.enabled true
+lmapp config set sync.host lmapp-central.yourinfrastructure.local
+```
 
-That's it. We don't charge for cloud features. You own your infrastructure.
+Now all your LMAPP instances sync through your own infrastructure. You own everything.
+
+### Custom Backup & Storage
+
+Want to back up conversations to your cloud storage?
+
+```bash
+# Configure cloud storage of your choice
+lmapp config set storage.backup.enabled true
+lmapp config set storage.backup.provider dropbox  # or google-drive, aws-s3, etc
+```
+
+Conversations auto-sync to your storage (encrypted). Still your data, just synced.
+
+### API Fallback (For High-Demand)
+
+Your machine is under heavy load? Set up a fallback backend:
+
+```bash
+# Configure optional fallback
+lmapp config set fallback.enabled true
+lmapp config set fallback.api openai
+lmapp config set openai.api-key sk-...
+```
+
+Local model runs first. If slow/offline, can fall back to configured service. You control when and how.
+
+### Collaborative Sharing
+
+Want to share conversations with your team?
+
+```bash
+lmapp config set sharing.enabled true
+# Generate shareable link in UI
+# Your team clicks link, sees conversation (read-only or interactive)
+```
+
+All handled through your infrastructure.
 
 ---
 

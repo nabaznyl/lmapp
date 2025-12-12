@@ -1,7 +1,6 @@
 # lmapp - Local LLM CLI
 
-> **Beautiful AI. Complete control. Your data, always.**  
-> Easy as 1, 2, 3... Download it. Install it. Run it.
+> **AI at your fingertips. Easy, simple, undeniable. Online or offline, the future is yours to command.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/) [![Tests](https://img.shields.io/badge/Tests-587%2F587%20passing-brightgreen.svg)]() [![Status](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
 
