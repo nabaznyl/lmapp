@@ -3,9 +3,11 @@
 > **Private AI in your terminal. No cloud. No subscriptions. Just you and your models.**  
 > Download once. Run anywhere. Own your data.
 
-**[📖 DEMO & FEATURES](DEMO.md)** | [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/) [![Tests](https://img.shields.io/badge/Tests-587%2F587%20passing-brightgreen.svg)]() [![Status](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/) [![Tests](https://img.shields.io/badge/Tests-587%2F587%20passing-brightgreen.svg)]() [![Status](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
 
 **v0.3.0-beta** - Web UI, 8 Plugins, RAG System, Batch Processing, Sessions, 587 Tests
+
+**[→ See Demo & Features](DEMO.md)**
 
 ---
 
