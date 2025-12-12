@@ -2,7 +2,7 @@
   "name": "lmapp-vscode",
   "displayName": "lmapp Copilot",
   "description": "Local AI Assistant for VS Code - Powered by lmapp",
-  "version": "0.1.0",
+  "version": "0.3.3",
   "publisher": "lmapp",
   "repository": {
     "type": "git",

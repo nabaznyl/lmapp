@@ -6,33 +6,47 @@ const vscode = require("vscode");
 const axios_1 = require("axios");
 const child_process_1 = require("child_process");
 let statusBarItem;
+let serverProcess;
 function activate(context) {
     console.log('lmapp-vscode is now active!');
     // Status Bar
     statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-    statusBarItem.command = 'lmapp.startServer';
+    statusBarItem.command = 'lmapp.toggleServer';
     context.subscriptions.push(statusBarItem);
     updateStatusBar('Ready');
     statusBarItem.show();
     // Commands
-    context.subscriptions.push(vscode.commands.registerCommand('lmapp.startServer', startServer), vscode.commands.registerCommand('lmapp.stopServer', stopServer));
+    context.subscriptions.push(vscode.commands.registerCommand('lmapp.startServer', startServer), vscode.commands.registerCommand('lmapp.stopServer', stopServer), vscode.commands.registerCommand('lmapp.toggleServer', toggleServer));
     // Inline Completion Provider
     const provider = new LmappCompletionProvider();
     const selector = { pattern: '**' }; // Match all files
     context.subscriptions.push(vscode.languages.registerInlineCompletionItemProvider(selector, provider));
 }
 class LmappCompletionProvider {
+    constructor() {
+        this.lastRequestTime = 0;
+        this.debounceMs = 500; // Wait 500ms after typing stops
+    }
     async provideInlineCompletionItems(document, position, context, token) {
         const config = vscode.workspace.getConfiguration('lmapp');
         if (!config.get('enableInlineCompletion')) {
             return [];
         }
-        // Debounce/Trigger logic could go here (e.g. wait for pause in typing)
+        // Debounce: Don't request on every keystroke
+        const now = Date.now();
+        if (now - this.lastRequestTime < this.debounceMs) {
+            await new Promise(resolve => setTimeout(resolve, this.debounceMs));
+            if (token.isCancellationRequested)
+                return [];
+        }
+        this.lastRequestTime = Date.now();
         const serverUrl = config.get('serverUrl');
         const model = config.get('model');
+        const maxLines = config.get('contextLines') || 50;
         // Get context (prefix/suffix)
-        // Simple implementation: just send the preceding lines
-        const range = new vscode.Range(new vscode.Position(0, 0), position);
+        // Optimize: Only send relevant context window to reduce latency
+        const startLine = Math.max(0, position.line - maxLines);
+        const range = new vscode.Range(new vscode.Position(startLine, 0), position);
         const prompt = document.getText(range);
         try {
             updateStatusBar('$(sync~spin) Generating...');
@@ -41,9 +55,11 @@ class LmappCompletionProvider {
                 prompt: prompt,
                 max_tokens: 50,
                 temperature: 0.2,
-                stop: ["\n\n"] // Stop at double newline to prevent run-on
-            }, { timeout: 2000 }); // Fast timeout for UI responsiveness
+                stop: ["\n\n"]
+            }, { timeout: 2000 });
             updateStatusBar('Ready');
+            if (token.isCancellationRequested)
+                return [];
             if (response.data && response.data.choices && response.data.choices.length > 0) {
                 const text = response.data.choices[0].text;
                 if (text) {
@@ -53,8 +69,7 @@ class LmappCompletionProvider {
         }
         catch (error) {
             updateStatusBar('$(error) Error');
-            console.error('lmapp completion error:', error);
-            // Silent fail for completions
+            // Silent fail for completions to avoid annoying user
         }
         return [];
     }
@@ -62,20 +77,52 @@ class LmappCompletionProvider {
 function updateStatusBar(text) {
     statusBarItem.text = `$(hubot) lmapp: ${text}`;
 }
+function toggleServer() {
+    if (serverProcess) {
+        stopServer();
+    }
+    else {
+        startServer();
+    }
+}
 function startServer() {
+    if (serverProcess) {
+        vscode.window.showInformationMessage('lmapp server is already running.');
+        return;
+    }
     vscode.window.showInformationMessage('Starting lmapp server...');
-    // This assumes lmapp is in the PATH. 
-    // In a real extension, we might bundle the python env or config the path.
-    (0, child_process_1.exec)('lmapp serve', (err, stdout, stderr) => {
-        if (err) {
+    updateStatusBar('$(sync~spin) Starting...');
+    // Use 'lmapp server' command
+    serverProcess = (0, child_process_1.exec)('lmapp server', (err, stdout, stderr) => {
+        if (err && !serverProcess?.killed) {
             vscode.window.showErrorMessage(`Failed to start lmapp: ${err.message}`);
+            serverProcess = undefined;
+            updateStatusBar('$(error) Failed');
             return;
         }
     });
+    // Give it a moment to start
+    setTimeout(() => {
+        if (serverProcess) {
+            updateStatusBar('Running');
+            vscode.window.showInformationMessage('lmapp server started!');
+        }
+    }, 2000);
 }
 function stopServer() {
-    // Implementation depends on how we track the process
-    vscode.window.showInformationMessage('Stopping server not implemented yet (kill process manually)');
+    if (serverProcess) {
+        serverProcess.kill();
+        serverProcess = undefined;
+        vscode.window.showInformationMessage('lmapp server stopped.');
+        updateStatusBar('Stopped');
+    }
+    else {
+        vscode.window.showInformationMessage('lmapp server is not running.');
+    }
 }
-function deactivate() { }
+function deactivate() {
+    if (serverProcess) {
+        serverProcess.kill();
+    }
+}
 //# sourceMappingURL=extension.js.map
