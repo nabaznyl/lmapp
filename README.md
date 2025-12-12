@@ -5,7 +5,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/) [![CI](https://github.com/nabaznyl/lmapp/actions/workflows/tests.yml/badge.svg)](https://github.com/nabaznyl/lmapp/actions/workflows/tests.yml) [![codecov](https://codecov.io/gh/nabaznyl/lmapp/branch/mother/graph/badge.svg)](https://codecov.io/gh/nabaznyl/lmapp) [![Status](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
 
-**v0.3.2** - Production Ready. Fully Featured. Free.
+**v0.3.3** - Production Ready. Fully Featured. Free.
 
 See [**Demo & Features**](https://github.com/nabaznyl/lmapp/blob/mother/DEMO.md) for examples and use cases.
 
@@ -19,11 +19,26 @@ Customize your AI's behavior: see [Roles & Workflows Guide](https://github.com/n
 Everyday commands:
 ```bash
 lmapp chat          # Start chatting locally
+lmapp server start  # Start API server (for VS Code)
 lmapp status        # Check backend/model status
-lmapp config show   # View current configuration
 ```
 
-More examples and demos: see [DEMO.md](https://github.com/nabaznyl/lmapp/blob/mother/DEMO.md).
+---
+
+## 🎥 Demonstrations
+
+> **Recommended:** Check out our [**Feature Tour**](https://github.com/nabaznyl/lmapp/blob/mother/DEMO.md) to see lmapp in action!
+
+We offer two ways to explore lmapp:
+
+1. **[Feature Tour (Read)](https://github.com/nabaznyl/lmapp/blob/mother/DEMO.md)** - A visual walkthrough of features, use cases, and the "first run" experience.
+2. **[Interactive Tour (Run)](https://github.com/nabaznyl/lmapp/blob/mother/INTERACTIVE_TOUR.md)** - A script you can run on your own machine to experience lmapp firsthand.
+
+Explore real-world use cases including:
+- 📝 **Content Generation** (Blogs, Emails, Code)
+- 🔍 **Document Analysis** (Summarization, Q&A)
+- 🤖 **Autonomous Agents** (Multi-step reasoning)
+- 📊 **Data Extraction** (JSON from text)
 
 ---
 
@@ -51,7 +66,18 @@ AI: Key use cases include:
   • Machine learning (optimization)
 ```
 
-### 🔍 RAG (Semantic Search)
+### � VS Code Integration
+Turn VS Code into an AI-powered IDE with our extension.
+
+1. **Start the Server**:
+   ```bash
+   lmapp server start
+   ```
+2. **Open Dashboard**: Go to `http://localhost:8000` to see status and chat.
+3. **Install Extension**: Install `lmapp-vscode` (coming soon to marketplace).
+4. **Enjoy**: Get inline code completions and chat directly in your editor.
+
+### �🔍 RAG (Semantic Search)
 ```bash
 $ lmapp rag index ~/my_docs
 📁 Indexing documents...
@@ -332,22 +358,22 @@ lmapp chat
 
 | Document | Purpose |
 |----------|---------|
-| **[QUICKSTART.md](QUICKSTART.md)** | 5-minute setup guide ⭐ Start here |
-| **[docs/installation.md](docs/installation.md)** | Installation methods for all platforms |
-| **[docs/CONFIGURATION.md](docs/CONFIGURATION.md)** | Configuration, environment, and settings |
-| **[docs/development.md](docs/development.md)** | Developer workflow and tips |
-| **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** | Solutions for common issues |
-| **[SECURITY.md](SECURITY.md)** | Security policy and vulnerability reporting |
-| **[CHANGELOG.md](CHANGELOG.md)** | Release history |
-| **[CONTRIBUTING.md](CONTRIBUTING.md)** | Contribution guidelines |
-| **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** | Community standards |
-| **[LICENSE](LICENSE)** | License terms |
-| **[DEMO.md](DEMO.md)** | Live examples and feature tour |
-| **[API_REFERENCE.md](API_REFERENCE.md)** | Lightweight CLI + HTTP API reference |
+| **[QUICKSTART.md](https://github.com/nabaznyl/lmapp/blob/mother/QUICKSTART.md)** | 5-minute setup guide ⭐ Start here |
+| **[docs/installation.md](https://github.com/nabaznyl/lmapp/blob/mother/docs/installation.md)** | Installation methods for all platforms |
+| **[docs/CONFIGURATION.md](https://github.com/nabaznyl/lmapp/blob/mother/docs/CONFIGURATION.md)** | Configuration, environment, and settings |
+| **[docs/development.md](https://github.com/nabaznyl/lmapp/blob/mother/docs/development.md)** | Developer workflow and tips |
+| **[TROUBLESHOOTING.md](https://github.com/nabaznyl/lmapp/blob/mother/TROUBLESHOOTING.md)** | Solutions for common issues |
+| **[SECURITY.md](https://github.com/nabaznyl/lmapp/blob/mother/SECURITY.md)** | Security policy and vulnerability reporting |
+| **[CHANGELOG.md](https://github.com/nabaznyl/lmapp/blob/mother/CHANGELOG.md)** | Release history |
+| **[CONTRIBUTING.md](https://github.com/nabaznyl/lmapp/blob/mother/CONTRIBUTING.md)** | Contribution guidelines |
+| **[CODE_OF_CONDUCT.md](https://github.com/nabaznyl/lmapp/blob/mother/CODE_OF_CONDUCT.md)** | Community standards |
+| **[LICENSE](https://github.com/nabaznyl/lmapp/blob/mother/LICENSE)** | License terms |
+| **[DEMO.md](https://github.com/nabaznyl/lmapp/blob/mother/DEMO.md)** | Live examples and feature tour |
+| **[API_REFERENCE.md](https://github.com/nabaznyl/lmapp/blob/mother/API_REFERENCE.md)** | Lightweight CLI + HTTP API reference |
 
 Additional references:
-- **[docs/ERROR_DATABASE.md](docs/ERROR_DATABASE.md)** - Known errors and fixes
+- **[docs/ERROR_DATABASE.md](https://github.com/nabaznyl/lmapp/blob/mother/docs/ERROR_DATABASE.md)** - Known errors and fixes
 
 ---
 
-**Welcome to the future of local AI.** 🚀
+**Welcome to the future of local AI.** 🚀 This is the way...

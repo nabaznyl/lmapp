@@ -222,9 +222,15 @@ class TestKnowledgeBasePlugin:
 
     def test_related_entries(self, plugin):
         """Test finding related entries."""
-        plugin.execute("add", title="Python Basics", content="Learning Python programming")
-        plugin.execute("add", title="Python Advanced", content="Advanced Python techniques")
-        result = plugin.execute("add", title="Python Performance", content="Python optimization tips")
+        plugin.execute(
+            "add", title="Python Basics", content="Learning Python programming"
+        )
+        plugin.execute(
+            "add", title="Python Advanced", content="Advanced Python techniques"
+        )
+        result = plugin.execute(
+            "add", title="Python Performance", content="Python optimization tips"
+        )
 
         # The last entry should find related entries
         entry_result = plugin.execute("get", entry_id=result["entry_id"])
@@ -276,9 +282,7 @@ class TestKnowledgeBasePlugin:
     def test_multiple_additions(self, plugin):
         """Test adding multiple entries sequentially."""
         for i in range(5):
-            result = plugin.execute(
-                "add", title=f"Entry {i}", content=f"Content {i}"
-            )
+            result = plugin.execute("add", title=f"Entry {i}", content=f"Content {i}")
             assert result["success"] is True
 
         result = plugin.execute("list")

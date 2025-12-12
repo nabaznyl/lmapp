@@ -47,6 +47,11 @@
           "type": "boolean",
           "default": true,
           "description": "Enable inline ghost-text completions"
+        },
+        "lmapp.contextLines": {
+          "type": "number",
+          "default": 50,
+          "description": "Number of preceding lines to send as context"
         }
       }
     }

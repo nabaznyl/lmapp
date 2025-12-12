@@ -201,8 +201,12 @@ full_check() {
 # 5. Reformat and lint
 reformat_all() {
     echo -e "${CYAN}Reformatting and linting code...${NC}"
-    black src/ tests/
-    echo -e "${GREEN}✓${NC} Code formatted with Black"
+    if command -v uaft &> /dev/null; then
+        uaft fix
+    else
+        black src/ tests/
+        echo -e "${GREEN}✓${NC} Code formatted with Black"
+    fi
 }
 
 # 6. Update dependencies
@@ -225,11 +229,15 @@ audit_deps() {
 # 8. Clean caches
 clean_cache() {
     echo -e "${CYAN}Cleaning Python caches...${NC}"
-    find "$PROJECT_ROOT" -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
-    find "$PROJECT_ROOT" -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true
-    find "$PROJECT_ROOT" -type d -name .mypy_cache -exec rm -rf {} + 2>/dev/null || true
-    find "$PROJECT_ROOT" -type f -name "*.pyc" -delete
-    rm -rf "$PROJECT_ROOT/build" "$PROJECT_ROOT/dist" "$PROJECT_ROOT"/*.egg-info 2>/dev/null || true
+    if command -v uaft &> /dev/null; then
+        uaft cleanup
+    else
+        find "$PROJECT_ROOT" -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+        find "$PROJECT_ROOT" -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true
+        find "$PROJECT_ROOT" -type d -name .mypy_cache -exec rm -rf {} + 2>/dev/null || true
+        find "$PROJECT_ROOT" -type f -name "*.pyc" -delete
+        rm -rf "$PROJECT_ROOT/build" "$PROJECT_ROOT/dist" "$PROJECT_ROOT"/*.egg-info 2>/dev/null || true
+    fi
     echo -e "${GREEN}✓${NC} Caches cleaned"
 }
 

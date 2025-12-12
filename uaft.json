@@ -1,0 +1,58 @@
+{
+  "project": "lmapp",
+  "fix": [
+    "black src/ tests/"
+  ],
+  "lint": {
+    "commands": [
+      "flake8 src/ tests/",
+      "black --check src/ tests/"
+    ]
+  },
+  "cleanup": [
+    "**/*.pyc",
+    "**/__pycache__",
+    "dist/",
+    "build/",
+    "*.egg-info",
+    ".pytest_cache",
+    ".coverage",
+    "htmlcov"
+  ],
+  "test": {
+    "command": "pytest",
+    "args": ["-v"]
+  },
+  "coverage": {
+    "command": "pytest",
+    "args": ["--cov=lmapp", "tests/", "--cov-report=term-missing"]
+  },
+  "install": {
+    "command": "pip",
+    "args": ["install", "-e", "."]
+  },
+  "dev": {
+    "command": "pip",
+    "args": ["install", "-e", ".[dev]"]
+  },
+  "rebuild": {
+    "commands": [
+      "uaft cleanup",
+      "uaft install"
+    ]
+  },
+  "check": {
+    "commands": [
+      "uaft lint",
+      "uaft test"
+    ]
+  },
+  "all": {
+    "commands": [
+      "uaft cleanup",
+      "uaft install",
+      "uaft fix",
+      "uaft test"
+    ]
+  }
+}

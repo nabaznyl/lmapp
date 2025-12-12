@@ -193,12 +193,6 @@ class LlamafileBackend(LLMBackend):
         llamafiles = list(self.LLAMAFILE_DIR.glob("*.llamafile"))
         return [f.stem for f in llamafiles]
 
-    def download_model(self, model_name: str, callback=None) -> bool:
-        """Download a specific model"""
-        # 🔖 BOOKMARK - Implement model-specific downloads
-        # For now, just use install() which downloads TinyLlama
-        return self.install()
-
     def chat(
         self, prompt: str, model: str = "", temperature: float = 0.7, *args, **kwargs
     ) -> str:

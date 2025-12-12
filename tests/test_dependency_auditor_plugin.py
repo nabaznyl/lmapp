@@ -3,7 +3,6 @@
 Tests for Dependency Auditor Plugin
 """
 
-import pytest
 from pathlib import Path
 import tempfile
 import json
@@ -80,7 +79,13 @@ class TestAuditResult:
             total_dependencies=10,
             vulnerabilities=[],
             license_issues=[],
-            summary={"critical": 0, "high": 0, "medium": 0, "low": 0, "license_violations": 0},
+            summary={
+                "critical": 0,
+                "high": 0,
+                "medium": 0,
+                "low": 0,
+                "license_violations": 0,
+            },
         )
         assert result.project_type == "python"
         assert result.total_dependencies == 10
@@ -105,7 +110,9 @@ class TestDependencyAuditorPlugin:
         plugin = DependencyAuditorPlugin()
         with tempfile.TemporaryDirectory() as tmpdir:
             # Create requirements.txt
-            Path(tmpdir, "requirements.txt").write_text("requests==2.28.0\nflask==2.0.0\n")
+            Path(tmpdir, "requirements.txt").write_text(
+                "requests==2.28.0\nflask==2.0.0\n"
+            )
 
             project_type = plugin._detect_project_type(Path(tmpdir))
             assert project_type == "python"
@@ -193,7 +200,11 @@ class TestDependencyAuditorPlugin:
         ]
 
         # Filter for high and above
-        filtered = [v for v in plugin.vulnerabilities if plugin._severity_rank(v.severity) >= plugin._severity_rank("high")]
+        filtered = [
+            v
+            for v in plugin.vulnerabilities
+            if plugin._severity_rank(v.severity) >= plugin._severity_rank("high")
+        ]
         assert len(filtered) == 2
 
     def test_execute_returns_dict(self):

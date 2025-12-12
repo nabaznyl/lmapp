@@ -175,9 +175,7 @@ class BatchJobManager:
             results = processor.process()
 
             # Save results
-            results_file = (
-                self.jobs_dir / f"{job_name}_results.json"
-            )
+            results_file = self.jobs_dir / f"{job_name}_results.json"
             processor.save_results(results_file)
 
             return results
@@ -218,9 +216,7 @@ class BatchJobManager:
             results = processor.process()
 
             # Save results
-            results_file = (
-                self.jobs_dir / f"{job_name}_results.json"
-            )
+            results_file = self.jobs_dir / f"{job_name}_results.json"
             processor.save_results(results_file)
 
             return results

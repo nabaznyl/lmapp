@@ -9,7 +9,7 @@ import inquirer
 import psutil
 from rich.console import Console
 from rich.panel import Panel
-from lmapp.core.config import LMAppConfig, ConfigManager
+from lmapp.core.config import ConfigManager
 from lmapp.backend.detector import BackendDetector
 
 console = Console()
@@ -25,7 +25,7 @@ class FirstRunWizard:
 
     def run(self) -> bool:
         """Run the first-run wizard if needed
-        
+
         Returns:
             True if wizard completed, False if skipped
         """
@@ -35,7 +35,7 @@ class FirstRunWizard:
         self._show_welcome()
         hardware_info = self._detect_hardware()
         recommended_model = self._get_recommended_model(hardware_info)
-        
+
         if self._should_download_model(recommended_model):
             self._download_model(recommended_model)
 
@@ -69,16 +69,16 @@ You're about to have your own AI assistant. Let's go!
 
     def _detect_hardware(self) -> dict:
         """Detect system hardware capabilities
-        
+
         Returns:
             Dictionary with hardware information
         """
         console.clear()
         console.print("[cyan]🔍 Detecting your hardware...[/cyan]\n")
-        
+
         memory = psutil.virtual_memory()
         cpu_info = psutil.cpu_count()
-        
+
         hardware = {
             "total_ram_gb": memory.total / (1024**3),
             "available_ram_gb": memory.available / (1024**3),
@@ -102,15 +102,15 @@ You're about to have your own AI assistant. Let's go!
         """
         console.print(Panel(info_text, border_style="green"))
         console.input("\n[dim]Press Enter to continue...[/dim]")
-        
+
         return hardware
 
     def _get_recommended_model(self, hardware: dict) -> str:
         """Get model recommendation based on hardware
-        
+
         Args:
             hardware: Dictionary with hardware info
-            
+
         Returns:
             Recommended model name
         """
@@ -127,15 +127,15 @@ You're about to have your own AI assistant. Let's go!
 
     def _should_download_model(self, recommended: str) -> bool:
         """Ask user if they want to download the recommended model
-        
+
         Args:
             recommended: The recommended model name
-            
+
         Returns:
             True if user wants to download, False otherwise
         """
         console.clear()
-        
+
         # Map model to display name and size
         model_info = {
             "qwen2.5:0.5b": ("Qwen 2.5 Ultra-Light (0.5B)", "370MB", "Minimal RAM"),
@@ -164,28 +164,30 @@ This model is perfect for your system.
         """
         console.print(Panel(recommendation_text, border_style="yellow"))
 
-        q = [inquirer.Confirm(
-            "download",
-            message="Download this model now?",
-            default=True
-        )]
-        
+        q = [
+            inquirer.Confirm(
+                "download", message="Download this model now?", default=True
+            )
+        ]
+
         answer = inquirer.prompt(q)
         return answer.get("download", True) if answer else False
 
     def _download_model(self, model_name: str) -> None:
         """Download and setup the recommended model
-        
+
         Args:
             model_name: Name of the model to download
         """
         console.clear()
         console.print(f"\n[cyan]⬇️  Downloading {model_name}...[/cyan]\n")
-        
+
         backend = self.detector.get_best_backend()
-        
+
         if not backend:
-            console.print("[yellow]⚠️  No backend found (Ollama/llamafile required)[/yellow]")
+            console.print(
+                "[yellow]⚠️  No backend found (Ollama/llamafile required)[/yellow]"
+            )
             console.input("[dim]Press Enter to continue...[/dim]")
             return
 
@@ -201,7 +203,9 @@ This model is perfect for your system.
 
         # Download model
         try:
-            with console.status(f"Downloading {model_name}... (this may take a few minutes)"):
+            with console.status(
+                f"Downloading {model_name}... (this may take a few minutes)"
+            ):
                 # Note: Model download would be handled by backend
                 # For now, we just show the message
                 pass
@@ -214,7 +218,7 @@ This model is perfect for your system.
     def _show_completion(self) -> None:
         """Show completion message and next steps"""
         console.clear()
-        
+
         completion_text = """
 [bold green]✓ Setup Complete![/bold green]
 
@@ -244,10 +248,10 @@ Enjoy your local AI! 🚀
 
 def run_first_time_setup(config_manager: Optional[ConfigManager] = None) -> bool:
     """Convenience function to run first-time setup
-    
+
     Args:
         config_manager: Optional ConfigManager instance
-        
+
     Returns:
         True if wizard ran, False if skipped
     """

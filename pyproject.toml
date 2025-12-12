@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lmapp"
-version = "0.3.2"
+version = "0.3.3"
 description = "Local LLM Made Simple - Consumer-friendly AI assistant"
 readme = "README.md"
 license = {text = "MIT"}
@@ -15,14 +15,13 @@ dependencies = [
     "requests>=2.31.0",
     "click>=8.1.0",
     "rich>=13.7.0",
-    "pyyaml>=6.0.1",
     "pydantic>=2.0.0",
     "inquirer>=3.1.0",
-    "prompt-toolkit>=3.0.43",
     "psutil>=5.9.0",
     "distro>=1.8.0",
-    "python-dotenv>=1.0.0",
     "loguru>=0.7.2",
+    "fastapi>=0.109.0",
+    "uvicorn>=0.27.0",
 ]
 
 [project.optional-dependencies]
@@ -35,8 +34,6 @@ dev = [
     "uaft>=0.2.0",
 ]
 api = [
-    "fastapi>=0.109.0",
-    "uvicorn>=0.27.0",
 ]
 
 [project.scripts]

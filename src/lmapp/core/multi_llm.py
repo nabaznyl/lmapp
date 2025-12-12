@@ -14,6 +14,7 @@ from lmapp.utils.logging import logger
 @dataclass
 class LLMResponse:
     """Response from a single LLM backend"""
+
     backend_name: str
     model: str
     response: str
@@ -100,9 +101,7 @@ class MultiLLMSession:
         # Query each backend
         for backend, model in self.backends:
             try:
-                logger.debug(
-                    f"Querying {backend.backend_name()} with model {model}"
-                )
+                logger.debug(f"Querying {backend.backend_name()} with model {model}")
                 response_text = backend.chat(
                     prompt=prompt, model=model, temperature=temperature
                 )
@@ -118,9 +117,7 @@ class MultiLLMSession:
                 self.responses.append(response)
 
             except Exception as e:
-                logger.error(
-                    f"Error querying {backend.backend_name()}: {e}"
-                )
+                logger.error(f"Error querying {backend.backend_name()}: {e}")
                 responses[backend.backend_name()] = LLMResponse(
                     backend_name=backend.backend_name(),
                     model=model,

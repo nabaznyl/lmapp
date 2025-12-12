@@ -13,55 +13,71 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from datetime import datetime
 import json
+import shutil
+import urllib.request
 
 
 @dataclass
 class PluginRegistry:
     """Central registry for plugin metadata and discovery."""
-    
+
     name: str  # e.g., "official", "community", "verified"
     url: str  # URL to plugin registry (can be local or remote)
     description: str
-    plugins: Dict[str, 'PluginMarketplaceEntry'] = field(default_factory=dict)
-    
-    def add_plugin(self, entry: 'PluginMarketplaceEntry') -> None:
+    plugins: Dict[str, "PluginMarketplaceEntry"] = field(default_factory=dict)
+
+    def add_plugin(self, entry: "PluginMarketplaceEntry") -> None:
         """Add plugin to registry."""
         self.plugins[entry.name] = entry
-    
-    def search(self, query: str) -> List['PluginMarketplaceEntry']:
+
+    def search(self, query: str) -> List["PluginMarketplaceEntry"]:
         """Search plugins by name or description."""
         query = query.lower()
         results = []
         for plugin in self.plugins.values():
-            if (query in plugin.name.lower() or 
-                query in plugin.description.lower() or
-                any(query in tag.lower() for tag in plugin.tags)):
+            if (
+                query in plugin.name.lower()
+                or query in plugin.description.lower()
+                or any(query in tag.lower() for tag in plugin.tags)
+            ):
                 results.append(plugin)
         return results
-    
-    def get_by_name(self, name: str) -> Optional['PluginMarketplaceEntry']:
+
+    def get_by_name(self, name: str) -> Optional["PluginMarketplaceEntry"]:
         """Get plugin by exact name."""
         return self.plugins.get(name)
-    
+
+    def fetch_remote(self) -> bool:
+        """Fetch registry data from remote URL."""
+        if not self.url.startswith("http"):
+            return False
+
+        try:
+            with urllib.request.urlopen(self.url, timeout=10) as response:
+                if response.status == 200:
+                    data = json.loads(response.read().decode())
+                    # Update plugins from remote data
+                    for name, plugin_data in data.get("plugins", {}).items():
+                        self.add_plugin(PluginMarketplaceEntry.from_dict(plugin_data))
+                    return True
+        except Exception:
+            pass
+        return False
+
     def to_dict(self) -> Dict:
         """Serialize registry to dictionary."""
         return {
             "name": self.name,
             "url": self.url,
             "description": self.description,
-            "plugins": {
-                name: entry.to_dict() 
-                for name, entry in self.plugins.items()
-            }
+            "plugins": {name: entry.to_dict() for name, entry in self.plugins.items()},
         }
-    
+
     @staticmethod
-    def from_dict(data: Dict) -> 'PluginRegistry':
+    def from_dict(data: Dict) -> "PluginRegistry":
         """Deserialize registry from dictionary."""
         registry = PluginRegistry(
-            name=data["name"],
-            url=data["url"],
-            description=data["description"]
+            name=data["name"], url=data["url"], description=data["description"]
         )
         for name, plugin_data in data.get("plugins", {}).items():
             registry.add_plugin(PluginMarketplaceEntry.from_dict(plugin_data))
@@ -71,7 +87,7 @@ class PluginRegistry:
 @dataclass
 class PluginMarketplaceEntry:
     """Plugin entry in marketplace with metadata and ratings."""
-    
+
     name: str
     version: str
     author: str
@@ -85,7 +101,7 @@ class PluginMarketplaceEntry:
     last_updated: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     verified: bool = False  # LMAPP certification
     dependencies: List[str] = field(default_factory=list)
-    
+
     def to_dict(self) -> Dict:
         """Serialize to dictionary."""
         return {
@@ -103,9 +119,9 @@ class PluginMarketplaceEntry:
             "verified": self.verified,
             "dependencies": self.dependencies,
         }
-    
+
     @staticmethod
-    def from_dict(data: Dict) -> 'PluginMarketplaceEntry':
+    def from_dict(data: Dict) -> "PluginMarketplaceEntry":
         """Deserialize from dictionary."""
         return PluginMarketplaceEntry(
             name=data["name"],
@@ -126,41 +142,46 @@ class PluginMarketplaceEntry:
 
 class PluginMarketplace:
     """Main marketplace manager - handles registries and plugin discovery."""
-    
+
     def __init__(self, storage_path: Path = None):
         """Initialize marketplace."""
         self.storage_path = storage_path or Path.home() / ".lmapp" / "marketplace"
         self.storage_path.mkdir(parents=True, exist_ok=True)
-        
+
         self.registries: Dict[str, PluginRegistry] = {}
         self._initialize_default_registries()
-    
+
     def _initialize_default_registries(self) -> None:
         """Initialize default registries."""
         # Official LMAPP registry
         official = PluginRegistry(
             name="official",
             url="https://lmapp.io/marketplace/official",
-            description="Official LMAPP plugins"
+            description="Official LMAPP plugins",
         )
         self.registries["official"] = official
-        
+
         # Community registry
         community = PluginRegistry(
             name="community",
             url="https://github.com/lmapp-community/plugins",
-            description="Community-contributed plugins"
+            description="Community-contributed plugins",
         )
         self.registries["community"] = community
-    
+
+    def refresh_registries(self) -> None:
+        """Fetch updates for all remote registries."""
+        for registry in self.registries.values():
+            registry.fetch_remote()
+
     def add_registry(self, registry: PluginRegistry) -> None:
         """Add custom registry."""
         self.registries[registry.name] = registry
-    
+
     def get_registry(self, name: str) -> Optional[PluginRegistry]:
         """Get registry by name."""
         return self.registries.get(name)
-    
+
     def search_all(self, query: str) -> List[tuple[str, PluginMarketplaceEntry]]:
         """Search across all registries."""
         results = []
@@ -169,36 +190,54 @@ class PluginMarketplace:
                 results.append((registry_name, entry))
         # Sort by rating and downloads
         results.sort(
-            key=lambda x: (x[1].verified, x[1].rating, x[1].downloads),
-            reverse=True
+            key=lambda x: (x[1].verified, x[1].rating, x[1].downloads), reverse=True
         )
         return results
-    
+
     def install_plugin(self, plugin_name: str, registry: str = "official") -> bool:
         """Install plugin from marketplace."""
         registry_obj = self.get_registry(registry)
         if not registry_obj:
             return False
-        
+
         entry = registry_obj.get_by_name(plugin_name)
         if not entry:
             return False
-        
-        # Download/copy plugin from entry.install_url
-        # (Implementation depends on URL scheme)
-        
-        # Update download count
-        entry.downloads += 1
-        
-        return True
-    
+
+        # Determine install path
+        # Assuming plugins are installed in ~/.local/share/lmapp/plugins/
+        install_dir = Path.home() / ".local" / "share" / "lmapp" / "plugins"
+        install_dir.mkdir(parents=True, exist_ok=True)
+
+        target_path = install_dir / f"{plugin_name}.py"
+
+        try:
+            if entry.install_url.startswith("http"):
+                urllib.request.urlretrieve(entry.install_url, target_path)
+            elif entry.install_url.startswith("file://"):
+                source_path = Path(entry.install_url.replace("file://", ""))
+                shutil.copy2(source_path, target_path)
+            else:
+                # Assume local path
+                source_path = Path(entry.install_url)
+                if source_path.exists():
+                    shutil.copy2(source_path, target_path)
+                else:
+                    return False
+
+            # Update download count
+            entry.downloads += 1
+            return True
+        except Exception:
+            return False
+
     def save_registries(self) -> None:
         """Save registries to disk."""
         for registry_name, registry in self.registries.items():
             registry_file = self.storage_path / f"{registry_name}.json"
             with open(registry_file, "w") as f:
                 json.dump(registry.to_dict(), f, indent=2)
-    
+
     def load_registries(self) -> None:
         """Load registries from disk."""
         for registry_file in self.storage_path.glob("*.json"):
@@ -209,27 +248,25 @@ class PluginMarketplace:
                     self.registries[registry.name] = registry
             except Exception:
                 pass  # Skip corrupted registries
-    
-    def list_plugins(self, registry: str = None, certified_only: bool = False) -> List[PluginMarketplaceEntry]:
+
+    def list_plugins(
+        self, registry: str = None, certified_only: bool = False
+    ) -> List[PluginMarketplaceEntry]:
         """List all plugins in registry."""
         plugins = []
-        
+
         registries_to_search = (
-            {registry: self.registries[registry]} 
-            if registry else 
-            self.registries
+            {registry: self.registries[registry]} if registry else self.registries
         )
-        
+
         for reg in registries_to_search.values():
             for plugin in reg.plugins.values():
                 if certified_only and not plugin.verified:
                     continue
                 plugins.append(plugin)
-        
+
         return sorted(
-            plugins,
-            key=lambda p: (p.verified, p.rating, p.downloads),
-            reverse=True
+            plugins, key=lambda p: (p.verified, p.rating, p.downloads), reverse=True
         )
 
 

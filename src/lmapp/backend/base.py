@@ -58,52 +58,42 @@ class LLMBackend(ABC):
     @abstractmethod
     def backend_name(self) -> str:
         """Return backend identifier (e.g., 'ollama')"""
-        pass
 
     @abstractmethod
     def backend_display_name(self) -> str:
         """Return human-readable backend name"""
-        pass
 
     @abstractmethod
     def is_installed(self) -> bool:
         """Check if backend is installed"""
-        pass
 
     @abstractmethod
     def get_version(self) -> Optional[str]:
         """Get backend version if installed"""
-        pass
 
     @abstractmethod
     def is_running(self) -> bool:
         """Check if backend service is running"""
-        pass
 
     @abstractmethod
     def install(self) -> bool:
         """Install the backend (automated)"""
-        pass
 
     @abstractmethod
     def start(self) -> bool:
         """Start the backend service"""
-        pass
 
     @abstractmethod
     def stop(self) -> bool:
         """Stop the backend service"""
-        pass
 
     @abstractmethod
     def list_models(self) -> List[str]:
         """List available models"""
-        pass
 
     @abstractmethod
     def download_model(self, model_name: str, callback=None) -> bool:
         """Download a model with optional progress callback"""
-        pass
 
     @abstractmethod
     def chat(

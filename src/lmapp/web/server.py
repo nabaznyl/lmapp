@@ -13,7 +13,14 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, HTTPException
+from fastapi import (
+    FastAPI,
+    WebSocket,
+    WebSocketDisconnect,
+    UploadFile,
+    File,
+    HTTPException,
+)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, HTMLResponse
@@ -77,15 +84,16 @@ state = AppState()
 
 # Routes
 
+
 @app.get("/", response_class=HTMLResponse)
 async def root():
     """Serve main HTML page."""
     static_dir = Path(__file__).parent / "static"
     html_file = static_dir / "index.html"
-    
+
     if html_file.exists():
         return FileResponse(html_file)
-    
+
     # Fallback if file doesn't exist yet - return simple HTML
     html_content = """
     <!DOCTYPE html>
@@ -133,20 +141,24 @@ async def chat(request: ChatMessage):
     model = request.model or "ollama-default"
 
     # Store in history
-    state.chat_history.append({
-        "role": "user",
-        "content": message,
-        "model": model,
-    })
+    state.chat_history.append(
+        {
+            "role": "user",
+            "content": message,
+            "model": model,
+        }
+    )
 
     # This would integrate with ChatSession in real implementation
     response = f"Response from {model} to: {message[:50]}..."
 
-    state.chat_history.append({
-        "role": "assistant",
-        "content": response,
-        "model": model,
-    })
+    state.chat_history.append(
+        {
+            "role": "assistant",
+            "content": response,
+            "model": model,
+        }
+    )
 
     return {
         "success": True,
@@ -186,7 +198,7 @@ async def upload_document(file: UploadFile = File(...)):
 
     # In real implementation, would save file and index with RAGSystem
     doc_id = f"doc_{len(state.uploaded_documents) + 1}"
-    
+
     state.uploaded_documents[doc_id] = {
         "filename": file.filename,
         "size": file.size or 0,
@@ -332,40 +344,50 @@ async def websocket_chat(websocket: WebSocket):
             model = message_data.get("model", "ollama-default")
 
             if not message:
-                await websocket.send_json({
-                    "error": "Message required",
-                })
+                await websocket.send_json(
+                    {
+                        "error": "Message required",
+                    }
+                )
                 continue
 
             # Store in history
-            state.chat_history.append({
-                "role": "user",
-                "content": message,
-            })
+            state.chat_history.append(
+                {
+                    "role": "user",
+                    "content": message,
+                }
+            )
 
             # Simulate streaming response
             response = f"Streaming response from {model} to: {message}"
 
             # Send response token by token (simulated)
             for token in response.split():
-                await websocket.send_json({
-                    "type": "token",
-                    "content": token + " ",
-                    "model": model,
-                })
+                await websocket.send_json(
+                    {
+                        "type": "token",
+                        "content": token + " ",
+                        "model": model,
+                    }
+                )
 
             # Send completion marker
-            await websocket.send_json({
-                "type": "complete",
-                "message": message,
-                "full_response": response,
-            })
+            await websocket.send_json(
+                {
+                    "type": "complete",
+                    "message": message,
+                    "full_response": response,
+                }
+            )
 
             # Store in history
-            state.chat_history.append({
-                "role": "assistant",
-                "content": response,
-            })
+            state.chat_history.append(
+                {
+                    "role": "assistant",
+                    "content": response,
+                }
+            )
 
     except WebSocketDisconnect:
         logger.info("WebSocket disconnected")
@@ -380,6 +402,7 @@ async def websocket_chat(websocket: WebSocket):
 async def http_exception_handler(request, exc):
     """Handle HTTP exceptions."""
     from fastapi.responses import JSONResponse
+
     return JSONResponse(
         status_code=exc.status_code,
         content={

@@ -8,7 +8,6 @@ Author: LMAPP Community
 License: MIT
 """
 
-import json
 import pytest
 from fastapi.testclient import TestClient
 from lmapp.web.server import app, state
@@ -40,7 +39,10 @@ class TestHealthEndpoints:
     def test_root(self, client):
         """Test root endpoint."""
         response = client.get("/")
-        assert response.status_code in [200, 404]  # 200 if static files mounted, 404 if not
+        assert response.status_code in [
+            200,
+            404,
+        ]  # 200 if static files mounted, 404 if not
 
     def test_health_check(self, client):
         """Test health check endpoint."""
@@ -97,8 +99,7 @@ class TestChatEndpoints:
     def test_post_chat_custom_model(self, client):
         """Test sending message with custom model."""
         response = client.post(
-            "/api/chat",
-            json={"message": "Test", "model": "custom-model"}
+            "/api/chat", json={"message": "Test", "model": "custom-model"}
         )
         assert response.status_code == 200
         data = response.json()
@@ -129,8 +130,7 @@ class TestDocumentEndpoints:
     def test_upload_document(self, client):
         """Test uploading a document."""
         response = client.post(
-            "/api/documents/upload",
-            files={"file": ("test.txt", b"test content")}
+            "/api/documents/upload", files={"file": ("test.txt", b"test content")}
         )
         assert response.status_code == 200
         data = response.json()
@@ -141,10 +141,7 @@ class TestDocumentEndpoints:
     def test_list_documents_after_upload(self, client):
         """Test listing documents after upload."""
         # Upload a document
-        client.post(
-            "/api/documents/upload",
-            files={"file": ("test.txt", b"content")}
-        )
+        client.post("/api/documents/upload", files={"file": ("test.txt", b"content")})
 
         # List documents
         response = client.get("/api/documents")
@@ -157,8 +154,7 @@ class TestDocumentEndpoints:
         """Test deleting a document."""
         # Upload a document
         upload_response = client.post(
-            "/api/documents/upload",
-            files={"file": ("test.txt", b"content")}
+            "/api/documents/upload", files={"file": ("test.txt", b"content")}
         )
         doc_id = upload_response.json()["document_id"]
 
@@ -178,8 +174,7 @@ class TestDocumentEndpoints:
         # Upload multiple documents
         for i in range(3):
             client.post(
-                "/api/documents/upload",
-                files={"file": (f"test{i}.txt", b"content")}
+                "/api/documents/upload", files={"file": (f"test{i}.txt", b"content")}
             )
 
         # Verify all documents listed
@@ -248,8 +243,7 @@ class TestPluginEndpoints:
         response = client.get("/api/plugins")
         plugins_before = response.json()["plugins"]
         translator_before = next(
-            (p for p in plugins_before if p["name"] == "translator"),
-            None
+            (p for p in plugins_before if p["name"] == "translator"), None
         )
         assert translator_before is not None
         assert translator_before["installed"] is False
@@ -261,8 +255,7 @@ class TestPluginEndpoints:
         response = client.get("/api/plugins")
         plugins_after = response.json()["plugins"]
         translator_after = next(
-            (p for p in plugins_after if p["name"] == "translator"),
-            None
+            (p for p in plugins_after if p["name"] == "translator"), None
         )
         assert translator_after is not None
         assert translator_after["installed"] is True
@@ -319,12 +312,16 @@ class TestWebSocketChat:
             # Send first message
             websocket.send_json({"message": "Hello"})
             response1 = websocket.receive_json()
-            assert "token" in str(response1).lower() or "error" in str(response1).lower()
+            assert (
+                "token" in str(response1).lower() or "error" in str(response1).lower()
+            )
 
             # Send second message
             websocket.send_json({"message": "World"})
             response2 = websocket.receive_json()
-            assert "token" in str(response2).lower() or "error" in str(response2).lower()
+            assert (
+                "token" in str(response2).lower() or "error" in str(response2).lower()
+            )
 
 
 class TestIntegration:
@@ -338,8 +335,7 @@ class TestIntegration:
 
         # Upload a document
         client.post(
-            "/api/documents/upload",
-            files={"file": ("test.txt", b"Test document")}
+            "/api/documents/upload", files={"file": ("test.txt", b"Test document")}
         )
 
         # Send a chat message

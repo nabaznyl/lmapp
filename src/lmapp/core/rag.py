@@ -156,9 +156,7 @@ class DocumentIndex:
                         doc_scores[doc_id] = 0
                     doc_scores[doc_id] += 1
 
-        sorted_docs = sorted(
-            doc_scores.items(), key=lambda x: x[1], reverse=True
-        )
+        sorted_docs = sorted(doc_scores.items(), key=lambda x: x[1], reverse=True)
 
         results = []
         for doc_id, score in sorted_docs[:top_k]:
@@ -181,9 +179,34 @@ class DocumentIndex:
         """Extract and normalize words from text."""
         words = re.findall(r"\b\w+\b", text.lower())
         stopwords = {
-            "a", "an", "and", "are", "as", "at", "be", "by", "for", "from",
-            "has", "he", "in", "is", "it", "its", "of", "on", "or", "that",
-            "the", "to", "was", "will", "with", "this", "but", "have",
+            "a",
+            "an",
+            "and",
+            "are",
+            "as",
+            "at",
+            "be",
+            "by",
+            "for",
+            "from",
+            "has",
+            "he",
+            "in",
+            "is",
+            "it",
+            "its",
+            "of",
+            "on",
+            "or",
+            "that",
+            "the",
+            "to",
+            "was",
+            "will",
+            "with",
+            "this",
+            "but",
+            "have",
         }
         return [w for w in words if len(w) > 2 and w not in stopwords]
 
@@ -236,9 +259,9 @@ class RAGSystem:
             {
                 "document": doc.to_dict(),
                 "relevance": score,
-                "preview": (doc.content[:100] + "..."
-                            if len(doc.content) > 100
-                            else doc.content),
+                "preview": (
+                    doc.content[:100] + "..." if len(doc.content) > 100 else doc.content
+                ),
             }
             for doc, score in results
         ]
@@ -276,11 +299,13 @@ class RAGSystem:
 
         result = []
         for source, docs_list in by_source.items():
-            result.append({
-                "source": source,
-                "chunks": len(docs_list),
-                "total_chars": sum(len(d.content) for d in docs_list),
-            })
+            result.append(
+                {
+                    "source": source,
+                    "chunks": len(docs_list),
+                    "total_chars": sum(len(d.content) for d in docs_list),
+                }
+            )
 
         return sorted(result, key=lambda x: x["source"])
 
@@ -294,8 +319,7 @@ class RAGSystem:
         index_file = self.index_dir / "index.json"
         data = {
             "documents": {
-                doc_id: doc.to_dict()
-                for doc_id, doc in self.index.documents.items()
+                doc_id: doc.to_dict() for doc_id, doc in self.index.documents.items()
             }
         }
         index_file.write_text(json.dumps(data, indent=2))

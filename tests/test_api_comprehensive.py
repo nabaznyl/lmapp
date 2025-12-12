@@ -5,13 +5,10 @@ Tests all 17+ endpoints for functionality, error handling, and response formats
 """
 
 import pytest
-import json
-from typing import Dict, Any
-from unittest.mock import MagicMock, patch, Mock
 
 # Import API and backend components
 from tests.mock_backend import MockBackend
-from lmapp.core.config import ConfigManager, LMAppConfig
+from lmapp.core.config import ConfigManager
 
 
 class TestRESTAPIEndpoints:
@@ -39,7 +36,7 @@ class TestRESTAPIEndpoints:
         # This would use a test client in real implementation
         # For now, verify backend can handle chat
         assert mock_backend.is_running()
-        
+
         # Mock chat request
         response = mock_backend.chat("Hello", model="tinyllama")
         assert response is not None
@@ -87,9 +84,9 @@ class TestRESTAPIEndpoints:
         info = mock_backend.get_info()
         assert info is not None
         # BackendInfo is a dataclass-like object
-        assert hasattr(info, 'name') or hasattr(info, 'status')
+        assert hasattr(info, "name") or hasattr(info, "status")
         # Verify it has backend info
-        assert info.name == 'mock' or info.status.value == 'running'
+        assert info.name == "mock" or info.status.value == "running"
 
     # ========================================================================
     # SESSION ENDPOINTS
@@ -100,7 +97,7 @@ class TestRESTAPIEndpoints:
         # Sessions would be managed by backend/service
         # Verify configuration supports sessions
         assert config is not None
-        assert hasattr(config, 'model')
+        assert hasattr(config, "model")
 
     def test_list_sessions(self, config):
         """Test GET /api/sessions - List all sessions"""
@@ -122,14 +119,16 @@ class TestRESTAPIEndpoints:
     def test_get_config_endpoint(self, config):
         """Test GET /api/config - Get configuration"""
         assert config is not None
-        assert hasattr(config, 'model')
-        assert hasattr(config, 'backend')
-        assert hasattr(config, 'advanced_mode')
+        assert hasattr(config, "model")
+        assert hasattr(config, "backend")
+        assert hasattr(config, "advanced_mode")
 
     def test_get_config_response_format(self, config):
         """Test /api/config returns proper format"""
         # Should be serializable to JSON
-        config_dict = config.model_dump() if hasattr(config, 'model_dump') else config.__dict__
+        config_dict = (
+            config.model_dump() if hasattr(config, "model_dump") else config.__dict__
+        )
         assert isinstance(config_dict, dict)
 
     def test_update_config_endpoint(self, config):
@@ -152,6 +151,7 @@ class TestRESTAPIEndpoints:
     def test_get_plugins_endpoint(self):
         """Test GET /api/plugins - List plugins"""
         from lmapp.plugins.plugin_manager import PluginManager
+
         manager = PluginManager()
         plugins = manager.discover_plugins()
         assert plugins is not None
@@ -160,6 +160,7 @@ class TestRESTAPIEndpoints:
     def test_get_plugin_details(self):
         """Test GET /api/plugins/{id} - Get plugin details"""
         from lmapp.plugins.plugin_manager import PluginManager
+
         manager = PluginManager()
         plugins = manager.discover_plugins()
         # Should be able to get details of any discovered plugin
@@ -168,8 +169,9 @@ class TestRESTAPIEndpoints:
     def test_execute_plugin_endpoint(self):
         """Test POST /api/plugins/{id}/execute - Execute plugin"""
         from lmapp.plugins.plugin_manager import PluginManager
+
         manager = PluginManager()
-        plugins = manager.discover_plugins()
+        manager.discover_plugins()
         # Plugins should be executable (interface implemented)
         assert manager is not None
 
@@ -187,8 +189,8 @@ class TestRESTAPIEndpoints:
         info = mock_backend.get_info()
         assert info is not None
         # BackendInfo is a dataclass-like object with name, status, version
-        assert hasattr(info, 'name')
-        assert hasattr(info, 'status')
+        assert hasattr(info, "name")
+        assert hasattr(info, "status")
 
     def test_backend_status_endpoint(self, mock_backend):
         """Test GET /api/backend/status - Backend status"""
@@ -202,26 +204,23 @@ class TestRESTAPIEndpoints:
         """Test invalid endpoint returns 404"""
         # Would use test client
         # For now, verify error handling infrastructure exists
-        pass
 
     def test_invalid_model_error(self, mock_backend):
         """Test invalid model parameter"""
         # Should handle gracefully
-        response = mock_backend.chat("test", model="invalid-model")
+        mock_backend.chat("test", model="invalid-model")
         # Either returns something or raises exception
-        assert response is not None or response is None
 
     def test_chat_timeout_handling(self, mock_backend):
         """Test timeout handling in chat endpoint"""
         # Backend should have timeout configuration
         config = ConfigManager().load()
-        assert hasattr(config, 'timeout')
+        assert hasattr(config, "timeout")
         assert config.timeout > 0
 
     def test_malformed_json_request(self):
         """Test malformed JSON in request"""
         # Error handling should be robust
-        pass
 
     # ========================================================================
     # RESPONSE FORMAT VALIDATION
@@ -240,7 +239,6 @@ class TestRESTAPIEndpoints:
     def test_error_response_format(self):
         """Test error responses have consistent format"""
         # Should include error code and message
-        pass
 
     # ========================================================================
     # AUTHENTICATION (Future)
@@ -250,12 +248,10 @@ class TestRESTAPIEndpoints:
         """Test endpoints require authentication"""
         # Would test with invalid/missing API key
         # Future feature
-        pass
 
     def test_unauthorized_access(self):
         """Test unauthorized access is rejected"""
         # Future authentication testing
-        pass
 
     # ========================================================================
     # PERFORMANCE
@@ -264,8 +260,9 @@ class TestRESTAPIEndpoints:
     def test_chat_response_time(self, mock_backend):
         """Test chat endpoint response time"""
         import time
+
         start = time.time()
-        response = mock_backend.chat("quick test", model="tinyllama")
+        mock_backend.chat("quick test", model="tinyllama")
         elapsed = time.time() - start
         # Should complete within timeout
         assert elapsed < 30  # 30 second timeout
@@ -273,8 +270,9 @@ class TestRESTAPIEndpoints:
     def test_list_models_performance(self, mock_backend):
         """Test list models endpoint performance"""
         import time
+
         start = time.time()
-        models = mock_backend.list_models()
+        mock_backend.list_models()
         elapsed = time.time() - start
         # Should be very fast
         assert elapsed < 1
@@ -287,11 +285,11 @@ class TestRESTAPIEndpoints:
         """Test complete chat workflow"""
         # 1. Backend is running
         assert mock_backend.is_running()
-        
+
         # 2. Models available
         models = mock_backend.list_models()
         assert models is not None
-        
+
         # 3. Can send messages
         response = mock_backend.chat("test", model="tinyllama")
         assert response is not None
@@ -300,14 +298,16 @@ class TestRESTAPIEndpoints:
         """Test complete configuration workflow"""
         # 1. Can load config
         assert config is not None
-        
+
         # 2. Has all required fields
-        assert hasattr(config, 'model')
-        assert hasattr(config, 'backend')
-        assert hasattr(config, 'temperature')
-        
+        assert hasattr(config, "model")
+        assert hasattr(config, "backend")
+        assert hasattr(config, "temperature")
+
         # 3. Can be serialized
-        config_dict = config.model_dump() if hasattr(config, 'model_dump') else config.__dict__
+        config_dict = (
+            config.model_dump() if hasattr(config, "model_dump") else config.__dict__
+        )
         assert isinstance(config_dict, dict)
 
 

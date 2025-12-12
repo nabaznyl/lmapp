@@ -1,7 +1,5 @@
-import pytest
 import json
 import os
-from pathlib import Path
 from lmapp.core.error_db import ErrorDB
 
 
@@ -20,7 +18,7 @@ def test_log_error(tmp_path):
     try:
         1 / 0
     except ZeroDivisionError as e:
-        solution = db.log_error(e)
+        db.log_error(e)
 
     # Verify log
     with open(db.db_file) as f:

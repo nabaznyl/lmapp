@@ -5,8 +5,6 @@ Scans project dependencies for vulnerabilities and license compliance
 """
 
 import json
-import subprocess
-import os
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict
@@ -16,6 +14,7 @@ from .plugin_manager import BasePlugin, PluginMetadata
 @dataclass
 class DependencyVulnerability:
     """Vulnerability information"""
+
     package: str
     version: str
     vulnerability_id: str
@@ -27,6 +26,7 @@ class DependencyVulnerability:
 @dataclass
 class DependencyLicense:
     """License information"""
+
     package: str
     version: str
     license: str
@@ -36,6 +36,7 @@ class DependencyLicense:
 @dataclass
 class AuditResult:
     """Complete audit report"""
+
     project_type: str  # python, node, mixed
     total_dependencies: int
     vulnerabilities: List[DependencyVulnerability]
@@ -46,7 +47,7 @@ class AuditResult:
 class DependencyAuditorPlugin(BasePlugin):
     """
     Audits project dependencies for vulnerabilities and license compliance.
-    
+
     Supports Python and Node.js projects without external API calls (offline).
     """
 
@@ -64,10 +65,9 @@ class DependencyAuditorPlugin(BasePlugin):
     def metadata(self) -> PluginMetadata:
         """Return plugin metadata."""
         return self._METADATA
-    
+
     def initialize(self, config: Optional[Dict[str, Any]] = None) -> None:
         """Initialize the plugin."""
-        pass
 
     # Known vulnerable packages (curated, offline database)
     KNOWN_VULNERABILITIES = {
@@ -83,8 +83,16 @@ class DependencyAuditorPlugin(BasePlugin):
 
     # Permissive licenses
     PERMISSIVE_LICENSES = {
-        "MIT", "Apache-2.0", "Apache 2.0", "BSD", "BSD-2-Clause",
-        "BSD-3-Clause", "ISC", "MPL-2.0", "LGPL-2.1+", "LGPL-3.0+"
+        "MIT",
+        "Apache-2.0",
+        "Apache 2.0",
+        "BSD",
+        "BSD-2-Clause",
+        "BSD-3-Clause",
+        "ISC",
+        "MPL-2.0",
+        "LGPL-2.1+",
+        "LGPL-3.0+",
     }
 
     def __init__(self):
@@ -96,11 +104,11 @@ class DependencyAuditorPlugin(BasePlugin):
     def execute(self, *args, **kwargs) -> Dict[str, Any]:
         """
         Audit project dependencies.
-        
+
         Args:
             path: Project root path (default: current directory)
             severity_filter: Minimum severity to report (default: 'low')
-            
+
         Returns:
             Dictionary with audit results
         """
@@ -113,8 +121,8 @@ class DependencyAuditorPlugin(BasePlugin):
             "status": "success",
             "audit_result": asdict(result),
             "message": f"Scanned {result.total_dependencies} dependencies, "
-                      f"found {len(result.vulnerabilities)} vulnerabilities, "
-                      f"{len(result.license_issues)} license concerns",
+            f"found {len(result.vulnerabilities)} vulnerabilities, "
+            f"{len(result.license_issues)} license concerns",
         }
 
     def _run_audit(self, project_path: str, severity_filter: str) -> AuditResult:
@@ -138,7 +146,8 @@ class DependencyAuditorPlugin(BasePlugin):
 
         # Filter by severity
         filtered_vulns = [
-            v for v in self.vulnerabilities
+            v
+            for v in self.vulnerabilities
             if self._severity_rank(v.severity) >= self._severity_rank(severity_filter)
         ]
 
@@ -148,7 +157,9 @@ class DependencyAuditorPlugin(BasePlugin):
             vulnerabilities=filtered_vulns,
             license_issues=self.license_issues,
             summary={
-                "critical": len([v for v in filtered_vulns if v.severity == "critical"]),
+                "critical": len(
+                    [v for v in filtered_vulns if v.severity == "critical"]
+                ),
                 "high": len([v for v in filtered_vulns if v.severity == "high"]),
                 "medium": len([v for v in filtered_vulns if v.severity == "medium"]),
                 "low": len([v for v in filtered_vulns if v.severity == "low"]),
@@ -158,7 +169,9 @@ class DependencyAuditorPlugin(BasePlugin):
 
     def _detect_project_type(self, project_path: Path) -> str:
         """Detect if project is Python, Node, or mixed"""
-        has_python = (project_path / "requirements.txt").exists() or (project_path / "setup.py").exists()
+        has_python = (project_path / "requirements.txt").exists() or (
+            project_path / "setup.py"
+        ).exists()
         has_node = (project_path / "package.json").exists()
 
         if has_python and has_node:
@@ -240,8 +253,17 @@ class DependencyAuditorPlugin(BasePlugin):
         # Placeholder: in production, would query PyPI/NPM for real licenses
         # For now, we'll assume common packages have known good licenses
         known_good = {
-            "requests", "flask", "django", "pytest", "black", "cryptography",
-            "express", "react", "lodash", "axios", "webpack"
+            "requests",
+            "flask",
+            "django",
+            "pytest",
+            "black",
+            "cryptography",
+            "express",
+            "react",
+            "lodash",
+            "axios",
+            "webpack",
         }
 
         if package in known_good:
@@ -262,9 +284,15 @@ class DependencyAuditorPlugin(BasePlugin):
         try:
             # Parse versions as tuples of ints for comparison
             def parse_version(v_str):
-                parts = v_str.replace("<", "").replace(">", "").replace("=", "").strip().split(".")
+                parts = (
+                    v_str.replace("<", "")
+                    .replace(">", "")
+                    .replace("=", "")
+                    .strip()
+                    .split(".")
+                )
                 return tuple(int(p) for p in parts)
-            
+
             v = parse_version(version)
             c = parse_version(constraint)
 

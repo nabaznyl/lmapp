@@ -5,22 +5,23 @@ Provides helpful, user-friendly error messages with troubleshooting suggestions.
 Integrates with error recovery to give users clear guidance on resolving issues.
 """
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 from enum import Enum
 import re
 
 
 class ErrorSeverity(Enum):
     """Error severity levels"""
-    INFO = "info"              # Informational, no action needed
-    WARNING = "warning"        # Warning, might need attention
-    ERROR = "error"            # Error, action required
-    CRITICAL = "critical"      # Critical, immediate action required
+
+    INFO = "info"  # Informational, no action needed
+    WARNING = "warning"  # Warning, might need attention
+    ERROR = "error"  # Error, action required
+    CRITICAL = "critical"  # Critical, immediate action required
 
 
 class HelpfulError:
     """Represents an error with helpful context and solutions."""
-    
+
     def __init__(
         self,
         title: str,
@@ -31,7 +32,7 @@ class HelpfulError:
     ):
         """
         Initialize a HelpfulError.
-        
+
         Args:
             title: Short error title
             message: Detailed error message
@@ -44,7 +45,7 @@ class HelpfulError:
         self.severity = severity
         self.suggestions = suggestions or []
         self.reference = reference
-    
+
     def format_for_display(self, verbose: bool = False) -> str:
         """Format error for display to user."""
         lines = [
@@ -52,19 +53,21 @@ class HelpfulError:
             "",
             self.message,
         ]
-        
-        if self.suggestions and (verbose or self.severity in [ErrorSeverity.CRITICAL, ErrorSeverity.ERROR]):
+
+        if self.suggestions and (
+            verbose or self.severity in [ErrorSeverity.CRITICAL, ErrorSeverity.ERROR]
+        ):
             lines.append("")
             lines.append("💡 Try these solutions:")
             for i, suggestion in enumerate(self.suggestions, 1):
                 lines.append(f"   {i}. {suggestion}")
-        
+
         if self.reference:
             lines.append("")
             lines.append(f"📖 Learn more: {self.reference}")
-        
+
         return "\n".join(lines)
-    
+
     def to_dict(self) -> Dict:
         """Convert to dictionary."""
         return {
@@ -78,21 +81,23 @@ class HelpfulError:
 
 class ErrorMessageLibrary:
     """Library of common errors and helpful messages."""
-    
+
     @staticmethod
-    def model_not_found(model_name: str, backend: str, available_models: Optional[List[str]] = None) -> HelpfulError:
+    def model_not_found(
+        model_name: str, backend: str, available_models: Optional[List[str]] = None
+    ) -> HelpfulError:
         """Error when model is not available."""
         suggestions = [
             f"Download the model: lmapp download {model_name}",
-            f"List available models: lmapp models --available",
+            "List available models: lmapp models --available",
         ]
-        
+
         if available_models:
             suggestions.append(
                 f"Available models: {', '.join(available_models[:3])}"
                 f"{' ...' if len(available_models) > 3 else ''}"
             )
-        
+
         return HelpfulError(
             title=f"Model '{model_name}' not found",
             message=f"The model '{model_name}' is not available in your {backend} installation.",
@@ -100,12 +105,12 @@ class ErrorMessageLibrary:
             suggestions=suggestions,
             reference="https://lmapp.dev/guides/models",
         )
-    
+
     @staticmethod
     def backend_not_running(backend: str) -> HelpfulError:
         """Error when backend is not running."""
         start_cmd = f"lmapp start {backend}"
-        
+
         return HelpfulError(
             title=f"{backend.capitalize()} is not running",
             message=f"LMAPP could not connect to {backend}. It may not be installed or running.",
@@ -113,12 +118,12 @@ class ErrorMessageLibrary:
             suggestions=[
                 f"Start {backend}: {start_cmd}",
                 f"Install {backend}: lmapp setup {backend}",
-                f"Check status: lmapp status",
+                "Check status: lmapp status",
                 f"View logs: lmapp logs {backend}",
             ],
             reference=f"https://lmapp.dev/backends/{backend}",
         )
-    
+
     @staticmethod
     def out_of_memory() -> HelpfulError:
         """Error when system runs out of memory."""
@@ -135,7 +140,7 @@ class ErrorMessageLibrary:
             ],
             reference="https://lmapp.dev/guides/memory-optimization",
         )
-    
+
     @staticmethod
     def configuration_error(detail: str) -> HelpfulError:
         """Error in configuration."""
@@ -151,7 +156,7 @@ class ErrorMessageLibrary:
             ],
             reference="https://lmapp.dev/guides/configuration",
         )
-    
+
     @staticmethod
     def network_error(detail: str = "Connection failed") -> HelpfulError:
         """Error connecting to backend or network."""
@@ -168,9 +173,11 @@ class ErrorMessageLibrary:
             ],
             reference="https://lmapp.dev/guides/troubleshooting",
         )
-    
+
     @staticmethod
-    def request_timeout(operation: str = "request", timeout_seconds: int = 30) -> HelpfulError:
+    def request_timeout(
+        operation: str = "request", timeout_seconds: int = 30
+    ) -> HelpfulError:
         """Error when request times out."""
         return HelpfulError(
             title="Request timeout",
@@ -185,7 +192,7 @@ class ErrorMessageLibrary:
             ],
             reference="https://lmapp.dev/guides/performance",
         )
-    
+
     @staticmethod
     def gpu_error(detail: str = "GPU unavailable") -> HelpfulError:
         """Error with GPU."""
@@ -202,7 +209,7 @@ class ErrorMessageLibrary:
             ],
             reference="https://lmapp.dev/guides/gpu-setup",
         )
-    
+
     @staticmethod
     def permission_error(resource: str) -> HelpfulError:
         """Error with file/resource permissions."""
@@ -219,9 +226,11 @@ class ErrorMessageLibrary:
             ],
             reference="https://lmapp.dev/guides/permissions",
         )
-    
+
     @staticmethod
-    def version_mismatch(current: str, required: str, component: str = "Backend") -> HelpfulError:
+    def version_mismatch(
+        current: str, required: str, component: str = "Backend"
+    ) -> HelpfulError:
         """Error when version is incompatible."""
         return HelpfulError(
             title=f"{component} version mismatch",
@@ -239,17 +248,17 @@ class ErrorMessageLibrary:
 
 class ErrorMessageFormatter:
     """Format errors for different output contexts."""
-    
+
     @staticmethod
     def format_for_cli(error: HelpfulError, verbose: bool = False) -> str:
         """Format for CLI output."""
         return error.format_for_display(verbose)
-    
+
     @staticmethod
     def format_for_log(error: HelpfulError) -> str:
         """Format for logging."""
         return f"[{error.severity.value.upper()}] {error.title}\n{error.message}"
-    
+
     @staticmethod
     def format_for_api(error: HelpfulError) -> Dict:
         """Format for API responses."""
@@ -259,7 +268,7 @@ class ErrorMessageFormatter:
 # Error context extraction utilities
 class ErrorContextExtractor:
     """Extract context from error messages and stack traces."""
-    
+
     @staticmethod
     def extract_model_name_from_error(error_text: str) -> Optional[str]:
         """Try to extract model name from error message."""
@@ -268,13 +277,13 @@ class ErrorContextExtractor:
             r"['\"]([a-z0-9\-:.]+)['\"]?\s+not found",
             r"model\s+['\"]?([a-z0-9\-:.]+)['\"]?",
         ]
-        
+
         for pattern in patterns:
             match = re.search(pattern, error_text, re.IGNORECASE)
             if match:
                 return match.group(1)
         return None
-    
+
     @staticmethod
     def extract_backend_name_from_error(error_text: str) -> Optional[str]:
         """Try to extract backend name from error message."""
@@ -283,25 +292,33 @@ class ErrorContextExtractor:
             if backend.lower() in error_text.lower():
                 return backend
         return None
-    
+
     @staticmethod
     def suggest_common_fixes(error_text: str) -> List[str]:
         """Suggest common fixes based on error text."""
         fixes = []
-        
-        if any(word in error_text.lower() for word in ["connection", "refused", "timeout"]):
+
+        if any(
+            word in error_text.lower() for word in ["connection", "refused", "timeout"]
+        ):
             fixes.append("Ensure the backend is running: lmapp status")
-        
+
         if any(word in error_text.lower() for word in ["memory", "out of", "exceeded"]):
             fixes.append("Try a smaller model: lmapp models --size small")
-        
+
         if any(word in error_text.lower() for word in ["gpu", "cuda", "rocm"]):
             fixes.append("Check GPU setup: lmapp doctor --gpu")
-        
-        if any(word in error_text.lower() for word in ["permission", "denied", "access"]):
+
+        if any(
+            word in error_text.lower() for word in ["permission", "denied", "access"]
+        ):
             fixes.append("Check file permissions: chmod u+rw ~/.lmapp")
-        
+
         if any(word in error_text.lower() for word in ["not found", "not available"]):
             fixes.append("Download required model: lmapp download")
-        
-        return fixes if fixes else ["Check logs: lmapp logs", "Run diagnostics: lmapp doctor"]
+
+        return (
+            fixes
+            if fixes
+            else ["Check logs: lmapp logs", "Run diagnostics: lmapp doctor"]
+        )

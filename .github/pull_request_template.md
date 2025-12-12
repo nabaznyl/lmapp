@@ -36,12 +36,12 @@ Describe manual testing or add test commands
 
 ## Checklist
 
-- [ ] My code follows the project's code style (`make format` passes)
-- [ ] I've run linting (`make lint` passes)
+- [ ] My code follows the project's code style (`uaft fix` passes)
+- [ ] I've run linting (`uaft lint` passes)
 - [ ] I've run type checking (`mypy` passes)
 - [ ] I've added/updated tests as needed
 - [ ] I've updated documentation if needed
-- [ ] All tests pass (`make test`)
+- [ ] All tests pass (`uaft test`)
 - [ ] My changes don't introduce new warnings
 
 ## Performance Impact

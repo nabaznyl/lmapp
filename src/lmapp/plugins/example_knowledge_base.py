@@ -8,7 +8,6 @@ Author: LMAPP Community
 License: MIT
 """
 
-import json
 import re
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -116,7 +115,11 @@ class KnowledgeBasePlugin(BasePlugin):
         return {"success": False, "error": f"Unknown action: {action}"}
 
     def _add_entry(
-        self, title: str, content: str, category: str = "uncategorized", importance: int = 5
+        self,
+        title: str,
+        content: str,
+        category: str = "uncategorized",
+        importance: int = 5,
     ) -> Dict[str, Any]:
         """Add entry to knowledge base."""
         if not title or not content:

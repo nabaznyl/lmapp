@@ -26,7 +26,7 @@ Supported Languages:
 - Generic patterns for any language
 """
 
-from typing import Dict, Optional, Any, Callable, List, Tuple
+from typing import Dict, Optional, Any, Callable, List
 from dataclasses import dataclass, field
 import re
 
@@ -36,7 +36,7 @@ from .plugin_manager import BasePlugin, PluginMetadata
 @dataclass
 class CodeIssue:
     """Represents a code issue found during analysis."""
-    
+
     severity: str  # critical, high, medium, low, info
     issue_type: str  # bug, style, performance, complexity
     line: int
@@ -44,7 +44,7 @@ class CodeIssue:
     message: str
     suggestion: Optional[str] = None
     pattern: Optional[str] = None
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -61,12 +61,12 @@ class CodeIssue:
 @dataclass
 class AnalysisResult:
     """Result of code analysis."""
-    
+
     language: str
     issues: List[CodeIssue] = field(default_factory=list)
     lines_analyzed: int = 0
     complexity_estimate: int = 0
-    
+
     @property
     def summary(self) -> Dict[str, Any]:
         """Get analysis summary."""
@@ -75,7 +75,7 @@ class AnalysisResult:
         medium = sum(1 for i in self.issues if i.severity == "medium")
         low = sum(1 for i in self.issues if i.severity == "low")
         info = sum(1 for i in self.issues if i.severity == "info")
-        
+
         return {
             "total_issues": len(self.issues),
             "by_severity": {
@@ -90,14 +90,14 @@ class AnalysisResult:
             "complexity_estimate": self.complexity_estimate,
             "pass": critical == 0 and high == 0,
         }
-    
+
     def _count_by_type(self) -> Dict[str, int]:
         """Count issues by type."""
         counts = {}
         for issue in self.issues:
             counts[issue.issue_type] = counts.get(issue.issue_type, 0) + 1
         return counts
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -110,11 +110,11 @@ class AnalysisResult:
 class CodeAnalyzerPlugin(BasePlugin):
     """
     Code Analyzer plugin for static code analysis.
-    
+
     Detects bugs, style issues, performance problems, and complexity issues
     across multiple programming languages.
     """
-    
+
     # Pattern definitions for different issue types
     CRITICAL_PATTERNS = {
         "null_deref": {
@@ -134,7 +134,7 @@ class CodeAnalyzerPlugin(BasePlugin):
             "suggestion": "Verify operator precedence and logical intent",
         },
     }
-    
+
     HIGH_PATTERNS = {
         "uncaught_exception": {
             "patterns": [
@@ -152,7 +152,7 @@ class CodeAnalyzerPlugin(BasePlugin):
             "suggestion": "Use context manager (with/using) for resource management",
         },
     }
-    
+
     MEDIUM_PATTERNS = {
         "performance": {
             "patterns": [
@@ -164,7 +164,7 @@ class CodeAnalyzerPlugin(BasePlugin):
             "suggestion": "Consider using list comprehension or more efficient method",
         },
     }
-    
+
     STYLE_PATTERNS = {
         "naming": {
             "patterns": [
@@ -182,7 +182,7 @@ class CodeAnalyzerPlugin(BasePlugin):
             "suggestion": "Remove or use the declared variable",
         },
     }
-    
+
     def __init__(self):
         """Initialize code analyzer plugin."""
         self._metadata = PluginMetadata(
@@ -202,16 +202,16 @@ class CodeAnalyzerPlugin(BasePlugin):
             "total_issues_found": 0,
             "average_complexity": 0.0,
         }
-    
+
     @property
     def metadata(self) -> PluginMetadata:
         """Return plugin metadata."""
         return self._metadata
-    
+
     def initialize(self, config: Optional[Dict[str, Any]] = None) -> None:
         """
         Initialize the code analyzer plugin.
-        
+
         Args:
             config: Configuration dict with keys:
                 - language: Programming language (python, javascript, java, cpp)
@@ -220,16 +220,16 @@ class CodeAnalyzerPlugin(BasePlugin):
         if config:
             self.language = config.get("language", "python")
             self.strict_mode = config.get("strict", False)
-    
+
     def _estimate_complexity(self, code: str) -> int:
         """
         Estimate cyclomatic complexity based on control structures.
-        
+
         Returns:
             Estimated complexity (1-10+)
         """
         complexity = 1
-        
+
         # Count decision points
         control_keywords = [
             r"\b(?:if|elif|else|switch|case)\b",
@@ -237,126 +237,134 @@ class CodeAnalyzerPlugin(BasePlugin):
             r"\b(?:try|except|catch|finally)\b",
             r"\b(?:and|or)\b",
         ]
-        
+
         for pattern in control_keywords:
             matches = len(re.findall(pattern, code, re.IGNORECASE))
             complexity += matches
-        
+
         return min(complexity, 10)  # Cap at 10
-    
+
     def _detect_issues(self, code: str, language: str) -> List[CodeIssue]:
         """
         Detect issues in code.
-        
+
         Args:
             code: Source code to analyze
             language: Programming language
-        
+
         Returns:
             List of CodeIssue objects
         """
         issues = []
         lines = code.split("\n")
-        
+
         # Detect critical issues
         for issue_name, issue_def in self.CRITICAL_PATTERNS.items():
             for line_no, line in enumerate(lines, 1):
                 for pattern in issue_def["patterns"]:
                     if re.search(pattern, line, re.IGNORECASE):
-                        issues.append(CodeIssue(
-                            severity="critical",
-                            issue_type="bug",
-                            line=line_no,
-                            column=len(line) - len(line.lstrip()),
-                            message=issue_def["message"],
-                            suggestion=issue_def["suggestion"],
-                            pattern=issue_name,
-                        ))
-        
+                        issues.append(
+                            CodeIssue(
+                                severity="critical",
+                                issue_type="bug",
+                                line=line_no,
+                                column=len(line) - len(line.lstrip()),
+                                message=issue_def["message"],
+                                suggestion=issue_def["suggestion"],
+                                pattern=issue_name,
+                            )
+                        )
+
         # Detect high severity issues
         for issue_name, issue_def in self.HIGH_PATTERNS.items():
             for line_no, line in enumerate(lines, 1):
                 for pattern in issue_def["patterns"]:
                     if re.search(pattern, line, re.IGNORECASE):
-                        issues.append(CodeIssue(
-                            severity="high",
-                            issue_type="bug",
-                            line=line_no,
-                            column=len(line) - len(line.lstrip()),
-                            message=issue_def["message"],
-                            suggestion=issue_def["suggestion"],
-                            pattern=issue_name,
-                        ))
-        
+                        issues.append(
+                            CodeIssue(
+                                severity="high",
+                                issue_type="bug",
+                                line=line_no,
+                                column=len(line) - len(line.lstrip()),
+                                message=issue_def["message"],
+                                suggestion=issue_def["suggestion"],
+                                pattern=issue_name,
+                            )
+                        )
+
         # Detect medium severity issues (performance)
         if not self.strict_mode or True:  # Always check performance
             for issue_name, issue_def in self.MEDIUM_PATTERNS.items():
                 for line_no, line in enumerate(lines, 1):
                     for pattern in issue_def["patterns"]:
                         if re.search(pattern, line, re.IGNORECASE):
-                            issues.append(CodeIssue(
-                                severity="medium",
-                                issue_type="performance",
-                                line=line_no,
-                                column=len(line) - len(line.lstrip()),
-                                message=issue_def["message"],
-                                suggestion=issue_def["suggestion"],
-                                pattern=issue_name,
-                            ))
-        
+                            issues.append(
+                                CodeIssue(
+                                    severity="medium",
+                                    issue_type="performance",
+                                    line=line_no,
+                                    column=len(line) - len(line.lstrip()),
+                                    message=issue_def["message"],
+                                    suggestion=issue_def["suggestion"],
+                                    pattern=issue_name,
+                                )
+                            )
+
         # Detect style issues (only in strict mode)
         if self.strict_mode:
             for issue_name, issue_def in self.STYLE_PATTERNS.items():
                 for line_no, line in enumerate(lines, 1):
                     for pattern in issue_def["patterns"]:
                         if re.search(pattern, line, re.IGNORECASE):
-                            issues.append(CodeIssue(
-                                severity="low",
-                                issue_type="style",
-                                line=line_no,
-                                column=len(line) - len(line.lstrip()),
-                                message=issue_def["message"],
-                                suggestion=issue_def["suggestion"],
-                                pattern=issue_name,
-                            ))
-        
+                            issues.append(
+                                CodeIssue(
+                                    severity="low",
+                                    issue_type="style",
+                                    line=line_no,
+                                    column=len(line) - len(line.lstrip()),
+                                    message=issue_def["message"],
+                                    suggestion=issue_def["suggestion"],
+                                    pattern=issue_name,
+                                )
+                            )
+
         return issues
-    
+
     def execute(self, *args, **kwargs) -> Dict[str, Any]:
         """
         Execute code analysis.
-        
+
         Args:
             code: Source code to analyze
             language: Programming language (optional, uses config default)
-        
+
         Returns:
             Dict with analysis results
         """
         code = kwargs.get("code", "")
         if not code and args:
             code = args[0]
-        
+
         language = kwargs.get("language", self.language)
-        
+
         # Create result object
         result = AnalysisResult(
             language=language,
             lines_analyzed=len(code.split("\n")),
         )
-        
+
         # Estimate complexity
         result.complexity_estimate = self._estimate_complexity(code)
-        
+
         # Detect issues
         result.issues = self._detect_issues(code, language)
-        
+
         # Update stats
         self.analysis_stats["analyses_run"] += 1
         self.analysis_stats["total_issues_found"] += len(result.issues)
-        
+
         return result.to_dict()
-    
+
     def cleanup(self) -> None:
         """Cleanup when plugin is unloaded."""
         self.analysis_stats = {
@@ -364,7 +372,7 @@ class CodeAnalyzerPlugin(BasePlugin):
             "total_issues_found": 0,
             "average_complexity": 0.0,
         }
-    
+
     def get_commands(self) -> Dict[str, Callable]:
         """Get CLI commands provided by this plugin."""
         return {
@@ -373,36 +381,36 @@ class CodeAnalyzerPlugin(BasePlugin):
             "set-language": self._set_language_command,
             "analysis-stats": self._stats_command,
         }
-    
+
     def _analyze_command(self, *args, **kwargs) -> Dict[str, Any]:
         """CLI command: analyze code snippet."""
         return self.execute(*args, **kwargs)
-    
+
     def _analyze_file_command(self, *args, **kwargs) -> Dict[str, Any]:
         """CLI command: analyze file."""
         filepath = kwargs.get("filepath")
         if not filepath:
             return {"error": "filepath required"}
-        
+
         try:
             with open(filepath, "r") as f:
                 code = f.read()
             return self.execute(code=code, **kwargs)
         except Exception as e:
             return {"error": str(e)}
-    
+
     def _set_language_command(self, *args, **kwargs) -> Dict[str, Any]:
         """CLI command: set language."""
         language = kwargs.get("language")
         if language:
             self.language = language
-        
+
         return {
             "status": "success",
             "language": self.language,
             "strict": self.strict_mode,
         }
-    
+
     def _stats_command(self, *args, **kwargs) -> Dict[str, Any]:
         """CLI command: show analysis statistics."""
         return {

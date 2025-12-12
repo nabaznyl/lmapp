@@ -26,25 +26,17 @@ class RetryStrategy(Enum):
 class BackendError(Exception):
     """Base exception for backend errors"""
 
-    pass
-
 
 class ConnectionError(BackendError):
     """Connection to backend failed"""
-
-    pass
 
 
 class ModelNotFoundError(BackendError):
     """Model not found on backend"""
 
-    pass
-
 
 class TimeoutError(BackendError):
     """Request timeout"""
-
-    pass
 
 
 def retry_with_backoff(

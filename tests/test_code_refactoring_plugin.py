@@ -62,9 +62,7 @@ def example():
 """
         result = plugin.execute("analyze", code=code)
         assert result["success"] is True
-        unused_issues = [
-            i for i in result["issues"] if i["type"] == "unused_variable"
-        ]
+        unused_issues = [i for i in result["issues"] if i["type"] == "unused_variable"]
         assert len(unused_issues) > 0
 
     def test_detect_bare_except(self, plugin):
@@ -93,7 +91,9 @@ class my_class:
         result = plugin.execute("analyze", code=code)
         assert result["success"] is True
         naming_issues = [i for i in result["issues"] if i["type"] == "naming"]
-        assert len(naming_issues) >= 2  # MyFunction should be my_function, my_class should be MyClass
+        assert (
+            len(naming_issues) >= 2
+        )  # MyFunction should be my_function, my_class should be MyClass
 
     def test_detect_high_complexity(self, plugin):
         """Test detection of high cyclomatic complexity."""
@@ -110,9 +110,7 @@ def complex_function(x):
 """
         result = plugin.execute("analyze", code=code)
         assert result["success"] is True
-        complexity_issues = [
-            i for i in result["issues"] if i["type"] == "complexity"
-        ]
+        complexity_issues = [i for i in result["issues"] if i["type"] == "complexity"]
         assert len(complexity_issues) > 0
 
     def test_suggest_names(self, plugin):
@@ -178,7 +176,7 @@ y = 2
 class MyClass:
     def method1(self):
         pass
-    
+
     def method2(self):
         pass
 """
@@ -255,7 +253,7 @@ class FirstClass:
 class SecondClass:
     def method1(self):
         pass
-    
+
     def method2(self):
         pass
 
@@ -286,9 +284,7 @@ def very_complex(x):
 """
         result = plugin.execute("analyze", code=code)
         assert result["success"] is True
-        complexity_issues = [
-            i for i in result["issues"] if i["type"] == "complexity"
-        ]
+        complexity_issues = [i for i in result["issues"] if i["type"] == "complexity"]
         if complexity_issues:
             assert complexity_issues[0]["severity"] in ["high", "critical"]
 

@@ -6,9 +6,8 @@ Manages automated setup of backends and models
 
 import platform
 import shutil
-from typing import Optional, List, Dict
+from typing import Dict
 from rich.console import Console
-from rich.prompt import Confirm
 
 from .backend.detector import BackendDetector
 from .backend.ollama import OllamaBackend

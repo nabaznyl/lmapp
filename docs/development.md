@@ -27,21 +27,26 @@ pre-commit install
 ### Testing & Quality
 
 ```bash
-make test          # Run all tests
-make lint          # Check code style (flake8)
-make format        # Auto-format code with black
-make coverage      # Generate coverage report
-make all           # Run: clean + install + lint + test
+# Using UAFT (Standard)
+uaft test          # Run all tests
+uaft fix           # Auto-format code (black + flake8)
+uaft cleanup       # Clean artifacts
+
+# Using lmapp CLI (Convenience)
+lmapp tests        # Run pytest
+lmapp lint         # Run flake8
+lmapp format       # Run black
+lmapp types        # Run mypy
 ```
 
 ### Development
 
 ```bash
-make install       # Install lmapp
-make clean         # Remove build artifacts
-make rebuild       # Clean + reinstall
+uaft install       # Install lmapp
+uaft cleanup       # Remove build artifacts
+uaft rebuild       # Clean + reinstall
 
-# Manual venv (alternative to make)
+# Manual venv (alternative to uaft)
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
@@ -57,9 +62,9 @@ pytest tests/ -v
 
 2. **Code & Test**:
    ```bash
-   make lint          # Check style
-   make format        # Auto-fix formatting
-   make test          # Run tests
+   uaft lint          # Check style
+   uaft fix           # Auto-fix formatting
+   uaft test          # Run tests
    ```
 
 3. **Pre-commit hooks run automatically** on `git commit`
@@ -118,16 +123,16 @@ git commit --no-verify
 ## Troubleshooting
 
 **"pre-commit hooks failed"**
-- Run `make format` to auto-fix
+- Run `uaft fix` to auto-fix
 - Or `pre-commit run --all-files` manually
 
 **"Tests failing locally but passing in CI"**
 - Check Python version: `python --version`
 - CI tests all versions 3.8-3.12
-- Install dev deps: `make dev`
+- Install dev deps: `uaft dev`
 
 **"Module not found"**
-- Make sure you installed with `make dev`
+- Make sure you installed with `uaft dev`
 - Check: `pip list | grep lmapp`
 
 ## Contributing

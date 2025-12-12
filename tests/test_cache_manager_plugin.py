@@ -3,15 +3,12 @@
 Tests for Cache Manager Plugin
 """
 
-import pytest
 import time
-from typing import Any
 
 from lmapp.plugins.example_cache_manager import (
     CacheManagerPlugin,
     SimpleLRUCache,
     CacheEntry,
-    CacheStats,
 )
 
 
@@ -302,7 +299,7 @@ class TestCacheManagerPlugin:
         plugin.cache_search_result("query", [])
 
         # Clear only response cache
-        result = plugin.execute(action="clear", cache_type="response")
+        plugin.execute(action="clear", cache_type="response")
         assert plugin.response_cache.entries == {}
         assert len(plugin.rag_cache.entries) > 0
 
@@ -352,7 +349,7 @@ class TestCacheManagerPlugin:
 
         data = {"key": "value", "number": 42}
 
-        key = plugin.cache_search_result("test", [data])
+        plugin.cache_search_result("test", [data])
         cached = plugin.get_cached_search("test")
 
         assert cached[0]["key"] == "value"

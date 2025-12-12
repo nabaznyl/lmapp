@@ -98,8 +98,6 @@ PERFORMANCE
 
 **Reality:** 3 seconds, $0 cost, data stays local, honest feedback.
 
----
-
 ### Demo 2: Document Search
 
 **Setup (one time):**
@@ -121,10 +119,10 @@ Results:
 
 ---
 
-## Enterprise Setup (For Teams)
+## Setup For Teams
 
 ```bash
-docker run -p 8000:8000 anonmaly/lmapp web
+docker run -p 8000:8000 lmapp/lmapp web
 ```
 
 Deploy to your infrastructure. All data stays in your network.

@@ -11,7 +11,7 @@ License: MIT
 import ast
 import re
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
 from lmapp.plugins.plugin_manager import BasePlugin, PluginMetadata
 
@@ -58,7 +58,6 @@ class CodeRefactoringPlugin(BasePlugin):
     def initialize(self, config: Optional[Dict[str, Any]] = None) -> None:
         """Initialize plugin with optional configuration."""
         # No initialization needed for this plugin
-        pass
 
     def execute(self, action: str, code: str = "", **kwargs) -> Dict[str, Any]:
         """Execute refactoring action.
@@ -111,9 +110,7 @@ class CodeRefactoringPlugin(BasePlugin):
             "low": sum(1 for i in result.issues if i.severity == "low"),
             "lines_of_code": len(code.split("\n")),
             "functions": sum(
-                1
-                for node in ast.walk(tree)
-                if isinstance(node, ast.FunctionDef)
+                1 for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)
             ),
             "classes": sum(
                 1 for node in ast.walk(tree) if isinstance(node, ast.ClassDef)
@@ -138,7 +135,6 @@ class CodeRefactoringPlugin(BasePlugin):
     def _check_dead_code(self, tree: ast.AST, code: str) -> List[RefactoringIssue]:
         """Detect dead code patterns."""
         issues = []
-        lines = code.split("\n")
 
         # Check for unused variables
         for node in ast.walk(tree):
@@ -330,9 +326,7 @@ class CodeRefactoringPlugin(BasePlugin):
                 complexity_map[node.name] = complexity
 
         avg_complexity = (
-            sum(complexity_map.values()) / len(complexity_map)
-            if complexity_map
-            else 0
+            sum(complexity_map.values()) / len(complexity_map) if complexity_map else 0
         )
 
         return {
@@ -342,9 +336,7 @@ class CodeRefactoringPlugin(BasePlugin):
             "status": (
                 "Good"
                 if avg_complexity < 5
-                else "Moderate"
-                if avg_complexity < 10
-                else "High"
+                else "Moderate" if avg_complexity < 10 else "High"
             ),
         }
 

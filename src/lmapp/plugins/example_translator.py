@@ -33,8 +33,6 @@ Supported Languages:
 """
 
 from typing import Dict, Optional, Any, Callable
-from pathlib import Path
-import json
 from dataclasses import dataclass, field
 
 from .plugin_manager import BasePlugin, PluginMetadata
@@ -104,21 +102,21 @@ TRANSLATION_DICT = {
 @dataclass
 class TranslationCache:
     """Simple translation cache."""
-    
+
     data: Dict[str, str] = field(default_factory=dict)
-    
+
     def get(self, key: str) -> Optional[str]:
         """Get cached translation."""
         return self.data.get(key)
-    
+
     def set(self, key: str, value: str) -> None:
         """Set cached translation."""
         self.data[key] = value
-    
+
     def clear(self) -> None:
         """Clear cache."""
         self.data.clear()
-    
+
     def to_dict(self) -> Dict[str, str]:
         """Export cache to dictionary."""
         return self.data.copy()
@@ -127,11 +125,11 @@ class TranslationCache:
 class TranslatorPlugin(BasePlugin):
     """
     Translator plugin for LMAPP.
-    
+
     Provides simple, dictionary-based translation without external dependencies.
     Supports common languages and caches translations for performance.
     """
-    
+
     def __init__(self):
         """Initialize translator plugin."""
         self._metadata = PluginMetadata(
@@ -152,16 +150,16 @@ class TranslatorPlugin(BasePlugin):
             "cache_hits": 0,
             "cache_misses": 0,
         }
-    
+
     @property
     def metadata(self) -> PluginMetadata:
         """Return plugin metadata."""
         return self._metadata
-    
+
     def initialize(self, config: Optional[Dict[str, Any]] = None) -> None:
         """
         Initialize the translator plugin.
-        
+
         Args:
             config: Configuration dict with keys:
                 - source_lang: Source language code (default: "en")
@@ -173,52 +171,52 @@ class TranslatorPlugin(BasePlugin):
             self.target_lang = config.get("target_lang", "es")
             if not config.get("cache_translations", True):
                 self.cache.clear()
-    
+
     def _simple_translate(self, text: str, source: str, target: str) -> str:
         """
         Translate text using dictionary lookup.
-        
+
         Falls back to original text if translation not found.
         Uses simple word/phrase matching.
         """
         if source == target:
             return text
-        
+
         lang_pair = f"{source}_{target}"
         reverse_pair = f"{target}_{source}"
-        
+
         # Check if we have translations for this pair
         if lang_pair not in TRANSLATION_DICT:
             # Try reverse translation
             if reverse_pair not in TRANSLATION_DICT:
                 return text  # No translation available
-        
+
         translation_dict = TRANSLATION_DICT.get(
             lang_pair, TRANSLATION_DICT.get(reverse_pair, {})
         )
-        
+
         # Translate each word/phrase in text
         result = text.lower()
-        
+
         # Sort by length (longest first) to handle multi-word phrases
         sorted_phrases = sorted(
             translation_dict.items(), key=lambda x: len(x[0]), reverse=True
         )
-        
+
         for source_phrase, target_phrase in sorted_phrases:
             result = result.replace(source_phrase, target_phrase)
-        
+
         return result
-    
+
     def execute(self, *args, **kwargs) -> Dict[str, Any]:
         """
         Execute translation.
-        
+
         Args:
             text: Text to translate
             source_lang: Source language (optional, uses config default)
             target_lang: Target language (optional, uses config default)
-        
+
         Returns:
             Dict with keys:
                 - translated: The translated text
@@ -230,14 +228,14 @@ class TranslatorPlugin(BasePlugin):
         text = kwargs.get("text", "")
         if not text and args:
             text = args[0]
-        
+
         source = kwargs.get("source_lang", self.source_lang)
         target = kwargs.get("target_lang", self.target_lang)
-        
+
         # Check cache
         cache_key = f"{source}:{target}:{text}"
         cached_result = self.cache.get(cache_key)
-        
+
         if cached_result:
             self.translation_stats["cache_hits"] += 1
             return {
@@ -247,15 +245,15 @@ class TranslatorPlugin(BasePlugin):
                 "cached": True,
                 "stats": self.translation_stats.copy(),
             }
-        
+
         # Perform translation
         translated = self._simple_translate(text, source, target)
         self.translation_stats["cache_misses"] += 1
         self.translation_stats["total_translations"] += 1
-        
+
         # Cache result
         self.cache.set(cache_key, translated)
-        
+
         return {
             "translated": translated,
             "source": source,
@@ -263,7 +261,7 @@ class TranslatorPlugin(BasePlugin):
             "cached": False,
             "stats": self.translation_stats.copy(),
         }
-    
+
     def cleanup(self) -> None:
         """Cleanup when plugin is unloaded."""
         self.cache.clear()
@@ -272,11 +270,11 @@ class TranslatorPlugin(BasePlugin):
             "cache_hits": 0,
             "cache_misses": 0,
         }
-    
+
     def get_commands(self) -> Dict[str, Callable]:
         """
         Get CLI commands provided by this plugin.
-        
+
         Returns:
             Dict of {command_name: handler_function}
         """
@@ -286,27 +284,27 @@ class TranslatorPlugin(BasePlugin):
             "translation-stats": self._stats_command,
             "clear-cache": self._clear_cache_command,
         }
-    
+
     def _translate_command(self, *args, **kwargs) -> Dict[str, Any]:
         """CLI command: translate text."""
         return self.execute(*args, **kwargs)
-    
+
     def _set_language_command(self, *args, **kwargs) -> Dict[str, Any]:
         """CLI command: set source and target languages."""
         source = kwargs.get("source")
         target = kwargs.get("target")
-        
+
         if source:
             self.source_lang = source
         if target:
             self.target_lang = target
-        
+
         return {
             "status": "success",
             "source_lang": self.source_lang,
             "target_lang": self.target_lang,
         }
-    
+
     def _stats_command(self, *args, **kwargs) -> Dict[str, Any]:
         """CLI command: show translation statistics."""
         return {
@@ -314,7 +312,7 @@ class TranslatorPlugin(BasePlugin):
             "cache_size": len(self.cache.data),
             "cache_data": self.cache.to_dict(),
         }
-    
+
     def _clear_cache_command(self, *args, **kwargs) -> Dict[str, Any]:
         """CLI command: clear translation cache."""
         self.cache.clear()

@@ -68,20 +68,16 @@ class BasePlugin(ABC):
     @abstractmethod
     def on_initialize(self) -> bool:
         """Called when plugin is loaded. Return True if successful."""
-        pass
 
     @abstractmethod
     def on_cleanup(self) -> None:
         """Called when plugin is unloaded."""
-        pass
 
     def register_command(self, name: str, handler: callable) -> None:
         """Register a command handler."""
-        pass
 
     def register_hook(self, hook_name: str, handler: callable) -> None:
         """Register a hook handler."""
-        pass
 
     def get_info(self) -> Dict[str, Any]:
         """Get plugin information."""

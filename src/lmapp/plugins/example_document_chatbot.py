@@ -4,11 +4,9 @@ Document Chatbot Plugin
 Multi-document conversation with citation tracking and context awareness
 """
 
-import json
 import time
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field, asdict
-from pathlib import Path
 
 from .plugin_manager import BasePlugin, PluginMetadata
 
@@ -16,6 +14,7 @@ from .plugin_manager import BasePlugin, PluginMetadata
 @dataclass
 class Citation:
     """Citation information"""
+
     document: str
     page: Optional[int] = None
     line: Optional[int] = None
@@ -25,6 +24,7 @@ class Citation:
 @dataclass
 class ConversationTurn:
     """Single turn in conversation"""
+
     id: str
     user_message: str
     bot_response: str
@@ -37,6 +37,7 @@ class ConversationTurn:
 @dataclass
 class DocumentContext:
     """Context from a document"""
+
     document_id: str
     document_name: str
     content: str
@@ -96,7 +97,7 @@ class ConversationMemory:
 class DocumentChatbotPlugin(BasePlugin):
     """
     Multi-document chatbot with context awareness and citation tracking.
-    
+
     Features:
     - Maintains conversation state across multiple documents
     - Tracks citations for each response
@@ -118,10 +119,9 @@ class DocumentChatbotPlugin(BasePlugin):
     def metadata(self) -> PluginMetadata:
         """Return plugin metadata."""
         return self._METADATA
-    
+
     def initialize(self, config: Optional[Dict[str, Any]] = None) -> None:
         """Initialize the plugin."""
-        pass
 
     def __init__(self):
         """Initialize document chatbot"""
@@ -133,12 +133,12 @@ class DocumentChatbotPlugin(BasePlugin):
     def execute(self, *args, **kwargs) -> Dict[str, Any]:
         """
         Execute chatbot operations.
-        
+
         Args:
             action: 'chat', 'add_document', 'list_documents', 'clear', 'get_history'
             query/message: User message
             documents: List of document contents
-            
+
         Returns:
             Dictionary with response and citations
         """
@@ -310,7 +310,9 @@ class DocumentChatbotPlugin(BasePlugin):
 
         # Build response from document content
         context = " ".join(doc.content for doc in relevant_docs)
-        return f"Based on the documents, I found relevant information. {context[:200]}..."
+        return (
+            f"Based on the documents, I found relevant information. {context[:200]}..."
+        )
 
     def _extract_citations(
         self, query: str, relevant_docs: List[DocumentContext]

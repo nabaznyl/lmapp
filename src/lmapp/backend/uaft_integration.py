@@ -12,7 +12,6 @@ UAFT enhances lmapp with automation capabilities:
 
 import subprocess
 import sys
-from typing import Optional
 from pathlib import Path
 import json
 
@@ -36,10 +35,7 @@ class UAFTIntegration:
         """Check if UAFT is installed and available"""
         try:
             result = subprocess.run(
-                ["uaft", "--version"],
-                capture_output=True,
-                text=True,
-                timeout=5
+                ["uaft", "--version"], capture_output=True, text=True, timeout=5
             )
             return result.returncode == 0
         except Exception:
@@ -61,8 +57,11 @@ class UAFTIntegration:
         Prompt user to install UAFT as optional companion tool.
         Returns True if user wants to install, False otherwise.
         """
-        console.print("\n[bold cyan]Optional: Universal Automation Framework Tool[/bold cyan]")
-        console.print("""
+        console.print(
+            "\n[bold cyan]Optional: Universal Automation Framework Tool[/bold cyan]"
+        )
+        console.print(
+            """
 UAFT is a recommended companion tool that enhances lmapp with:
   ✨ Project automation and initialization
   🧪 Automated testing workflows
@@ -71,13 +70,13 @@ UAFT is a recommended companion tool that enhances lmapp with:
   🔌 Plugin system for extensibility
 
 UAFT makes it easy to automate repetitive tasks in your projects.
-        """)
+        """
+        )
 
         if self.uaft_installed:
             console.print("[green]✓ UAFT is already installed![/green]")
             enable = inquirer.confirm(
-                message="Enable UAFT integration with lmapp?",
-                default=True
+                message="Enable UAFT integration with lmapp?", default=True
             )
             return enable
 
@@ -85,7 +84,7 @@ UAFT makes it easy to automate repetitive tasks in your projects.
             inquirer.Confirm(
                 "install_uaft",
                 message="Would you like to install UAFT now?",
-                default=True
+                default=True,
             )
         ]
 
@@ -104,13 +103,13 @@ UAFT makes it easy to automate repetitive tasks in your projects.
                 SpinnerColumn(),
                 TextColumn("[progress.description]{task.description}"),
             ) as progress:
-                task = progress.add_task("Downloading and installing UAFT...", total=None)
+                progress.add_task("Downloading and installing UAFT...", total=None)
 
                 result = subprocess.run(
                     [sys.executable, "-m", "pip", "install", "uaft", "-q"],
                     capture_output=True,
                     text=True,
-                    timeout=300
+                    timeout=300,
                 )
 
                 progress.stop()
@@ -136,10 +135,7 @@ UAFT makes it easy to automate repetitive tasks in your projects.
         config_dir = Path.home() / ".lmapp"
         config_dir.mkdir(parents=True, exist_ok=True)
 
-        config = {
-            "enabled": enabled,
-            "version": "0.2.1"  # Current UAFT version
-        }
+        config = {"enabled": enabled, "version": "0.2.1"}  # Current UAFT version
 
         config_path = config_dir / "uaft_config.json"
         with open(config_path, "w") as f:
@@ -148,7 +144,8 @@ UAFT makes it easy to automate repetitive tasks in your projects.
     def _show_uaft_quickstart(self) -> None:
         """Show UAFT quickstart information"""
         console.print("\n[bold cyan]UAFT Quickstart[/bold cyan]")
-        console.print("""
+        console.print(
+            """
 Get started with UAFT:
 
   1. Initialize a project:
@@ -161,13 +158,13 @@ Get started with UAFT:
      $ uaft --help
 
 Learn more: https://github.com/nabaznyl/uaft
-        """)
+        """
+        )
 
     def get_integration_status(self) -> dict:
         """Get current UAFT integration status"""
         return {
             "installed": self.uaft_installed,
             "enabled": self.uaft_config.get("enabled", False),
-            "version": self.uaft_config.get("version")
+            "version": self.uaft_config.get("version"),
         }
-

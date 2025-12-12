@@ -15,15 +15,23 @@ bash scripts/dev-utils.sh setup && bash scripts/dev-utils.sh ready
 
 **Daily Workflow:**
 ```bash
-make format        # Auto-format code
-make test          # Run tests
+# Using UAFT (Standard)
+uaft fix           # Auto-format code
+uaft test          # Run tests
+
+# OR using lmapp CLI
+lmapp format       # Auto-format code
+lmapp tests        # Run tests
+lmapp lint         # Check style
+lmapp types        # Check types
+
 git add .
 git commit -m "Your message"    # Pre-commit hook validates automatically
 ```
 
 **Before Submitting PR:**
 ```bash
-make all           # Format, lint, test all at once
+uaft test          # Ensure all tests pass
 bash scripts/dev-utils.sh deps-audit    # Security check
 git push origin feature/your-feature
 ```
@@ -85,15 +93,15 @@ git checkout -b feature/your-feature-name
 
 **Step 3: Validate before committing**
 ```bash
-make format          # Auto-format
-make test            # Run tests
+uaft fix             # Auto-format
+uaft test            # Run tests
 git add .
 git commit -m "description"    # Pre-commit hook validates automatically
 ```
 
 **Step 4: Before pushing**
 ```bash
-make all             # Full validation
+uaft all             # Full validation
 bash scripts/dev-utils.sh deps-audit    # Security check
 git push origin feature/your-feature-name
 ```

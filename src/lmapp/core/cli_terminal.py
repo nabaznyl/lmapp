@@ -5,11 +5,8 @@ Allows users to run lmapp commands and shell commands interactively
 """
 
 import subprocess
-import sys
-from typing import Optional
 from rich.console import Console
 from rich.prompt import Prompt
-from rich.syntax import Syntax
 
 console = Console()
 
@@ -25,9 +22,7 @@ class CLITerminalMode:
         """Start the interactive terminal"""
         self.running = True
 
-        console.print(
-            "\n[cyan bold]🖥️  lmapp Advanced CLI Terminal[/cyan bold]\n"
-        )
+        console.print("\n[cyan bold]🖥️  lmapp Advanced CLI Terminal[/cyan bold]\n")
         console.print(
             "[dim]Type 'help' for available commands or shell commands directly[/dim]"
         )

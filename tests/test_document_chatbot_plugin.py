@@ -3,15 +3,12 @@
 Tests for Document Chatbot Plugin
 """
 
-import pytest
-import time
 
 from lmapp.plugins.example_document_chatbot import (
     DocumentChatbotPlugin,
     ConversationMemory,
     ConversationTurn,
     Citation,
-    DocumentContext,
 )
 
 
@@ -329,7 +326,7 @@ class TestDocumentChatbotPlugin:
         result1 = plugin.execute(action="chat", message="Testing framework")
         turn1_id = result1["turn_id"]
 
-        result2 = plugin.execute(action="chat", message="More about it")
+        plugin.execute(action="chat", message="More about it")
 
         history = plugin.execute(action="get_history")
 

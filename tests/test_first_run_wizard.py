@@ -5,10 +5,9 @@ Tests hardware detection and model recommendation logic
 """
 
 import pytest
-import psutil
-from unittest.mock import patch, MagicMock, Mock
+from unittest.mock import patch
 from lmapp.ui.first_run import FirstRunWizard
-from lmapp.core.config import ConfigManager, LMAppConfig
+from lmapp.core.config import LMAppConfig
 from lmapp.backend.detector import BackendDetector
 
 
@@ -28,8 +27,8 @@ class TestFirstRunWizardCore:
         """Test hardware detection returns dict with required keys"""
         # Call the method that actually does the detection logic
         # (without the UI part which calls console.input)
-        with patch('lmapp.ui.first_run.console.input', return_value=''):
-            with patch('lmapp.ui.first_run.console.print'):  # Suppress output
+        with patch("lmapp.ui.first_run.console.input", return_value=""):
+            with patch("lmapp.ui.first_run.console.print"):  # Suppress output
                 hardware = wizard._detect_hardware()
                 assert isinstance(hardware, dict)
                 assert "total_ram_gb" in hardware
@@ -38,8 +37,8 @@ class TestFirstRunWizardCore:
 
     def test_hardware_detection_values_realistic(self, wizard):
         """Test hardware detection returns realistic values"""
-        with patch('lmapp.ui.first_run.console.input', return_value=''):
-            with patch('lmapp.ui.first_run.console.print'):
+        with patch("lmapp.ui.first_run.console.input", return_value=""):
+            with patch("lmapp.ui.first_run.console.print"):
                 hardware = wizard._detect_hardware()
                 # Should have at least some RAM
                 assert hardware["total_ram_gb"] > 0.1
@@ -78,7 +77,11 @@ class TestFirstRunWizardCore:
 
     def test_model_recommendation_high_ram(self, wizard):
         """Test model recommendation for 8GB+ RAM systems"""
-        hardware_high = {"total_ram_gb": 16.0, "available_ram_gb": 14.0, "cpu_cores": 16}
+        hardware_high = {
+            "total_ram_gb": 16.0,
+            "available_ram_gb": 14.0,
+            "cpu_cores": 16,
+        }
         model = wizard._get_recommended_model(hardware_high)
         assert isinstance(model, str)
         assert len(model) > 0
@@ -116,21 +119,21 @@ class TestFirstRunWizardCore:
         """Test FirstRunWizard initializes with required components"""
         wizard = FirstRunWizard()
         assert wizard is not None
-        assert hasattr(wizard, 'config')
-        assert hasattr(wizard, 'config_manager')
-        assert hasattr(wizard, 'detector')
+        assert hasattr(wizard, "config")
+        assert hasattr(wizard, "config_manager")
+        assert hasattr(wizard, "detector")
         assert wizard.config is not None
 
     def test_wizard_has_required_methods(self, wizard):
         """Test wizard has all required methods"""
-        assert hasattr(wizard, 'run')
-        assert hasattr(wizard, '_show_welcome')
-        assert hasattr(wizard, '_detect_hardware')
-        assert hasattr(wizard, '_get_recommended_model')
-        assert hasattr(wizard, '_should_download_model')
-        assert hasattr(wizard, '_download_model')
-        assert hasattr(wizard, '_show_completion')
-        
+        assert hasattr(wizard, "run")
+        assert hasattr(wizard, "_show_welcome")
+        assert hasattr(wizard, "_detect_hardware")
+        assert hasattr(wizard, "_get_recommended_model")
+        assert hasattr(wizard, "_should_download_model")
+        assert hasattr(wizard, "_download_model")
+        assert hasattr(wizard, "_show_completion")
+
         # All should be callable
         assert callable(wizard.run)
         assert callable(wizard._detect_hardware)
@@ -138,7 +141,7 @@ class TestFirstRunWizardCore:
 
     def test_wizard_config_has_completed_setup_field(self, wizard):
         """Test config supports completed_setup flag"""
-        assert hasattr(wizard.config, 'completed_setup')
+        assert hasattr(wizard.config, "completed_setup")
         assert isinstance(wizard.config.completed_setup, bool)
 
     # ========================================================================
@@ -148,13 +151,13 @@ class TestFirstRunWizardCore:
     def test_should_download_model_decline(self, wizard):
         """Test wizard method exists and returns bool"""
         # Test that the method exists and is callable
-        assert hasattr(wizard, '_should_download_model')
+        assert hasattr(wizard, "_should_download_model")
         assert callable(wizard._should_download_model)
 
     def test_should_download_model_accept(self, wizard):
         """Test wizard download method signature"""
         # Test that the method exists and is callable
-        assert hasattr(wizard, '_should_download_model')
+        assert hasattr(wizard, "_should_download_model")
         assert callable(wizard._should_download_model)
 
     def test_wizard_multiple_instantiation(self):
@@ -164,7 +167,7 @@ class TestFirstRunWizardCore:
         # All should be independent
         for wizard in wizards:
             assert wizard is not None
-            assert hasattr(wizard, 'config')
+            assert hasattr(wizard, "config")
 
 
 class TestFirstRunWizardIntegrationWithConfig:
@@ -206,13 +209,17 @@ class TestFirstRunWizardEdgeCases:
             model = wizard._get_recommended_model(hardware)
             # Should return something, even for edge case
             assert isinstance(model, str)
-        except Exception as e:
+        except Exception:
             # OK if it raises exception for invalid hardware
             assert True
 
     def test_model_recommendation_negative_values(self, wizard):
         """Test model recommendation robustness with invalid values"""
-        hardware_invalid = {"total_ram_gb": -1.0, "available_ram_gb": -1.0, "cpu_cores": -1}
+        hardware_invalid = {
+            "total_ram_gb": -1.0,
+            "available_ram_gb": -1.0,
+            "cpu_cores": -1,
+        }
         try:
             model = wizard._get_recommended_model(hardware_invalid)
             # Either returns something or raises exception
@@ -224,15 +231,19 @@ class TestFirstRunWizardEdgeCases:
 
     def test_model_recommendation_extreme_high_ram(self, wizard):
         """Test model recommendation with very high RAM"""
-        hardware_extreme = {"total_ram_gb": 256.0, "available_ram_gb": 256.0, "cpu_cores": 128}
+        hardware_extreme = {
+            "total_ram_gb": 256.0,
+            "available_ram_gb": 256.0,
+            "cpu_cores": 128,
+        }
         model = wizard._get_recommended_model(hardware_extreme)
         assert isinstance(model, str)
         assert len(model) > 0
 
     def test_hardware_dict_structure_consistency(self, wizard):
         """Test hardware detection always returns dict with required keys"""
-        with patch('lmapp.ui.first_run.console.input', return_value=''):
-            with patch('lmapp.ui.first_run.console.print'):
+        with patch("lmapp.ui.first_run.console.input", return_value=""):
+            with patch("lmapp.ui.first_run.console.print"):
                 for _ in range(3):
                     hardware = wizard._detect_hardware()
                     # Should have these required keys

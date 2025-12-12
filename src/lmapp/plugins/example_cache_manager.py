@@ -7,10 +7,8 @@ Optimizes LLM response caching and RAG document cache management
 import json
 import time
 import hashlib
-from pathlib import Path
 from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict, field
-from datetime import datetime, timedelta
+from dataclasses import dataclass, asdict
 
 from .plugin_manager import BasePlugin, PluginMetadata
 
@@ -18,6 +16,7 @@ from .plugin_manager import BasePlugin, PluginMetadata
 @dataclass
 class CacheEntry:
     """Single cache entry"""
+
     key: str
     value: Any
     created_at: float
@@ -30,6 +29,7 @@ class CacheEntry:
 @dataclass
 class CacheStats:
     """Cache statistics"""
+
     total_entries: int
     total_size_mb: float
     hit_rate: float  # hits / (hits + misses)
@@ -98,7 +98,8 @@ class SimpleLRUCache:
         """Remove all expired entries, return count removed"""
         current_time = time.time()
         expired_keys = [
-            k for k, e in self.entries.items()
+            k
+            for k, e in self.entries.items()
             if (current_time - e.created_at) > e.ttl_seconds
         ]
 
@@ -149,7 +150,7 @@ class SimpleLRUCache:
 class CacheManagerPlugin(BasePlugin):
     """
     Manages LLM response cache and RAG document cache.
-    
+
     Features:
     - LRU cache with TTL support
     - Cache statistics and health monitoring
@@ -171,10 +172,9 @@ class CacheManagerPlugin(BasePlugin):
     def metadata(self) -> PluginMetadata:
         """Return plugin metadata."""
         return self._METADATA
-    
+
     def initialize(self, config: Optional[Dict[str, Any]] = None) -> None:
         """Initialize the plugin."""
-        pass
 
     def __init__(self):
         """Initialize cache manager"""
@@ -186,11 +186,11 @@ class CacheManagerPlugin(BasePlugin):
     def execute(self, *args, **kwargs) -> Dict[str, Any]:
         """
         Manage caches.
-        
+
         Args:
             action: 'stats', 'clear', 'cleanup', 'optimize'
             cache_type: 'all', 'response', 'rag', 'search'
-            
+
         Returns:
             Dictionary with cache management results
         """
@@ -208,15 +208,17 @@ class CacheManagerPlugin(BasePlugin):
         else:
             return {"status": "error", "message": f"Unknown action: {action}"}
 
-    def cache_response(self, prompt: str, response: str, ttl_seconds: int = 3600) -> str:
+    def cache_response(
+        self, prompt: str, response: str, ttl_seconds: int = 3600
+    ) -> str:
         """
         Cache LLM response.
-        
+
         Args:
             prompt: The prompt that generated this response
             response: The LLM response
             ttl_seconds: Time to live for this cache entry
-            
+
         Returns:
             Cache key
         """
@@ -227,10 +229,10 @@ class CacheManagerPlugin(BasePlugin):
     def get_cached_response(self, prompt: str) -> Optional[str]:
         """
         Get cached response for prompt.
-        
+
         Args:
             prompt: The prompt to look up
-            
+
         Returns:
             Cached response or None
         """
@@ -238,15 +240,17 @@ class CacheManagerPlugin(BasePlugin):
         value, hit = self.response_cache.get(key)
         return value if hit else None
 
-    def cache_document(self, doc_path: str, content: str, ttl_seconds: int = 86400) -> str:
+    def cache_document(
+        self, doc_path: str, content: str, ttl_seconds: int = 86400
+    ) -> str:
         """
         Cache RAG document.
-        
+
         Args:
             doc_path: Path to document
             content: Document content
             ttl_seconds: Time to live (default 24h)
-            
+
         Returns:
             Cache key
         """
@@ -260,15 +264,17 @@ class CacheManagerPlugin(BasePlugin):
         value, hit = self.rag_cache.get(key)
         return value if hit else None
 
-    def cache_search_result(self, query: str, results: List[Dict], ttl_seconds: int = 1800) -> str:
+    def cache_search_result(
+        self, query: str, results: List[Dict], ttl_seconds: int = 1800
+    ) -> str:
         """
         Cache search results.
-        
+
         Args:
             query: Search query
             results: Search results
             ttl_seconds: Time to live (default 30min)
-            
+
         Returns:
             Cache key
         """
@@ -307,7 +313,8 @@ class CacheManagerPlugin(BasePlugin):
                 "search": asdict(search_stats) if search_stats else None,
             },
             "total_cached_mb": sum(
-                s.total_size_mb for s in [resp_stats, rag_stats, search_stats]
+                s.total_size_mb
+                for s in [resp_stats, rag_stats, search_stats]
                 if s is not None
             ),
         }

@@ -5,6 +5,7 @@ Provides intuitive beginner experience with power-user features
 """
 
 from typing import List, Callable, Optional
+import json
 import inquirer
 import psutil
 from rich.console import Console
@@ -60,25 +61,29 @@ class MainMenu:
 
         if advanced:
             # Advanced Mode: Full feature access
-            items.extend([
-                MenuItem("B", "Plugins", self.manage_plugins),
-                MenuItem("C", "Models", self.manage_models),
-                MenuItem("D", "API & Integration", self.show_api),
-                MenuItem("E", "Settings", self.configure),
-                MenuItem("F", "Roles & Workflows", self.calibrate_workflow),
-                MenuItem("G", "Developer Tools", self.show_dev_tools),
-                MenuItem("H", "Help & Documentation", self.show_help),
-                MenuItem("I", "About", self.show_about),
-            ])
+            items.extend(
+                [
+                    MenuItem("B", "Plugins", self.manage_plugins),
+                    MenuItem("C", "Models", self.manage_models),
+                    MenuItem("D", "API & Integration", self.show_api),
+                    MenuItem("E", "Settings", self.configure),
+                    MenuItem("F", "Roles & Workflows", self.calibrate_workflow),
+                    MenuItem("G", "Developer Tools", self.show_dev_tools),
+                    MenuItem("H", "Help & Documentation", self.show_help),
+                    MenuItem("I", "About", self.show_about),
+                ]
+            )
         else:
             # Beginner Mode: Simplified menus
-            items.extend([
-                MenuItem("B", "Plugins", self.manage_plugins),
-                MenuItem("C", "Settings", self.configure),
-                MenuItem("D", "Roles & Workflows", self.calibrate_workflow),
-                MenuItem("E", "Help & Documentation", self.show_help),
-                MenuItem("F", "About", self.show_about),
-            ])
+            items.extend(
+                [
+                    MenuItem("B", "Plugins", self.manage_plugins),
+                    MenuItem("C", "Settings", self.configure),
+                    MenuItem("D", "Roles & Workflows", self.calibrate_workflow),
+                    MenuItem("E", "Help & Documentation", self.show_help),
+                    MenuItem("F", "About", self.show_about),
+                ]
+            )
 
         items.append(MenuItem("Q", "Quit", self.quit))
         return items
@@ -86,16 +91,20 @@ class MainMenu:
     def display(self):
         """Display the menu with enhanced visual hierarchy"""
         config = self.config_manager.load()
-        mode_indicator = "[bold green]📊 Advanced Mode[/bold green]" if config.advanced_mode else "[dim]Beginner Mode[/dim]"
-        
+        mode_indicator = (
+            "[bold green]📊 Advanced Mode[/bold green]"
+            if config.advanced_mode
+            else "[dim]Beginner Mode[/dim]"
+        )
+
         # Clear console for fresh start
         console.clear()
-        
+
         # Show header with branding
         console.print("\n" + "=" * 60)
         console.print("[bold cyan]LMAPP - Local LLM Chat[/bold cyan]", justify="center")
         console.print(f"Version {__version__}", justify="center", style="dim")
-        
+
         # Show mode indicator
         console.print(f"\nMode: {mode_indicator}", justify="center")
         console.print("=" * 60 + "\n")
@@ -103,45 +112,49 @@ class MainMenu:
     def get_choice(self) -> Optional[str]:
         """Get user's menu choice with visual separators"""
         self.items = self._build_menu_items()
-        
+
         # Organize items into categories
         chat_items = [i for i in self.items if i.key == "A"]
         management_items = [i for i in self.items if i.key in ["B", "C", "D"]]
         advanced_items = [i for i in self.items if i.key in ["E", "F"]]
         control_items = [i for i in self.items if i.key in ["G", "H"]]
         quit_items = [i for i in self.items if i.key == "Q"]
-        
+
         # Display categorized menu with separators
         if chat_items:
             console.print("[cyan]─── Chat ───[/cyan]")
             for item in chat_items:
                 console.print(f"  [bold]{item.key}[/bold])  {item.label}")
-        
+
         if management_items:
             console.print("\n[cyan]─── Explore & Manage ───[/cyan]")
             for item in management_items:
                 console.print(f"  [bold]{item.key}[/bold])  {item.label}")
-        
+
         if advanced_items:
             console.print("\n[cyan]─── Configure ───[/cyan]")
             for item in advanced_items:
                 console.print(f"  [bold]{item.key}[/bold])  {item.label}")
-        
+
         if control_items:
             console.print("\n[cyan]─── Help & Info ───[/cyan]")
             for item in control_items:
                 console.print(f"  [bold]{item.key}[/bold])  {item.label}")
-        
+
         if quit_items:
             console.print("\n[cyan]─── Exit ───[/cyan]")
             for item in quit_items:
                 console.print(f"  [bold]{item.key}[/bold])  {item.label}")
-        
+
         console.print()
-        
+
         # Get user input
         try:
-            choice = console.input("[bold]Enter your choice [/bold](Q to quit): ").upper().strip()
+            choice = (
+                console.input("[bold]Enter your choice [/bold](Q to quit): ")
+                .upper()
+                .strip()
+            )
             return choice if choice else None
         except KeyboardInterrupt:
             return "Q"
@@ -149,13 +162,13 @@ class MainMenu:
     def run(self):
         """Main menu loop with first-run wizard"""
         from lmapp.ui.first_run import FirstRunWizard
-        
+
         # Run first-time setup wizard if needed
         config = self.config_manager.load()
         if not config.completed_setup:
             wizard = FirstRunWizard()
             wizard.run()
-        
+
         # Main menu loop
         while self.running:
             self.display()
@@ -185,9 +198,15 @@ class MainMenu:
 
         if not backend:
             console.print("[red]No backend found![/red]")
-            console.print("\n[dim]A backend like Ollama is required to use LMAPP.[/dim]")
-            
-            q = [inquirer.Confirm("install", message="Install a backend now?", default=True)]
+            console.print(
+                "\n[dim]A backend like Ollama is required to use LMAPP.[/dim]"
+            )
+
+            q = [
+                inquirer.Confirm(
+                    "install", message="Install a backend now?", default=True
+                )
+            ]
             if inquirer.prompt(q).get("install"):
                 self.manage_models()
             return
@@ -206,7 +225,9 @@ class MainMenu:
 
         if not models:
             console.print("[yellow]No models found.[/yellow]")
-            q = [inquirer.Confirm("download", message="Download a model?", default=True)]
+            q = [
+                inquirer.Confirm("download", message="Download a model?", default=True)
+            ]
             if inquirer.prompt(q).get("download"):
                 self.manage_models()
                 return
@@ -234,10 +255,10 @@ class MainMenu:
     def manage_plugins(self):
         """Browse and execute plugins"""
         from lmapp.plugins.plugin_manager import PluginManager
-        
+
         config = self.config_manager.load()
         self.plugin_manager = PluginManager()
-        
+
         if config.advanced_mode:
             self._manage_plugins_advanced()
         else:
@@ -248,55 +269,63 @@ class MainMenu:
         while True:
             console.clear()
             console.print("[bold cyan]🔌 Plugins[/bold cyan]\n")
-            
+
             # Discover actual plugins
             plugin_paths = self.plugin_manager.discover_plugins()
-            
+
             if not plugin_paths:
                 console.print("[dim]No plugins found[/dim]")
-                console.print("[yellow]Visit github.com/nabaznyl/lmapp for plugins[/yellow]")
+                console.print(
+                    "[yellow]Visit github.com/nabaznyl/lmapp for plugins[/yellow]"
+                )
                 console.input("\n[dim]Press Enter to go back...[/dim]")
                 break
-            
+
             # Load plugins and group by category/tags
             plugins_by_category = {}
             choices = []
-            
+
             for plugin_path in plugin_paths:
                 plugin_info = self.plugin_manager.load_plugin(plugin_path)
                 if plugin_info and plugin_info.metadata:
                     name = plugin_info.metadata.name
                     desc = plugin_info.metadata.description or "No description"
                     tags = plugin_info.metadata.tags or ["General"]
-                    
+
                     category = tags[0] if tags else "General"
                     if category not in plugins_by_category:
                         plugins_by_category[category] = []
-                        choices.append((f"[bold cyan]{category}[/bold cyan]", f"HEADER_{category}"))
-                    
+                        choices.append(
+                            (f"[bold cyan]{category}[/bold cyan]", f"HEADER_{category}")
+                        )
+
                     plugins_by_category[category].append((name, plugin_info))
                     choices.append((f"  {name:<25} - {desc[:40]}", name))
                     choices.append(("", "SPACER"))
-            
+
             if not choices:
                 console.print("[dim]No plugins available[/dim]")
                 console.input("[dim]Press Enter to go back...[/dim]")
                 break
-            
+
             choices.append(("Back to Menu", "back"))
-            
+
             q = [inquirer.List("plugin", message="Select a plugin", choices=choices)]
             answer = inquirer.prompt(q)
-            
+
             if not answer:
                 break
-            
+
             selected = answer.get("plugin")
-            if selected in ["back"] or selected.startswith("HEADER_") or selected == "SPACER":
+            if (
+                selected in ["back"]
+                or selected.startswith("HEADER_")
+                or selected == "SPACER"
+            ):
                 if selected == "back":
                     break
                 continue
-            
+
             # Find and execute selected plugin
             for category, plugins in plugins_by_category.items():
                 for name, plugin_info in plugins:
@@ -309,20 +338,22 @@ class MainMenu:
         while True:
             console.clear()
             console.print("[bold cyan]🔌 Plugins (Advanced Mode)[/bold cyan]\n")
-            
+
             # Discover actual plugins
             plugin_paths = self.plugin_manager.discover_plugins()
-            
+
             if not plugin_paths:
                 console.print("[dim]No plugins found[/dim]")
-                console.print("[yellow]To add plugins, place them in ~/.lmapp/plugins/[/yellow]")
+                console.print(
+                    "[yellow]To add plugins, place them in ~/.lmapp/plugins/[/yellow]"
+                )
                 console.input("\n[dim]Press Enter to go back...[/dim]")
                 break
-            
+
             # Load and display all plugins
             choices = []
             loaded_plugins = {}
-            
+
             for plugin_path in plugin_paths:
                 plugin_info = self.plugin_manager.load_plugin(plugin_path)
                 if plugin_info and plugin_info.metadata:
@@ -330,34 +361,40 @@ class MainMenu:
                     version = plugin_info.metadata.version or "unknown"
                     desc = plugin_info.metadata.description or "No description"
                     loaded_plugins[name] = plugin_info
-                    
+
                     status = "✓" if plugin_info.is_loaded else "✗"
-                    choices.append((f"{status} {name:<20} v{version:<10} - {desc[:35]}", name))
-            
-            choices.extend([
-                ("", "SPACER"),
-                ("Browse Plugin Repository", "repo"),
-                ("Back to Menu", "back"),
-            ])
-            
+                    choices.append(
+                        (f"{status} {name:<20} v{version:<10} - {desc[:35]}", name)
+                    )
+
+            choices.extend(
+                [
+                    ("", "SPACER"),
+                    ("Browse Plugin Repository", "repo"),
+                    ("Back to Menu", "back"),
+                ]
+            )
+
             q = [inquirer.List("plugin", message="Choose plugin", choices=choices)]
             answer = inquirer.prompt(q)
-            
+
             if not answer:
                 break
-            
+
             selected = answer.get("plugin")
             if selected == "back":
                 break
             elif selected == "repo":
-                console.print("[yellow]Plugin repository: github.com/nabaznyl/lmapp/plugins[/yellow]")
+                console.print(
+                    "[yellow]Plugin repository: github.com/nabaznyl/lmapp/plugins[/yellow]"
+                )
                 console.input("[dim]Press Enter to continue...[/dim]")
             elif selected in loaded_plugins:
                 self._execute_plugin(loaded_plugins[selected])
 
     def _execute_plugin(self, plugin_info):
         """Execute a plugin and display output
-        
+
         Args:
             plugin_info: PluginInfo object with loaded plugin
         """
@@ -365,12 +402,12 @@ class MainMenu:
             console.clear()
             console.print(f"[bold cyan]{plugin_info.metadata.name}[/bold cyan]\n")
             console.print(f"[dim]{plugin_info.metadata.description}[/dim]\n")
-            
+
             # Try to execute the plugin
-            if plugin_info.plugin and hasattr(plugin_info.plugin, 'execute'):
+            if plugin_info.plugin and hasattr(plugin_info.plugin, "execute"):
                 with console.status(f"Running {plugin_info.metadata.name}..."):
                     result = plugin_info.plugin.execute()
-                
+
                 if result:
                     console.print("[green]✓ Completed successfully[/green]")
                     console.print(f"\n[dim]Output:[/dim]\n{result}")
@@ -379,11 +416,11 @@ class MainMenu:
             else:
                 console.print("[yellow]Plugin interface not yet available[/yellow]")
                 console.print("[dim]Plugin loading UI coming soon[/dim]")
-        
+
         except Exception as e:
             console.print(f"[red]✗ Error executing plugin: {e}[/red]")
             console.print("[dim]Check plugin compatibility and configuration[/dim]")
-        
+
         console.input("\n[dim]Press Enter to go back...[/dim]")
 
     def manage_models(self):
@@ -399,7 +436,9 @@ class MainMenu:
 
         while True:
             console.clear()
-            console.print(f"[bold cyan]Models ({backend.backend_display_name()})[/bold cyan]\n")
+            console.print(
+                f"[bold cyan]Models ({backend.backend_display_name()})[/bold cyan]\n"
+            )
 
             if not backend.is_running():
                 console.print("[yellow]Starting backend...[/yellow]\n")
@@ -420,14 +459,16 @@ class MainMenu:
 
             console.print()
 
-            q = [inquirer.List(
-                "action",
-                message="Choose an action",
-                choices=[
-                    ("Download New Model", "download"),
-                    ("Back to Menu", "back"),
-                ],
-            )]
+            q = [
+                inquirer.List(
+                    "action",
+                    message="Choose an action",
+                    choices=[
+                        ("Download New Model", "download"),
+                        ("Back to Menu", "back"),
+                    ],
+                )
+            ]
 
             answer = inquirer.prompt(q)
             if not answer or answer.get("action") == "back":
@@ -443,18 +484,70 @@ class MainMenu:
 
         # Hardware-optimized model recommendations
         models = [
-            {"id": "qwen2.5:0.5b", "name": "Qwen 2.5", "size": "0.5B", "speed": "⚡ Ultra-Fast", "ram": 2},
-            {"id": "tinyllama", "name": "TinyLlama", "size": "1.1B", "speed": "⚡ Fast", "ram": 2},
-            {"id": "llama3.2:1b", "name": "Llama 3.2", "size": "1B", "speed": "⚡ Fast", "ram": 3},
-            {"id": "llama3.2:3b", "name": "Llama 3.2", "size": "3B", "speed": "🔥 Balanced", "ram": 4},
-            {"id": "phi3", "name": "Phi-3 Mini", "size": "3.8B", "speed": "🔥 Good", "ram": 4},
-            {"id": "mistral", "name": "Mistral", "size": "7B", "speed": "💪 Standard", "ram": 6},
-            {"id": "llama3.1", "name": "Llama 3.1", "size": "8B", "speed": "💪 Excellent", "ram": 8},
-            {"id": "neural-chat", "name": "Neural Chat", "size": "7B", "speed": "💪 Optimized", "ram": 6},
+            {
+                "id": "qwen2.5:0.5b",
+                "name": "Qwen 2.5",
+                "size": "0.5B",
+                "speed": "⚡ Ultra-Fast",
+                "ram": 2,
+            },
+            {
+                "id": "tinyllama",
+                "name": "TinyLlama",
+                "size": "1.1B",
+                "speed": "⚡ Fast",
+                "ram": 2,
+            },
+            {
+                "id": "llama3.2:1b",
+                "name": "Llama 3.2",
+                "size": "1B",
+                "speed": "⚡ Fast",
+                "ram": 3,
+            },
+            {
+                "id": "llama3.2:3b",
+                "name": "Llama 3.2",
+                "size": "3B",
+                "speed": "🔥 Balanced",
+                "ram": 4,
+            },
+            {
+                "id": "phi3",
+                "name": "Phi-3 Mini",
+                "size": "3.8B",
+                "speed": "🔥 Good",
+                "ram": 4,
+            },
+            {
+                "id": "mistral",
+                "name": "Mistral",
+                "size": "7B",
+                "speed": "💪 Standard",
+                "ram": 6,
+            },
+            {
+                "id": "llama3.1",
+                "name": "Llama 3.1",
+                "size": "8B",
+                "speed": "💪 Excellent",
+                "ram": 8,
+            },
+            {
+                "id": "neural-chat",
+                "name": "Neural Chat",
+                "size": "7B",
+                "speed": "💪 Optimized",
+                "ram": 6,
+            },
         ]
 
         # Filter: compatible RAM + not installed
-        compatible = [m for m in models if m["ram"] <= ram_gb and m["id"].split(":")[0] not in installed]
+        compatible = [
+            m
+            for m in models
+            if m["ram"] <= ram_gb and m["id"].split(":")[0] not in installed
+        ]
 
         if not compatible:
             console.print("[yellow]All compatible models already installed[/yellow]")
@@ -462,13 +555,17 @@ class MainMenu:
             return
 
         choices = [
-            (f"{m['name']:<15} {m['size']:<6} {m['speed']:<15}", m['id'])
+            (f"{m['name']:<15} {m['size']:<6} {m['speed']:<15}", m["id"])
             for m in compatible
         ]
         choices.append(("Custom model name...", "custom"))
         choices.append(("Back", "back"))
 
-        q = [inquirer.List("model", message="Select a model to download", choices=choices)]
+        q = [
+            inquirer.List(
+                "model", message="Select a model to download", choices=choices
+            )
+        ]
         answer = inquirer.prompt(q)
         model = answer.get("model") if answer else None
 
@@ -498,15 +595,19 @@ class MainMenu:
             return
 
         # Recommend Ollama by default (most compatible)
-        recommended = next((b for b in available if b.backend_name() == "ollama"), available[0])
+        recommended = next(
+            (b for b in available if b.backend_name() == "ollama"), available[0]
+        )
 
         console.print(f"[dim]Recommended: {recommended.backend_display_name()}[/dim]\n")
 
         with console.status(f"Installing {recommended.backend_display_name()}..."):
             if recommended.install():
-                console.print(f"[green]✓ {recommended.backend_display_name()} installed![/green]")
+                console.print(
+                    f"[green]✓ {recommended.backend_display_name()} installed![/green]"
+                )
             else:
-                console.print(f"[red]✗ Installation failed[/red]")
+                console.print("[red]✗ Installation failed[/red]")
 
         console.input("[dim]Press Enter to continue...[/dim]")
 
@@ -559,19 +660,23 @@ class MainMenu:
             choices = []
 
             if not config.advanced_mode:
-                choices.extend([
-                    ("Dark Mode (Coming)", "dark-mode"),
-                    ("Default Model", "default-model"),
-                    ("Enable Advanced Mode", "advanced-mode"),
-                ])
+                choices.extend(
+                    [
+                        ("Dark Mode (Coming)", "dark-mode"),
+                        ("Default Model", "default-model"),
+                        ("Enable Advanced Mode", "advanced-mode"),
+                    ]
+                )
             else:
-                choices.extend([
-                    ("Dark Mode (Coming)", "dark-mode"),
-                    ("Default Model", "default-model"),
-                    ("Backend", "backend"),
-                    ("Temperature", "temperature"),
-                    ("Disable Advanced Mode", "advanced-mode"),
-                ])
+                choices.extend(
+                    [
+                        ("Dark Mode (Coming)", "dark-mode"),
+                        ("Default Model", "default-model"),
+                        ("Backend", "backend"),
+                        ("Temperature", "temperature"),
+                        ("Disable Advanced Mode", "advanced-mode"),
+                    ]
+                )
 
             choices.append(("Back to Menu", "back"))
 
@@ -587,7 +692,11 @@ class MainMenu:
                 if backend and backend.is_running():
                     models = backend.list_models() or []
                     if models:
-                        q = [inquirer.List("model", message="Select default model", choices=models)]
+                        q = [
+                            inquirer.List(
+                                "model", message="Select default model", choices=models
+                            )
+                        ]
                         ans = inquirer.prompt(q)
                         if ans:
                             config.default_model = ans.get("model")
@@ -602,7 +711,11 @@ class MainMenu:
             elif setting == "advanced-mode":
                 config.advanced_mode = not config.advanced_mode
                 self.config_manager.save(config)
-                state = "[green]ENABLED[/green]" if config.advanced_mode else "[dim]DISABLED[/dim]"
+                state = (
+                    "[green]ENABLED[/green]"
+                    if config.advanced_mode
+                    else "[dim]DISABLED[/dim]"
+                )
                 console.print(f"\nAdvanced Mode {state}")
                 console.input("[dim]Press Enter to continue...[/dim]")
 
@@ -649,13 +762,17 @@ From chat, press [bold]Ctrl+P[/bold] to access plugins:
         """About screen with hardware info and mode toggle"""
         while True:
             config = self.config_manager.load()
-            mode_text = "[green]ENABLED ✓[/green]" if config.advanced_mode else "[yellow]DISABLED[/yellow]"
+            mode_text = (
+                "[green]ENABLED ✓[/green]"
+                if config.advanced_mode
+                else "[yellow]DISABLED[/yellow]"
+            )
 
             # Get hardware info
             memory = psutil.virtual_memory()
             cpu_count = psutil.cpu_count()
             memory_gb = memory.total / (1024**3)
-            
+
             # Get recommended model
             if memory_gb < 2:
                 recommended = "qwen2.5:0.5b (370MB) - Minimal"
@@ -685,15 +802,17 @@ Beautiful AI. Complete control. Your data, always.
             """
             console.print(Panel(about_text, title="About LMAPP", border_style="blue"))
 
-            q = [inquirer.List(
-                "action",
-                message="Choose an option",
-                choices=[
-                    ("Toggle Advanced Mode", "toggle"),
-                    ("View All System Info", "info"),
-                    ("Back to Menu", "back"),
-                ],
-            )]
+            q = [
+                inquirer.List(
+                    "action",
+                    message="Choose an option",
+                    choices=[
+                        ("Toggle Advanced Mode", "toggle"),
+                        ("View All System Info", "info"),
+                        ("Back to Menu", "back"),
+                    ],
+                )
+            ]
 
             answer = inquirer.prompt(q)
             action = answer.get("action") if answer else "back"
@@ -703,7 +822,11 @@ Beautiful AI. Complete control. Your data, always.
             elif action == "toggle":
                 config.advanced_mode = not config.advanced_mode
                 self.config_manager.save(config)
-                state = "[green]ENABLED ✓[/green]" if config.advanced_mode else "[yellow]DISABLED[/yellow]"
+                state = (
+                    "[green]ENABLED ✓[/green]"
+                    if config.advanced_mode
+                    else "[yellow]DISABLED[/yellow]"
+                )
                 console.clear()
                 console.print(f"\n[bold]Advanced Mode {state}[/bold]")
                 console.print("\n[dim]Menu will update on next screen...[/dim]")
@@ -714,7 +837,7 @@ Beautiful AI. Complete control. Your data, always.
                 # Get detailed system info
                 backend = self.detector.get_best_backend()
                 backend_name = backend.backend_display_name() if backend else "None"
-                
+
                 info = f"""
 [bold cyan]System Information[/bold cyan]
 
@@ -737,13 +860,12 @@ Beautiful AI. Complete control. Your data, always.
                 console.print(Panel(info, border_style="green", title="System Details"))
                 console.input("\n[dim]Press Enter to continue...[/dim]")
 
-
     def calibrate_workflow(self):
         """Run the workflow calibration wizard"""
         from lmapp.core.workflow import WorkflowManager
-        
+
         manager = WorkflowManager()
-        
+
         questions = [
             inquirer.List(
                 "action",
@@ -755,18 +877,18 @@ Beautiful AI. Complete control. Your data, always.
                 ],
             )
         ]
-        
+
         answer = inquirer.prompt(questions)
         if not answer:
             return
-            
+
         action = answer["action"]
-        
+
         if action == "wizard":
             manager.run_setup_wizard()
             console.input("\n[dim]Press Enter to continue...[/dim]")
         elif action == "edit":
-            console.print(f"\n[bold]Manual Edit[/bold]")
+            console.print("\n[bold]Manual Edit[/bold]")
             console.print(f"Edit the rules file at: [cyan]{manager.rules_file}[/cyan]")
             console.print("\nExample structure:")
             console.print(json.dumps(manager.default_rules, indent=2))

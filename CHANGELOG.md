@@ -11,6 +11,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.3] - 2025-12-12
+
+### Added
+- **Server Dashboard**: New Web UI at `http://localhost:8000` with status indicators, version info, and a built-in Chat Terminal.
+- **Server Management**: New CLI commands for robust server control:
+  - `lmapp server start`: Starts the API server (checks for port conflicts).
+  - `lmapp server stop`: Gracefully shuts down the running server.
+  - `lmapp server list`: Shows active server PID and URL.
+  - `lmapp server kill -a`: Forcefully kills all server instances.
+- **Global `-y` Flag**: Added `-y` / `--yes` flag to skip confirmation prompts in CLI commands.
+- **VS Code Extension**:
+  - Added `Lmapp: Toggle Server` command.
+  - Added `contextLines` configuration (default: 50).
+  - Implemented debouncing (500ms) for inline completions to improve performance.
+
+### Fixed
+- **Dependency Issue**: Fixed `ModuleNotFoundError: No module named 'uvicorn'` by moving API dependencies to core requirements.
+- **Port Conflicts**: Server now checks if port 8000 is in use before starting and provides helpful error messages.
+- **CLI UX**: Removed "Roles & Workflows" prompt from utility commands (only shows in main menu/chat).
+- **Config Show**: Fixed `AttributeError` in `lmapp config show` command.
+
 ## [0.3.2] - 2025-12-12
 
 ### Fixed

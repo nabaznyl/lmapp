@@ -4,6 +4,9 @@ lmapp CLI - Main entry point
 Provides the primary command-line interface for lmapp
 """
 import os
+import signal
+from pathlib import Path
+from typing import Optional
 
 import sys
 import click
@@ -14,13 +17,12 @@ from lmapp import __version__
 from lmapp.ui.menu import MainMenu
 from lmapp.ui.chat_ui import launch_chat
 from lmapp.utils.system_check import SystemCheck
-from lmapp.utils.logging import logger
+from lmapp.utils.logging import logger, LOG_FILE
 from lmapp.backend.installer import BackendInstaller
 from lmapp.backend.detector import BackendDetector
 from lmapp.core.chat import ChatSession
 from lmapp.core.nux import check_first_run, run_user_mode_setup
 from lmapp.core.config import get_config_manager
-from lmapp.auto_update import check_for_updates
 
 console = Console()
 
@@ -29,15 +31,17 @@ console = Console()
 @click.option("--version", is_flag=True, help="Show version and exit")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.option("--dev", is_flag=True, help="Enable Developer Mode")
+@click.option("-y", "--yes", is_flag=True, help="Skip confirmation prompts (assume yes)")
 @click.pass_context
-def main(ctx, version, debug, dev):
+def main(ctx, version, debug, dev, yes):
     """lmapp - Local LLM Made Simple
-    # Check for updates
-    check_for_updates(__version__)
-
 
     Your personal AI assistant, running locally on your machine.
     """
+    # Set global assume_yes flag
+    if yes:
+        get_config_manager().update(assume_yes=True)
+
     if debug:
 
         os.environ["LMAPP_DEBUG"] = "1"
@@ -73,13 +77,12 @@ def main(ctx, version, debug, dev):
 
             # Silent logging as requested
             # console.print(f"\n[dim]Error has been logged to the database. Run 'lmapp errors' to view history.[/dim]")
-        except Exception as e:
+        except Exception:
             # Fallback if ErrorDB fails
             console.print(f"\n[bold red]Critical Error:[/bold red] {exc_value}")
             # console.print(f"[dim]Failed to log error: {e}[/dim]")
 
         # Call original hook if debug
-
 
         if os.environ.get("LMAPP_DEBUG"):
             sys.__excepthook__(exc_type, exc_value, exc_traceback)
@@ -103,22 +106,32 @@ def main(ctx, version, debug, dev):
     is_interactive = sys.stdin.isatty()
     is_help = "--help" in sys.argv
     is_test = "pytest" in sys.modules
-    
-    if is_interactive and not is_help and not is_test:
+
+    # Only prompt for workflow on main menu or chat command
+    # Prevents annoying prompts on utility commands like 'server', 'status', etc.
+    allowed_commands = [None, "chat"]
+    should_check_workflow = (
+        is_interactive 
+        and not is_help 
+        and not is_test 
+        and ctx.invoked_subcommand in allowed_commands
+    )
+
+    if should_check_workflow:
         from lmapp.core.workflow import WorkflowManager
-        from rich.prompt import Confirm
-        
+        from lmapp.ui.prompt import confirm
+
         workflow_mgr = WorkflowManager()
         if workflow_mgr.should_prompt():
             console.print("\n[bold cyan]Roles & Workflows Setup[/bold cyan]")
             console.print("Would you like to configure your AI assistant's behavior?")
             console.print("[dim](Operating rules, tool awareness, etc.)[/dim]")
-            
-            if Confirm.ask("Run setup wizard?", default=True):
+
+            if confirm("Run setup wizard?", default=True):
                 workflow_mgr.run_setup_wizard()
             else:
                 # Suppress future prompts?
-                if Confirm.ask("Suppress this prompt in the future?", default=True):
+                if confirm("Suppress this prompt in the future?", default=True):
                     get_config_manager().update(suppress_workflow_prompt=True)
 
     # Handle Developer Mode flag
@@ -357,15 +370,69 @@ def download():
     menu.download_model_ui(backend)
 
 
-@main.command()
-def serve():
-    """Start the API server for VS Code integration"""
+# --- Server Management ---
+
+PID_FILE = Path.home() / ".local" / "share" / "lmapp" / "server.pid"
+
+
+def _get_server_pid() -> Optional[int]:
+    """Get PID of running server if exists"""
+    if PID_FILE.exists():
+        try:
+            pid = int(PID_FILE.read_text().strip())
+            # Check if process actually exists
+            try:
+                os.kill(pid, 0)
+                return pid
+            except OSError:
+                # Stale PID file
+                PID_FILE.unlink()
+                return None
+        except ValueError:
+            PID_FILE.unlink()
+            return None
+    return None
+
+
+@main.group(name="server", invoke_without_command=True)
+@click.pass_context
+def server(ctx):
+    """Manage the API server (start, stop, list)"""
+    if ctx.invoked_subcommand is None:
+        ctx.invoke(server_start)
+
+
+@server.command(name="start")
+def server_start():
+    """Start the API server (default)"""
     import uvicorn
     from lmapp.server.app import app
+
+    # Check if already running
+    pid = _get_server_pid()
+    if pid:
+        console.print(f"[yellow]Server is already running (PID: {pid})[/yellow]")
+        console.print("Run [bold]lmapp server stop[/bold] to stop it.")
+        return
+
+    # Check port 8000
+    import socket
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    result = sock.connect_ex(("127.0.0.1", 8000))
+    sock.close()
+    if result == 0:
+        console.print("[red]Port 8000 is already in use by another process.[/red]")
+        console.print("Run [bold]lsof -i :8000[/bold] to identify it.")
+        return
 
     console.print("[bold cyan]Starting lmapp API Server...[/bold cyan]")
     console.print("[dim]Listening on http://localhost:8000[/dim]")
     console.print("[dim]Press Ctrl+C to stop[/dim]\n")
+
+    # Write PID
+    PID_FILE.parent.mkdir(parents=True, exist_ok=True)
+    PID_FILE.write_text(str(os.getpid()))
 
     try:
         uvicorn.run(app, host="127.0.0.1", port=8000, log_level="info")
@@ -373,7 +440,65 @@ def serve():
         console.print("\n[yellow]Server stopped[/yellow]")
     except Exception as e:
         console.print(f"\n[red]Server error: {e}[/red]")
-        sys.exit(1)
+    finally:
+        if PID_FILE.exists():
+            PID_FILE.unlink()
+
+
+@server.command(name="stop")
+def server_stop():
+    """Stop the running server"""
+    pid = _get_server_pid()
+    if not pid:
+        console.print("[yellow]No running server found.[/yellow]")
+        return
+
+    try:
+        os.kill(pid, signal.SIGINT)
+        console.print(f"[green]Stopped server (PID: {pid})[/green]")
+        if PID_FILE.exists():
+            PID_FILE.unlink()
+    except ProcessLookupError:
+        console.print("[yellow]Server process not found (stale PID file removed)[/yellow]")
+        if PID_FILE.exists():
+            PID_FILE.unlink()
+    except Exception as e:
+        console.print(f"[red]Failed to stop server: {e}[/red]")
+
+
+@server.command(name="list")
+def server_list():
+    """List active server"""
+    pid = _get_server_pid()
+    if pid:
+        console.print(f"[green]●[/green] Server running on port 8000 (PID: {pid})")
+        console.print(f"  URL: http://localhost:8000")
+    else:
+        console.print("[dim]No server running[/dim]")
+
+
+@server.command(name="kill")
+@click.option("-a", "--all", "kill_all", is_flag=True, help="Kill all instances")
+def server_kill(kill_all):
+    """Force kill server processes"""
+    if kill_all:
+        import subprocess
+        try:
+            subprocess.run(["pkill", "-f", "lmapp server"], check=False)
+            console.print("[green]Killed all lmapp server instances[/green]")
+            if PID_FILE.exists():
+                PID_FILE.unlink()
+        except Exception as e:
+            console.print(f"[red]Failed to kill processes: {e}[/red]")
+    else:
+        server_stop()
+
+
+@main.command(name="serve", hidden=True)
+def serve():
+    """Alias for server"""
+    ctx = click.get_current_context()
+    ctx.invoke(server_start)
 
 
 @main.command()
@@ -381,15 +506,16 @@ def status():
     """Show system status and configuration"""
     logger.debug("status command started")
     console.print("[bold]LMAPP Status Report[/bold]\n")
-    
+
     # Show version and config
     from lmapp.core.config import get_config_manager
-    config = get_config_manager().get()
-    
-    console.print(f"[bold]Version[/bold]\n")
+
+    _ = get_config_manager().get()
+
+    console.print("[bold]Version[/bold]\n")
     console.print(f"  Version: {__version__}")
-    console.print(f"  Status: [green]Production Ready[/green]")
-    console.print(f"  License: [cyan]MIT (Free)[/cyan]")
+    console.print("  Status: [green]Production Ready[/green]")
+    console.print("  License: [cyan]MIT (Free)[/cyan]")
 
     checker = SystemCheck()
     checker.run_all_checks()
@@ -404,13 +530,15 @@ def status():
 @main.group()
 def workflow():
     """Manage AI Roles & Workflows"""
-    pass
+
 
 @workflow.command(name="setup")
 def workflow_setup():
     """Run the interactive Roles & Workflows wizard"""
     from lmapp.core.workflow import WorkflowManager
+
     WorkflowManager().run_setup_wizard()
+
 
 @main.group()
 def config():
@@ -426,6 +554,127 @@ def config_show():
     from lmapp.core.config import get_config_manager
 
     manager = get_config_manager()
+    config = manager.load()
+
+    content = f"[bold]Current Configuration:[/bold]\n"
+    content += f"backend: {config.backend}\n"
+    content += f"model: {config.model}\n"
+    content += f"temperature: {config.temperature}\n"
+    content += f"debug: {config.debug}\n"
+    content += f"developer_mode: {config.developer_mode}"
+
+    console.print(Panel.fit(content))
+    
+    # Format paths for display (replace home with ~)
+    config_path = str(manager.config_file).replace(str(Path.home()), "~")
+    log_path = str(LOG_FILE).replace(str(Path.home()), "~")
+    
+    console.print(f"[dim]Configuration file: {config_path}[/dim]")
+    console.print(f"[dim]Log file: {log_path}[/dim]")
+
+
+@main.group()
+def plugin():
+    """Manage plugins and marketplace"""
+    logger.debug("plugin command group started")
+
+
+@plugin.command(name="update")
+def plugin_update():
+    """Update plugin registries"""
+    from lmapp.plugins.plugin_marketplace import get_plugin_marketplace
+
+    marketplace = get_plugin_marketplace()
+    console.print("Updating plugin registries...")
+    marketplace.refresh_registries()
+    console.print("[green]Registries updated successfully.[/green]")
+
+
+@plugin.command(name="list")
+@click.option("--registry", help="Filter by registry name")
+@click.option("--certified", is_flag=True, help="Show only certified plugins")
+def plugin_list(registry, certified):
+    """List available plugins"""
+    from lmapp.plugins.plugin_marketplace import get_plugin_marketplace
+    from rich.table import Table
+
+    marketplace = get_plugin_marketplace()
+    plugins = marketplace.list_plugins(registry=registry, certified_only=certified)
+
+    if not plugins:
+        console.print("[yellow]No plugins found.[/yellow]")
+        return
+
+    table = Table(title="Available Plugins")
+    table.add_column("Name", style="cyan")
+    table.add_column("Version", style="green")
+    table.add_column("Description")
+    table.add_column("Rating", style="yellow")
+    table.add_column("Verified", style="blue")
+
+    for p in plugins:
+        verified_mark = "✓" if p.verified else ""
+        table.add_row(
+            p.name,
+            p.version,
+            p.description[:50] + "..." if len(p.description) > 50 else p.description,
+            f"{p.rating} ({p.reviews})",
+            verified_mark,
+        )
+
+    console.print(table)
+
+
+@plugin.command(name="search")
+@click.argument("query")
+def plugin_search(query):
+    """Search for plugins"""
+    from lmapp.plugins.plugin_marketplace import get_plugin_marketplace
+    from rich.table import Table
+
+    marketplace = get_plugin_marketplace()
+    results = marketplace.search_all(query)
+
+    if not results:
+        console.print(f"[yellow]No plugins found matching '{query}'.[/yellow]")
+        return
+
+    table = Table(title=f"Search Results: {query}")
+    table.add_column("Registry", style="magenta")
+    table.add_column("Name", style="cyan")
+    table.add_column("Description")
+    table.add_column("Verified", style="blue")
+
+    for registry_name, p in results:
+        verified_mark = "✓" if p.verified else ""
+        table.add_row(
+            registry_name,
+            p.name,
+            p.description[:50] + "..." if len(p.description) > 50 else p.description,
+            verified_mark,
+        )
+
+    console.print(table)
+
+
+@plugin.command(name="install")
+@click.argument("plugin_name")
+@click.option("--registry", default="official", help="Registry to install from")
+def plugin_install(plugin_name, registry):
+    """Install a plugin"""
+    from lmapp.plugins.plugin_marketplace import get_plugin_marketplace
+
+    marketplace = get_plugin_marketplace()
+    console.print(
+        f"Installing [cyan]{plugin_name}[/cyan] from [magenta]{registry}[/magenta]..."
+    )
+
+    if marketplace.install_plugin(plugin_name, registry):
+        console.print(f"[green]Successfully installed {plugin_name}![/green]")
+    else:
+        console.print(
+            f"[red]Failed to install {plugin_name}. Check logs for details.[/red]"
+        )
 
     console.print(manager.show())
     console.print()
@@ -547,6 +796,66 @@ def config_validate():
     except Exception as e:
         console.print(f"[red]✗ Configuration is invalid: {str(e)}[/red]")
         logger.error(f"Config validation failed: {str(e)}")
+
+
+@main.command(context_settings=dict(ignore_unknown_options=True))
+@click.argument("args", nargs=-1, type=click.UNPROCESSED)
+def tests(args):
+    """Run the test suite (pytest wrapper)"""
+    import subprocess
+
+    cmd = ["pytest"] + list(args)
+    console.print(f"[dim]Running: {' '.join(cmd)}[/dim]")
+    sys.exit(subprocess.call(cmd))
+
+
+@main.command(context_settings=dict(ignore_unknown_options=True))
+@click.argument("args", nargs=-1, type=click.UNPROCESSED)
+def src(args):
+    """Run code linting (flake8 wrapper)"""
+    import subprocess
+
+    # Default to src/ if no args provided, otherwise pass args to flake8
+    target = list(args) if args else ["src/"]
+    cmd = ["flake8"] + target
+    console.print(f"[dim]Running: {' '.join(cmd)}[/dim]")
+    sys.exit(subprocess.call(cmd))
+
+
+@main.command(context_settings=dict(ignore_unknown_options=True))
+@click.argument("args", nargs=-1, type=click.UNPROCESSED)
+def format(args):
+    """Run code formatting (black wrapper)"""
+    import subprocess
+
+    target = list(args) if args else ["src/", "tests/"]
+    cmd = ["black"] + target
+    console.print(f"[dim]Running: {' '.join(cmd)}[/dim]")
+    sys.exit(subprocess.call(cmd))
+
+
+@main.command(context_settings=dict(ignore_unknown_options=True))
+@click.argument("args", nargs=-1, type=click.UNPROCESSED)
+def lint(args):
+    """Run code linting (flake8 wrapper)"""
+    import subprocess
+
+    target = list(args) if args else ["src/", "tests/"]
+    cmd = ["flake8"] + target
+    console.print(f"[dim]Running: {' '.join(cmd)}[/dim]")
+    sys.exit(subprocess.call(cmd))
+
+
+@main.command(context_settings=dict(ignore_unknown_options=True))
+@click.argument("args", nargs=-1, type=click.UNPROCESSED)
+def types(args):
+    """Run type checking (mypy wrapper)"""
+    import subprocess
+
+    target = list(args) if args else ["src/"]
+    cmd = ["mypy"] + target
+    console.print(f"[dim]Running: {' '.join(cmd)}[/dim]")
+    sys.exit(subprocess.call(cmd))
 
 
 if __name__ == "__main__":

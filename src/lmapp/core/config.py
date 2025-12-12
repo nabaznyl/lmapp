@@ -48,6 +48,11 @@ class LMAppConfig(BaseModel):
         default=None, description="Maximum tokens in response"
     )
     timeout: int = Field(default=300, description="Request timeout in seconds")
+    
+    # Runtime flags (not saved to disk usually, but part of config object)
+    assume_yes: bool = Field(
+        default=False, description="Skip confirmation prompts (assume yes)"
+    )
 
     # Workflow / Calibration Settings
     workflow_setup_completed: bool = Field(
@@ -57,7 +62,8 @@ class LMAppConfig(BaseModel):
         default=False, description="Suppress the startup workflow prompt"
     )
     workflow_role: str = Field(
-        default="default", description="Default role to use (default, architect, custom)"
+        default="default",
+        description="Default role to use (default, architect, custom)",
     )
 
     @field_validator("backend")
@@ -151,14 +157,15 @@ class ConfigManager:
                 self._config = LMAppConfig()
         if not self._config:
             self._config = LMAppConfig()
-        
+
         # Enforce trial gating: if no active trial/paid, force Advanced Mode OFF
         # (This ensures free tier users don't accidentally have advanced features)
         from lmapp.core.trial import is_trial_active
+
         if self._config.advanced_mode and not is_trial_active():
             logger.debug("Trial inactive, enforcing free tier (Advanced Mode OFF)")
             self._config.advanced_mode = False
-        
+
         return self._config
 
     def update(self, **kwargs) -> bool:

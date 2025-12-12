@@ -5,10 +5,8 @@ Manages bash-it, Oh My Zsh, and other shell enhancements
 """
 
 import subprocess
-import platform
 import os
 from pathlib import Path
-from typing import Optional, List
 from rich.console import Console
 from lmapp.utils.logging import logger
 
@@ -149,9 +147,7 @@ class ShellCustomizer:
             True if successful
         """
         if not self.shell_rc:
-            console.print(
-                f"[red]✗ Shell RC file not found for {self.shell}[/red]"
-            )
+            console.print(f"[red]✗ Shell RC file not found for {self.shell}[/red]")
             return False
 
         aliases = """
@@ -197,9 +193,7 @@ alias lmapp-models='ollama list'  # Ollama models
 
     def show_shell_menu(self) -> None:
         """Display shell customization menu"""
-        console.print(
-            "\n[cyan bold]🐚 Shell Customization Menu[/cyan bold]\n"
-        )
+        console.print("\n[cyan bold]🐚 Shell Customization Menu[/cyan bold]\n")
 
         options = [
             ("A", "Install bash-it", lambda: self.install_bash_it()),
