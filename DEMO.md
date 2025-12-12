@@ -10,6 +10,8 @@
 
 You're a developer. You've been hearing about LMAPP.
 
+### Step 1: Install (30 seconds)
+
 You run:
 ```bash
 pip install lmapp
@@ -23,7 +25,10 @@ Installing collected packages: lmapp
 Successfully installed lmapp-0.2.6
 ```
 
-You run:
+Done. That's it.
+
+### Step 2: First Launch (The magic)
+
 ```bash
 lmapp chat
 ```
@@ -73,6 +78,8 @@ Model finishes downloading.
 [ Start Chatting ]
 ```
 
+### Step 3: You're In
+
 You click. You see:
 
 ```
@@ -117,69 +124,6 @@ You need AI tools. Right now you're choosing between:
 **LMAPP:** Ollama + beautiful UI + 8 plugins + REST API. Everything works together. Free. Local.
 
 Easy as 1, 2, 3... Download it. Install it. Run it.
-
----
-
-## Installation & First Run
-
-### Your Experience
-
-**Step 1: Install** (30 seconds)
-```bash
-pip install lmapp
-```
-
-Done. That's it.
-
-**Step 2: First Launch** (The magic)
-```bash
-lmapp chat
-```
-
-Browser opens automatically. You see the setup wizard from above.
-
-You click **"Download Model"** (or skip if you already have Ollama running).
-
-**Step 3: One Minute Later**
-
-```
-✓ Model downloaded successfully
-✓ Ollama configured
-✓ LMAPP ready to go
-
-Welcome! You're all set.
-
-[  Start Chatting  ]
-```
-
-You click **"Start Chatting"**.
-
-**Step 4: You're In**
-
-```
-┌─────────────────────────────────────────────────────────┐
-│  LMAPP                                          🌙 ☀️  │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│  Welcome! Ready to chat with Mistral 7B                │
-│                                                         │
-│  Message...                                            │
-│                                          Send | Plugins │
-│                                                         │
-│  You: "Hello! What can you do?"                         │
-│                                                         │
-│  Model: "I can help with:                              │
-│  • Answer questions                                    │
-│  • Write and review code                               │
-│  • Translate text                                      │
-│  • Analyze documents                                   │
-│  • Debug problems                                      │
-│  • And much more...                                    │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
-```
-
-**You're using AI in less than 10 minutes. No setup. No complexity.**
 
 ---
 
@@ -308,9 +252,7 @@ All conversations stay in your network.
 
 ---
 
-## The Redesigned Limitations Section
-
-### This Is NOT a Limitation (Reframed)
+## The Limitations Section
 
 **"Your data stays local"**
 - Default: ✅ Your data never leaves your machine
@@ -339,7 +281,7 @@ All conversations stay in your network.
 
 ---
 
-## What's Actually Wrong Today (Honest Assessment)
+## What's Wrong Today?
 
 ### Real Issues to Fix
 
@@ -354,118 +296,6 @@ All conversations stay in your network.
 ❌ **Model quality** - Open models are getting better (Mistral 8x7B next), but GPT-4 isn't our problem. We use what's best available.
 
 ❌ **Infrastructure requirements** - Your machine IS the infrastructure. That's the point.
-
----
-
-## Installation Instructions (Clean & Simple)
-
-### Desktop/Laptop (Recommended)
-
-```bash
-# One command
-pip install lmapp
-
-# One command to start
-lmapp chat
-
-# Browser opens, you see setup wizard
-# Click "Download Model" (one time)
-# Click "Start Chatting"
-# Done
-```
-
-### macOS (Alternative)
-
-```bash
-# Download installer from GitHub
-curl -O https://github.com/nabaznyl/lmapp/releases/download/v0.2.6/lmapp-installer.dmg
-# Double-click installer
-# Click "Install"
-# Click "Start LMAPP"
-```
-
-### Docker (Team Deployment)
-
-```bash
-docker run -p 8000:8000 anonmaly/lmapp web
-# Open http://localhost:8000
-```
-
-### Linux Server (Infrastructure)
-
-```bash
-docker-compose up lmapp
-# curl http://localhost:8000
-```
-
----
-
-## Configuration (Minimal by Default)
-
-### Default (Works Out of Box)
-```bash
-lmapp chat
-# Everything works, all data local
-```
-
-### With Custom Model
-```bash
-lmapp config set model mistral:13b
-lmapp chat
-# Uses a different model
-```
-
----
-
-## Available Backends
-
-LMAPP supports multiple backends for maximum flexibility:
-
-### Primary: Ollama
-- Most popular, widest model selection
-- Easy installation and management
-- Excellent performance
-- Recommended for most users
-
-### Fallback: llamafile
-- Single-file executable model
-- Zero dependencies beyond the binary
-- Perfect for offline, fail-safe access
-- Great for distribution and portability
-- Fastest setup for isolated environments
-
-### Other Compatible Backends
-- OpenAI-compatible endpoints (custom API servers)
-- Additional integrations available via plugin system
-- Extensible plugin architecture for custom backends
-
-See QUICKSTART.md for backend configuration details.
-
----
-
-## Who LMAPP Is For
-
-### ✅ Perfect Fit
-
-- **Developers** - Need code review, refactoring, debugging
-- **Teams** - Want shared AI without per-user costs
-- **Privacy-conscious** - Need data staying local
-- **Offline-first** - Want to work without internet
-- **Cost-sensitive** - $0 beats $10,000/year
-- **Infrastructure teams** - Want to deploy themselves
-- **Open source fans** - MIT licensed, full control
-
-### ✅ Still Works Great
-
-- **Multi-device users** - Share across devices with your infrastructure
-- **Teams wanting managed** - Deploy to your infrastructure, we provide templates
-- **Enterprises** - All features available, customizable
-
-### ❌ Maybe Not the Best Fit (Be Honest)
-
-- **1-click no-thought users** - This requires 5 minutes of setup
-- **Want managed service** - LMAPP is self-hosted
-- **Enterprise contracts** - We're open source, not enterprise vendor (coming soon)
 
 ---
 
@@ -501,59 +331,6 @@ See QUICKSTART.md for backend configuration details.
 - **Offline:** No internet = still works
 - **Free:** No mandatory APIs = no costs
 - **Flexible:** Extensible with plugins and custom backends
-
----
-
-## Advanced Setup (Optional)
-
-### Multi-Device Synchronization
-
-Want LMAPP running on your laptop AND desktop with shared sessions?
-
-```bash
-# Configure on primary machine
-lmapp config set sync.enabled true
-lmapp config set sync.host lmapp-central.yourinfrastructure.local
-```
-
-Now all your LMAPP instances sync through your own infrastructure. You own everything.
-
-### Custom Backup & Storage
-
-Want to back up conversations to your cloud storage?
-
-```bash
-# Configure cloud storage of your choice
-lmapp config set storage.backup.enabled true
-lmapp config set storage.backup.provider dropbox  # or google-drive, aws-s3, etc
-```
-
-Conversations auto-sync to your storage (encrypted). Still your data, just synced.
-
-### API Fallback (For High-Demand)
-
-Your machine is under heavy load? Set up a fallback backend:
-
-```bash
-# Configure optional fallback
-lmapp config set fallback.enabled true
-lmapp config set fallback.api openai
-lmapp config set openai.api-key sk-...
-```
-
-Local model runs first. If slow/offline, can fall back to configured service. You control when and how.
-
-### Collaborative Sharing
-
-Want to share conversations with your team?
-
-```bash
-lmapp config set sharing.enabled true
-# Generate shareable link in UI
-# Your team clicks link, sees conversation (read-only or interactive)
-```
-
-All handled through your infrastructure.
 
 ---
 
