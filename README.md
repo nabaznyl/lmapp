@@ -5,7 +5,10 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/) [![Tests](https://img.shields.io/badge/Tests-587%2F587%20passing-brightgreen.svg)]() [![Status](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
 
-**v0.3.0-beta** - Web UI, 8 Plugins, RAG System, Batch Processing, Sessions, 587 Tests
+**v0.4.0-beta** - 30-Day Full-Feature Trial, Freemium Model, Desktop GUI, Web UI
+
+> 🎉 **Try all features for 30 days, free. Then enjoy powerful free tier forever.**  
+> See [Trial & Freemium Model](TRIAL_AND_FREEMIUM.md) | [Advanced Mode](ADVANCED_MODE.md) | [Legal Terms](LEGAL_TERMS.md)
 
 See [**Demo & Features**](DEMO.md) for examples and use cases.
 
@@ -18,7 +21,23 @@ See [**Demo & Features**](DEMO.md) for examples and use cases.
 ```bash
 pip install lmapp
 lmapp install  # Automatically installs and configures Ollama
-lmapp chat     # Start chatting!
+lmapp chat     # Start chatting! (30-day trial begins)
+```
+
+### Check Trial Status
+
+```bash
+lmapp status
+```
+
+**Output (first run):**
+```
+LMAPP Status Report
+===================
+Version: v0.4.0
+Trial Status: Active
+Days Remaining: 30 days
+Advanced Mode: ON
 ```
 
 ### Example

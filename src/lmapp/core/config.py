@@ -2,6 +2,7 @@
 """
 Configuration Management
 Pydantic-based configuration with JSON persistence
+Includes trial system integration
 """
 
 import os
@@ -32,7 +33,7 @@ class LMAppConfig(BaseModel):
     )
     advanced_mode: bool = Field(
         default=False,
-        description="Enable Advanced Mode UI (power user features)",
+        description="Enable Advanced Mode (access to RAG, plugins, batch, web UI)",
     )
     completed_setup: bool = Field(
         default=False,
@@ -139,6 +140,14 @@ class ConfigManager:
                 self._config = LMAppConfig()
         if not self._config:
             self._config = LMAppConfig()
+        
+        # Enforce trial gating: if no active trial/paid, force Advanced Mode OFF
+        # (This ensures free tier users don't accidentally have advanced features)
+        from lmapp.core.trial import is_trial_active
+        if self._config.advanced_mode and not is_trial_active():
+            logger.debug("Trial inactive, enforcing free tier (Advanced Mode OFF)")
+            self._config.advanced_mode = False
+        
         return self._config
 
     def update(self, **kwargs) -> bool:
