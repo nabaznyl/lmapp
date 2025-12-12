@@ -81,23 +81,23 @@ class BackendInstaller:
             return None
 
         backend_name = answers["backend"]
-        backend = self.detector.get_backend_by_name(backend_name)
+        selected_backend: Optional[LLMBackend] = self.detector.get_backend_by_name(backend_name)
 
-        if not backend:
+        if not selected_backend:
             console.print("[red]Invalid backend selection[/red]")
             return None
 
         # Step 4: Install backend
-        console.print(f"\n[bold]Step 4: Installing {backend.backend_display_name()}[/bold]")
+        console.print(f"\n[bold]Step 4: Installing {selected_backend.backend_display_name()}[/bold]")
 
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
             console=console,
         ) as progress:
-            task = progress.add_task(f"Installing {backend.backend_display_name()}...", total=None)
+            task = progress.add_task(f"Installing {selected_backend.backend_display_name()}...", total=None)
 
-            success = backend.install()
+            success = selected_backend.install()
 
             if success:
                 progress.update(task, description=f"✓ {backend.backend_display_name()} installed")

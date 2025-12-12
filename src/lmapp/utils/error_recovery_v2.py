@@ -9,7 +9,7 @@ import re
 from typing import Any, Optional, TypeVar, Callable, Dict
 from functools import wraps
 from enum import Enum
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from lmapp.utils.logging import logger
 from lmapp.backend.base import LLMBackend
@@ -58,8 +58,6 @@ class TimeoutError(BackendError):
 class ResourceError(BackendError):
     """Resource exhaustion (memory, GPU, etc.)"""
 
-
-from dataclasses import dataclass, field
 
 class ConfigurationError(BackendError):
     """Configuration error"""

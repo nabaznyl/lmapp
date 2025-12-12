@@ -17,7 +17,7 @@ from lmapp import __version__
 from lmapp.ui.menu import MainMenu
 from lmapp.ui.chat_ui import launch_chat
 from lmapp.utils.system_check import SystemCheck
-from lmapp.utils.logging import logger, LOG_FILE
+from lmapp.utils.logging import logger, LOG_FILE, enable_debug
 from lmapp.backend.installer import BackendInstaller
 from lmapp.backend.detector import BackendDetector
 from lmapp.core.chat import ChatSession
@@ -45,7 +45,7 @@ def main(ctx, version, debug, dev, yes):
     if debug:
 
         os.environ["LMAPP_DEBUG"] = "1"
-        logger.enable_debug()
+        enable_debug()
 
     logger.debug(f"lmapp CLI started, version={__version__}, debug={debug}")
 

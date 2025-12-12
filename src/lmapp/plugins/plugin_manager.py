@@ -114,6 +114,7 @@ class BasePlugin(ABC):
 
 
 @dataclass
+@dataclass
 class PluginInfo:
     """Information about a loaded plugin."""
 
@@ -122,6 +123,10 @@ class PluginInfo:
     status: PluginStatus = PluginStatus.UNLOADED
     error_message: Optional[str] = None
     config: Dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def is_loaded(self) -> bool:
+        return self.status == PluginStatus.LOADED
 
 
 class PluginManager:

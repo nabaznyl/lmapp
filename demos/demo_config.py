@@ -39,13 +39,9 @@ def main():
     # Display current settings
     print("📖 Current Configuration Settings:\n")
 
-    show_config_option(
-        "backend", config.backend, "LLM backend to use (auto, ollama, llamafile, mock)"
-    )
+    show_config_option("backend", config.backend, "LLM backend to use (auto, ollama, llamafile, mock)")
 
-    show_config_option(
-        "model", config.model, "AI model to use (tinyllama, mistral, llama2, etc.)"
-    )
+    show_config_option("model", config.model, "AI model to use (tinyllama, mistral, llama2, etc.)")
 
     show_config_option(
         "temperature",

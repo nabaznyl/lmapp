@@ -4,7 +4,7 @@ Enhanced Menu System with Advanced Mode
 Provides intuitive beginner experience with power-user features
 """
 
-from typing import List, Callable, Optional
+from typing import List, Callable, Optional, Dict, Any
 import json
 import inquirer
 import psutil
@@ -264,7 +264,7 @@ class MainMenu:
                 break
 
             # Load plugins and group by category/tags
-            plugins_by_category = {}
+            plugins_by_category: Dict[str, List[Any]] = {}
             choices = []
 
             for plugin_path in plugin_paths:
@@ -443,15 +443,15 @@ class MainMenu:
                 break
 
             if answer.get("action") == "download":
-                self._download_model_ui(backend)
+                self.download_model_ui(backend)
 
-    def _download_model_ui(self, backend):
+    def download_model_ui(self, backend):
         """Model download interface with hardware detection"""
         ram_gb = psutil.virtual_memory().total / (1024**3)
         installed = [m.split(":")[0] for m in (backend.list_models() or [])]
 
         # Hardware-optimized model recommendations
-        models = [
+        models: List[Dict[str, Any]] = [
             {
                 "id": "qwen2.5:0.5b",
                 "name": "Qwen 2.5",
