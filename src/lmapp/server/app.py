@@ -1,6 +1,6 @@
 import os
 import signal
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
@@ -209,8 +209,12 @@ async def root():
 
 
 @app.post("/admin/shutdown")
-async def shutdown_server():
+def shutdown_server(request: Request):
     """Shutdown the server"""
+    if request.client.host != "127.0.0.1":
+        logger.warning(f"Unauthorized shutdown attempt from {request.client.host}")
+        raise HTTPException(status_code=403, detail="Unauthorized")
+        
     logger.info("Shutdown requested via API")
     # Schedule shutdown
     os.kill(os.getpid(), signal.SIGINT)
@@ -218,7 +222,7 @@ async def shutdown_server():
 
 
 @app.get("/health", response_model=HealthResponse)
-async def health_check():
+def health_check():
     b = get_backend()
     status = "ok" if b else "no_backend"
     backend_name = b.backend_name() if b else None
@@ -230,7 +234,7 @@ async def health_check():
 
 
 @app.post("/v1/completions", response_model=CompletionResponse)
-async def create_completion(request: CompletionRequest):
+def create_completion(request: CompletionRequest):
     b = get_backend()
     if not b:
         raise HTTPException(status_code=503, detail="No LLM backend available")
