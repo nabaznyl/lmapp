@@ -222,50 +222,15 @@ Status Report:
 
 ## 💡 Who Is This For?
 
-### **Developers & Power Users**
-- Want LLM access in your terminal workflow
-- Need multi-backend flexibility (Ollama, llamafile)
-- Prefer CLI over GUI
-- Value privacy and local processing
-- Want to understand how it works
-
-### **Students & Researchers**
-- Need AI assistance for studying/research
-- Want offline-first tool (no internet needed after setup)
-- Appreciate well-documented code
-- May want to contribute or fork
-
-### **Professionals (Non-Technical)**
-- Need AI assistance but value privacy
-- Want simple, elegant tool
-- Prefer "just works" experience
-- Don't want subscriptions or cloud dependencies
-
-### **Anyone Who Wants Universal Access**
-- One tool that works on any Linux device
-- Download once, use everywhere
-- No vendor lock-in
----
-
-## 💡 Why LMAPP?
-
-- ✅ **30-second setup** (vs. 10+ minutes for competitors)
-- ✅ **100% private** - No cloud, no tracking
-- ✅ **Terminal-native** - Seamless CLI workflow
-- ✅ **Multiple backends** - Ollama, llamafile, and more
-- ✅ **Production-ready** - 587 tests, 100% coverage
-- ✅ **Free forever** - MIT licensed, no subscriptions
+### Perfect Fit
+- **Developers** - Code explanations, debugging, documentation, CLI workflows
+- **Students & Researchers** - Study partner, research assistance, offline-first
+- **SysAdmins** - Command lookups, automation scripts, system analysis
+- **Professionals** - Writing, analysis, research, note-taking
+- **Privacy-Conscious Users** - Want AI without cloud dependencies
+- **Anyone** who values control over convenience
 
 ---
-
-## 🎯 Use Cases
-
-Works great for:
-- **Developers** - Code explanations, debugging, documentation
-- **Students** - Study partner, homework help
-- **Professionals** - Research, analysis, writing
-- **SysAdmins** - Quick command lookups, automation
-- **Anyone** who wants AI without cloud dependence
 
 ---
 
