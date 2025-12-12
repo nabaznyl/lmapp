@@ -7,15 +7,15 @@
 
 **v0.3.0-beta** - Web UI, 8 Plugins, RAG System, Batch Processing, Sessions, 587 Tests
 
-**[→ See Demo & Features](DEMO.md)** | [![Open in Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/nabaznyl/lmapp)
+**[→ See Demo & Features](DEMO.md)** | [![Run on Replit](https://replit.com/badge/github/nabaznyl/lmapp)](https://replit.com/github/nabaznyl/lmapp)
 
 ---
 
 ## 🚀 Quick Start (30 seconds)
 
-**Try it now** in your browser:
+**Try it now** in your browser (no account required):
 ```bash
-# In Codespaces, lmapp is already installed:
+# Click "Run on Replit" above, then in the terminal:
 lmapp chat
 
 # Or install locally:
