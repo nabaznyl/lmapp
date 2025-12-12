@@ -114,7 +114,7 @@ fi
 
 # 7. Validate file structure integrity
 echo -e "${YELLOW}→ Validating project structure...${NC}"
-CRITICAL_FILES=("setup.py" "pyproject.toml" "VERSION" ".gitignore")
+CRITICAL_FILES=("pyproject.toml" "VERSION" ".gitignore" "README.md")
 MISSING=0
 for file in "${CRITICAL_FILES[@]}"; do
     if [ ! -f "$PROJECT_ROOT/$file" ]; then
@@ -150,11 +150,11 @@ fi
 echo -e "${YELLOW}→ Checking version consistency...${NC}"
 if git diff --cached --name-only | grep -qE "^VERSION$"; then
     VERSION=$(cat "$PROJECT_ROOT/VERSION" | grep -E "^v?[0-9]+\.[0-9]+\.[0-9]+" | head -1)
-    if grep -q "version=\"$VERSION\"" "$PROJECT_ROOT/setup.py" 2>/dev/null; then
+    if grep -q "version = \"$VERSION\"" "$PROJECT_ROOT/pyproject.toml" 2>/dev/null; then
         echo -e "${GREEN}✓ Version consistent in tracked files${NC}"
     else
-        echo -e "${YELLOW}⚠️  Version file changed but setup.py not updated${NC}"
-        echo "   Run: scripts/sync-version.sh"
+        echo -e "${YELLOW}⚠️  Version file changed but pyproject.toml not updated${NC}"
+        echo "   Update pyproject.toml with: version = \"$VERSION\""
         ISSUES_FOUND=$((ISSUES_FOUND+1))
     fi
 else

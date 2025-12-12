@@ -24,13 +24,7 @@ VERSION="${VERSION#v}"
 
 echo "📌 Syncing version: $VERSION"
 
-# Update setup.py
-if [ -f "$PROJECT_ROOT/setup.py" ]; then
-    sed -i "s/version=\"[^\"]*\"/version=\"$VERSION\"/" "$PROJECT_ROOT/setup.py"
-    echo "✓ Updated setup.py"
-fi
-
-# Update pyproject.toml
+# Update pyproject.toml (primary source)
 if [ -f "$PROJECT_ROOT/pyproject.toml" ]; then
     sed -i "s/version = \"[^\"]*\"/version = \"$VERSION\"/" "$PROJECT_ROOT/pyproject.toml"
     echo "✓ Updated pyproject.toml"
