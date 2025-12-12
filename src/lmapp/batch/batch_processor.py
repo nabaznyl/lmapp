@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import List, Dict, Optional, Any, Callable, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class BatchStatus(Enum):
@@ -85,7 +85,7 @@ class BatchJob:
     inputs: List[BatchInput]
     status: BatchStatus = BatchStatus.PENDING
     results: List[BatchResult] = field(default_factory=list)
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     started_at: Optional[str] = None
     completed_at: Optional[str] = None
     total_processed: int = 0
@@ -167,7 +167,7 @@ class BatchProcessor:
             return None
         
         job.status = BatchStatus.PROCESSING
-        job.started_at = datetime.utcnow().isoformat() + "Z"
+        job.started_at = datetime.now(timezone.utc).isoformat()
         
         import time
         
@@ -212,7 +212,7 @@ class BatchProcessor:
                 on_progress(idx + 1, len(job.inputs))
         
         job.status = BatchStatus.COMPLETED
-        job.completed_at = datetime.utcnow().isoformat() + "Z"
+        job.completed_at = datetime.now(timezone.utc).isoformat()
         self._save_job(job)
         
         return job

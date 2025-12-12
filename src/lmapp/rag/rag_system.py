@@ -1,5 +1,5 @@
 """
-RAG (Retrieval-Augmented Generation) system for LMAPP v0.2.4.
+RAG (Retrieval-Augmented Generation) system for LMAPP v0.3.2.
 
 Enables LMAPP to search local files and inject relevant context into LLM prompts.
 Supports semantic search with simple vector similarity and file-based retrieval.
@@ -10,6 +10,7 @@ Features:
 - Automatic relevance ranking
 - Context injection into system prompts
 - Integration with CRECALL for knowledge base search
+- Smart Chunking for better context retrieval
 """
 
 import os
@@ -18,12 +19,12 @@ from typing import Optional, List, Dict, Tuple, Any
 from dataclasses import dataclass
 import json
 import hashlib
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 @dataclass
 class Document:
-    """Represents a searchable document."""
+    """Represents a searchable document or chunk."""
     
     doc_id: str
     title: str
@@ -32,11 +33,13 @@ class Document:
     source_type: str = "text"  # text, markdown, code, url
     metadata: Optional[Dict[str, Any]] = None
     created_at: Optional[str] = None
+    parent_id: Optional[str] = None  # ID of the parent file if this is a chunk
+    chunk_index: int = 0  # Index of this chunk in the parent file
     
     def __post_init__(self):
         """Initialize derived fields."""
         if not self.created_at:
-            self.created_at = datetime.utcnow().isoformat() + "Z"
+            self.created_at = datetime.now(timezone.utc).isoformat()
         if not self.metadata:
             self.metadata = {}
     
@@ -50,12 +53,14 @@ class Document:
             "source_type": self.source_type,
             "metadata": self.metadata,
             "created_at": self.created_at,
+            "parent_id": self.parent_id,
+            "chunk_index": self.chunk_index,
         }
     
     @staticmethod
     def from_dict(data: Dict[str, Any]) -> "Document":
         """Create Document from dictionary."""
-        return Document(
+        doc = Document(
             doc_id=data["doc_id"],
             title=data["title"],
             content=data["content"],
@@ -63,7 +68,10 @@ class Document:
             source_type=data.get("source_type", "text"),
             metadata=data.get("metadata"),
             created_at=data.get("created_at"),
+            parent_id=data.get("parent_id"),
+            chunk_index=data.get("chunk_index", 0),
         )
+        return doc
 
 
 @dataclass
@@ -81,6 +89,66 @@ class SearchResult:
             "relevance_score": self.relevance_score,
             "matched_text": self.matched_text,
         }
+
+
+class Chunker:
+    """Splits text into manageable chunks."""
+    
+    def __init__(self, chunk_size: int = 1000, overlap: int = 100):
+        """
+        Initialize Chunker.
+        
+        Args:
+            chunk_size: Target size of each chunk in characters
+            overlap: Number of characters to overlap between chunks
+        """
+        self.chunk_size = chunk_size
+        self.overlap = overlap
+        
+    def chunk_text(self, text: str) -> List[str]:
+        """Split text into chunks."""
+        if not text:
+            return []
+            
+        if len(text) <= self.chunk_size:
+            return [text]
+            
+        chunks = []
+        start = 0
+        text_len = len(text)
+        
+        while start < text_len:
+            end = start + self.chunk_size
+            
+            # If we are not at the end, try to find a natural break point
+            if end < text_len:
+                # Look for paragraph break
+                last_break = text.rfind('\n\n', start, end)
+                if last_break != -1:
+                    end = last_break + 2
+                else:
+                    # Look for sentence break
+                    last_period = text.rfind('. ', start, end)
+                    if last_period != -1:
+                        end = last_period + 2
+                    else:
+                        # Look for space
+                        last_space = text.rfind(' ', start, end)
+                        if last_space != -1:
+                            end = last_space + 1
+            
+            chunk = text[start:end].strip()
+            if chunk:
+                chunks.append(chunk)
+            
+            # Move start forward, accounting for overlap
+            start = end - self.overlap
+            
+            # Ensure we always move forward
+            if start >= end:
+                start = end
+                
+        return chunks
 
 
 class SimpleVectorizer:
@@ -279,6 +347,7 @@ class RAGSystem:
             index_dir: Directory for document index
         """
         self.index = DocumentIndex(index_dir)
+        self.chunker = Chunker(chunk_size=1000, overlap=100)
     
     def index_file(self, file_path: Path, doc_title: Optional[str] = None) -> Optional[str]:
         """
@@ -289,7 +358,7 @@ class RAGSystem:
             doc_title: Optional document title (defaults to filename)
         
         Returns:
-            Document ID if successful, None otherwise
+            Document ID of the first chunk if successful, None otherwise
         """
         if not file_path.exists():
             return None
@@ -301,21 +370,41 @@ class RAGSystem:
             if len(content) > 1_000_000:  # 1MB limit
                 return None
             
-            doc_id = self._generate_doc_id(file_path)
+            parent_id = self._generate_doc_id(file_path)
             title = doc_title or file_path.name
             source_type = self._detect_source_type(file_path)
             
-            doc = Document(
-                doc_id=doc_id,
-                title=title,
-                content=content,
-                file_path=str(file_path),
-                source_type=source_type,
-                metadata={"file_size": len(content), "indexed_at": datetime.utcnow().isoformat()},
-            )
+            # Chunk the content
+            chunks = self.chunker.chunk_text(content)
             
-            self.index.add_document(doc)
-            return doc_id
+            if not chunks:
+                return None
+                
+            first_chunk_id = None
+            
+            for i, chunk_content in enumerate(chunks):
+                chunk_id = f"{parent_id}_{i}"
+                if i == 0:
+                    first_chunk_id = chunk_id
+                
+                doc = Document(
+                    doc_id=chunk_id,
+                    title=f"{title} (Part {i+1})",
+                    content=chunk_content,
+                    file_path=str(file_path),
+                    source_type=source_type,
+                    metadata={
+                        "file_size": len(content), 
+                        "chunk_size": len(chunk_content),
+                        "indexed_at": datetime.now(timezone.utc).isoformat()
+                    },
+                    parent_id=parent_id,
+                    chunk_index=i
+                )
+                
+                self.index.add_document(doc)
+            
+            return first_chunk_id
         except (IOError, UnicodeDecodeError):
             return None
     
@@ -367,7 +456,7 @@ class RAGSystem:
         Returns:
             Context string ready for prompt injection
         """
-        results = self.search(query, top_k=3)
+        results = self.search(query, top_k=5)
         
         if not results:
             return ""
@@ -376,7 +465,8 @@ class RAGSystem:
         total_length = 0
         
         for result in results:
-            doc_context = f"Source: {result.document.title}\n{result.document.content[:500]}"
+            # Use the chunk content directly
+            doc_context = f"Source: {result.document.title}\n{result.document.content}"
             
             if total_length + len(doc_context) <= max_context_length:
                 context_parts.append(doc_context)
