@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.2] - 2025-12-12
+
+### Fixed
+- **CLI Regression**: Fixed an issue where the "Roles & Workflows" setup prompt would block non-interactive sessions and automated tests.
+- **Documentation**: Updated PyPI links in `README.md` to use absolute URLs for better compatibility.
+
 ## [0.3.1] - 2025-12-12
 
 ### Changed

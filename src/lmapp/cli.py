@@ -99,21 +99,27 @@ def main(ctx, version, debug, dev):
         run_user_mode_setup()
 
     # Workflow Calibration Check
-    from lmapp.core.workflow import WorkflowManager
-    from rich.prompt import Confirm
+    # Only run if interactive, not running help, and not in test mode
+    is_interactive = sys.stdin.isatty()
+    is_help = "--help" in sys.argv
+    is_test = "pytest" in sys.modules
     
-    workflow_mgr = WorkflowManager()
-    if workflow_mgr.should_prompt():
-        console.print("\n[bold cyan]Roles & Workflows Setup[/bold cyan]")
-        console.print("Would you like to configure your AI assistant's behavior?")
-        console.print("[dim](Operating rules, tool awareness, etc.)[/dim]")
+    if is_interactive and not is_help and not is_test:
+        from lmapp.core.workflow import WorkflowManager
+        from rich.prompt import Confirm
         
-        if Confirm.ask("Run setup wizard?", default=True):
-            workflow_mgr.run_setup_wizard()
-        else:
-            # Suppress future prompts?
-            if Confirm.ask("Suppress this prompt in the future?", default=True):
-                get_config_manager().update(suppress_workflow_prompt=True)
+        workflow_mgr = WorkflowManager()
+        if workflow_mgr.should_prompt():
+            console.print("\n[bold cyan]Roles & Workflows Setup[/bold cyan]")
+            console.print("Would you like to configure your AI assistant's behavior?")
+            console.print("[dim](Operating rules, tool awareness, etc.)[/dim]")
+            
+            if Confirm.ask("Run setup wizard?", default=True):
+                workflow_mgr.run_setup_wizard()
+            else:
+                # Suppress future prompts?
+                if Confirm.ask("Suppress this prompt in the future?", default=True):
+                    get_config_manager().update(suppress_workflow_prompt=True)
 
     # Handle Developer Mode flag
     if dev:
