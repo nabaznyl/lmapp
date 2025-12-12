@@ -1,26 +1,11 @@
-# lmapp - Local LLM, Made Simple ⚡
+# lmapp - Local LLM CLI
 
-> **Your AI assistant, anywhere. No cloud. No telemetry. No subscriptions.**  
-> One tool to download. One command to run. Works on any device.
+> **Private AI in your terminal. No cloud. No subscriptions. Just you and your models.**  
+> Download once. Run anywhere. Own your data.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PyPI Version](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/)
-[![Python: 3.9+](https://img.shields.io/badge/Python-3.9+-green.svg)]()
-[![Tests: 531/531 Passing](https://img.shields.io/badge/Tests-531%2F531%20passing-brightgreen.svg)]()
-[![Code Quality: Linting 0 errors](https://img.shields.io/badge/Code%20Quality-0%20errors-brightgreen.svg)]()
-[![Type Safety: mypy Clean](https://img.shields.io/badge/Type%20Safety-mypy%20clean-brightgreen.svg)]()
-[![Status: Production Ready](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
+**[📖 DEMO & FEATURES](DEMO.md)** | [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/) [![Tests](https://img.shields.io/badge/Tests-587%2F587%20passing-brightgreen.svg)]() [![Status](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
 
-**v0.2.6 Now Available!** 🎉 **Web UI + 8 Production Plugins:**
-- 🌐 **Web UI** - Beautiful GitHub Copilot-style dark theme interface
-- 🔌 **8 Production Plugins** - Auditor, Cache Manager, Document Chatbot, Code Refactoring, Knowledge Base, Translator, Git Flow, Q&A Bot
-- 🔍 **RAG System** - Retrieve-Augmented Generation (semantic search of local files)
-- 📦 **Batch Processing** - Process multiple inputs in parallel
-- 💾 **Conversation Sessions** - Remember multi-turn conversations
-- 🎭 **Custom System Prompts** - Tailor AI behavior to your needs  
-- 📝 **Enhanced Error Messages** - Clear troubleshooting guidance
-- ⌨️ **Command Aliases** - `lmapp c` for chat, `lmapp m` for models
-- ✅ **531 Tests Passing** - 100% coverage (259 new v0.2.6 tests)
+**v0.3.0-beta** - Web UI, 8 Plugins, RAG System, Batch Processing, Sessions, 587 Tests
 
 ---
 
@@ -34,116 +19,58 @@ lmapp install  # Automatically installs and configures Ollama
 lmapp chat     # Start chatting!
 ```
 
-**Latest Features (v0.2.4):**
-```bash
-# RAG - Search through your own files
-lmapp rag index ~/documents          # Index all documents
-lmapp rag search "Python tips"       # Find relevant content
-lmapp chat --with-context "Python?"  # Use RAG context in conversation
+### Update
 
-# Batch Processing - Process multiple queries efficiently
-lmapp batch create inputs.json       # Create batch from file
-lmapp batch process job_id           # Process batch
-lmapp batch results job_id --json    # Export results
-
-# Plugins - Extend with custom functionality
-lmapp plugin list                    # See installed plugins
-lmapp plugin search "translation"    # Find plugins
-lmapp plugin install my-plugin       # Add plugin to workflow
-
-# Use command aliases for faster workflow (v0.2.3 feature)
-lmapp c "What is AI?"           # Shortcut for 'lmapp chat'
-lmapp m list                    # Shortcut for 'lmapp models list'
-lmapp s new "Python Help"       # Create a new conversation session
-lmapp config --set-prompt       # Customize AI behavior
-```
-```
-
-**Update:**
 ```bash
 pip install --upgrade lmapp
 ```
 
-**Alternative installations:**
-```bash
-# From Source
-git clone https://github.com/nabaznyl/lmapp.git && cd lmapp && pip install .
-```
+### Verify Installation
 
-See [Installation Guide](./INSTALL.md) for more options.
-
-**Verify installation:**
 ```bash
 lmapp --version && lmapp status
 ```
 
----
-
-## ✨ What's New in v0.2.6
-
-### 🌐 Web UI (Production Ready)
-**Start the web UI:** `lmapp web`  
-**Access:** http://localhost:8000
-
-**Features:**
-- Dark theme inspired by GitHub Copilot
-- Real-time streaming chat with WebSocket support
-- Document upload and RAG search
-- Plugin installation and management
-- Settings panel with model configuration
-- Responsive design (desktop + mobile)
-
-**Screenshot:** [Coming soon]
-
-### 🔌 8 Production Plugins
-
-**Official Plugins (v0.2.6):**
-1. **Dependency Auditor** - Check Python dependencies for vulnerabilities
-2. **Cache Manager** - Optimize and manage cache files
-3. **Document Chatbot** - Summarize and Q&A on uploaded documents
-4. **Code Refactoring Assistant** - Static analysis and code improvements
-5. **Knowledge Base Builder** - Personal knowledge management with auto-tagging
-6. **Translator** - Multi-language translation
-7. **Git Flow** - Automated Git workflow commands
-8. **Q&A Bot** - Generate FAQ from documents
-
-### 📚 New Documentation
-- **[QUICKSTART.md](QUICKSTART.md)** - 5-minute getting started guide ⭐ Start here!
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Production deployment (Docker, K8s, nginx)
-- **[API_REFERENCE.md](API_REFERENCE.md)** - Complete REST API documentation
-- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Solutions for common issues
-- **[PROJECT_STATUS_v0.2.6.md](PROJECT_STATUS_v0.2.6.md)** - Detailed project metrics
-
-### 🚀 v0.2.6 Metrics
-- **531 tests passing** (100% success rate)
-- **12,985 lines** of production code
-- **6,977 lines** of test code
-- **8 plugins** fully tested
-- **17 API endpoints** in web UI backend
-- **Zero regressions** from v0.2.4
-- **Deployment ready** (Docker, Kubernetes, Nginx)
+See [Installation Guide](./INSTALL.md) for more options or [QUICKSTART.md](QUICKSTART.md) for detailed setup.
 
 ---
 
-## 📖 Documentation Map
+## 🎯 Core Features
 
-| Document | Purpose |
-|----------|---------|
-| **[QUICKSTART.md](QUICKSTART.md)** | 5-minute setup guide (⭐ start here!) |
-| **[DEPLOYMENT.md](DEPLOYMENT.md)** | Production deployment instructions |
-| **[API_REFERENCE.md](API_REFERENCE.md)** | REST API endpoint documentation |
-| **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** | Solutions for common problems |
-| **[README.md](README.md)** | Project overview (you are here) |
-| **[INSTALL.md](INSTALL.md)** | Installation methods |
-| **[CONTRIBUTING.md](CONTRIBUTING.md)** | Developer guidelines |
-| **[CHANGELOG.md](CHANGELOG.md)** | Release history |
-| **[PLUGIN_DEVELOPER_GUIDE.md](src/lmapp/plugins/PLUGIN_DEVELOPER_GUIDE.md)** | Build your own plugins |
+### 💬 Chat
+```bash
+lmapp chat                          # Start interactive chat
+lmapp chat --model mistral          # Use specific model
+lmapp c "What is AI?"               # Shortcut: lmapp c for chat
+```
+
+### 🔍 RAG (Semantic Search)
+```bash
+lmapp rag index ~/documents         # Index your documents
+lmapp rag search "Python tips"      # Find relevant content
+lmapp chat --with-context "Help"    # Use RAG in conversation
+```
+
+### 📦 Batch Processing
+```bash
+lmapp batch create inputs.json      # Process multiple queries
+lmapp batch results job_id --json   # Export results
+```
+
+### 🔌 Plugins
+```bash
+lmapp plugin list                   # See installed plugins
+lmapp plugin install translator     # Add new plugin
+```
+
+### ⚙️ Configuration
+```bash
+lmapp config show                   # View all settings
+lmapp config set temperature 0.3    # Customize behavior
+lmapp config --set-prompt           # Custom system prompt
+```
 
 ---
-
-✅ **v0.2.6 Released** - Web UI + 8 plugins | [Install from PyPI](https://pypi.org/project/lmapp/) | [GitHub Releases](https://github.com/nabaznyl/lmapp/releases)
-
-
 
 ## 💡 Who Is This For?
 
@@ -170,281 +97,87 @@ lmapp --version && lmapp status
 - One tool that works on any Linux device
 - Download once, use everywhere
 - No vendor lock-in
-- Open source = you own your data
+---
+
+## 💡 Why LMAPP?
+
+- ✅ **30-second setup** (vs. 10+ minutes for competitors)
+- ✅ **100% private** - No cloud, no tracking
+- ✅ **Terminal-native** - Seamless CLI workflow
+- ✅ **Multiple backends** - Ollama, llamafile, and more
+- ✅ **Production-ready** - 587 tests, 100% coverage
+- ✅ **Free forever** - MIT licensed, no subscriptions
 
 ---
 
-## ✨ What Makes lmapp Different?
+## 🎯 Use Cases
 
-| Feature | lmapp | ChatGPT | Ollama | LM Studio |
-|---------|-------|---------|--------|-----------|
-| **Setup Time** | 30 seconds | 2 minutes | 5 minutes | 10 minutes |
-| **Privacy** | ✅ 100% Local | ❌ Cloud | ✅ Local | ✅ Local |
-| **No Subscription** | ✅ Free | ❌ Paid | ✅ Free | ✅ Free |
-| **Terminal Native** | ✅ Built-in | ❌ Web | ⚠️ Manual | ❌ GUI only |
-| **Configuration** | ✅ Simple CLI | ❌ UI Only | ⚠️ Complex | ⚠️ Complex |
-| **Multiple Backends** | ✅ Yes | ❌ No | ❌ Single | ❌ Single |
-| **Error Recovery** | ✅ Smart | ❌ Manual | ⚠️ Basic | ⚠️ Basic |
-| **Test Coverage** | ✅ 100% | N/A | ⚠️ Partial | N/A |
-
-**The lmapp advantage:** Built specifically for seamless, privacy-first, terminal-native AI access.
+Works great for:
+- **Developers** - Code explanations, debugging, documentation
+- **Students** - Study partner, homework help
+- **Professionals** - Research, analysis, writing
+- **SysAdmins** - Quick command lookups, automation
+- **Anyone** who wants AI without cloud dependence
 
 ---
 
-## 🎯 Real-World Use Cases
-
-### 👨‍💻 Developer: Quick Code Explanations
-```bash
-$ lmapp chat
-You: Explain this async/await in Python
-AI: [Detailed explanation with examples]
-You: /stats
-Stats: 1 message, tinyllama, 0.7°, 23 seconds
-```
-
-### 📚 Student: Study Partner
-```bash
-$ lmapp chat
-You: Summarize the French Revolution
-AI: [Comprehensive summary]
-You: Break that down into 3 key points
-AI: [Simplified explanation]
-```
-
-### 💼 Professional: Research Assistant
-```bash
-$ lmapp chat
-You: Analyze this market trend
-AI: [Data-driven analysis]
-You: What are the implications?
-AI: [Strategic insights]
-```
-
-### 🔧 SysAdmin: Quick Documentation Lookup
-```bash
-$ lmapp chat
-You: How do I configure nginx reverse proxy?
-AI: [Step-by-step instructions]
-```
-
----
-
-## 🎁 Core Features
-
-### 🧠 Multi-Backend Support
-- **Ollama** - Full integration, automatic detection
-- **llamafile** - Single-file models support
-- **Mock** - Testing & development mode
-- **Automatic Selection** - Uses what's available
-
-### 💬 Simple Chat Interface
-- Clean terminal UI (no GUI bloat)
-- Real-time responses
-- Command system: `/help`, `/stats`, `/clear`, `/history`, `/debug`, `/exit`
-- Session context preserved
-
-### ⚙️ Easy Configuration
-```bash
-lmapp config set model mistral     # Change model
-lmapp config set temperature 0.3   # Adjust creativity
-lmapp config set debug true        # Enable debug
-lmapp config show                  # View all settings
-```
-
-### 📊 Helpful Statistics
-```bash
-You: /stats
-Stats:
-  Messages: 12
-  Model: mistral
-  Temperature: 0.7
-  Session Duration: 5m 43s
-```
-
-### 🆘 Smart Error Recovery
-- Automatic retry on failure
-- Falls back to available backends
-- Helpful error messages
-- Contextual debugging info
-
-### 📝 Comprehensive Logging
-- Auto-rotating logs (kept for 7 days)
-- Debug mode for troubleshooting
-- Stored in `~/.local/share/lmapp/logs/`
-
----
-
-## 📖 Usage
-
-### Backend Management
-
-lmapp automatically detects and manages AI backends (Ollama or llamafile):
+## 📖 Basic Usage
 
 ```bash
-# Check backend status
-lmapp status
-
-# Install and start a backend (automatic detection)
-lmapp install
-
-# Start backend service
-lmapp start
-
-# Stop backend service
-lmapp stop
-```
-
-**Supported Backends:**
-- **Ollama** (Recommended for 8GB+ RAM) - Fast, efficient, well-maintained
-- **llamafile** (Best for limited RAM) - Single-file, portable, runs anywhere
-
-### Start Chat
-```bash
-# Simple chat (uses default backend and model)
+# Start chat
 lmapp chat
 
-# With specific model
-lmapp chat --model tinyllama:latest
+# Use specific model
+lmapp chat --model mistral
 
-# With debug logging
-lmapp --debug chat
+# Check status
+lmapp status
 
-# Enable debug via environment
-LMAPP_DEBUG=1 lmapp chat
+# View configuration
+lmapp config show
 ```
 
-### Model Management
-```bash
-# List available models
-lmapp models list
+**Supported Backends:** Ollama, llamafile (auto-detected)
 
-# Download a specific model (Ollama)
-ollama pull tinyllama:latest
-ollama pull qwen2.5:0.5b
-
-# For llamafile, models are downloaded automatically on install
-```
-
-### Configure
-```bash
-lmapp config show              # View all settings
-lmapp config set key value     # Change a setting
-lmapp config validate          # Check configuration
-lmapp config reset             # Reset to defaults
-```
-
-### View Logs
-```bash
-tail -f ~/.local/share/lmapp/logs/lmapp.log
-```
+See [QUICKSTART.md](QUICKSTART.md) for complete usage guide.
 
 ---
 
-## 📋 System Requirements
+## ✅ Quality & Features
 
-### Minimum
-- **OS**: Debian, Ubuntu, Linux Mint (any APT-based Linux)
-- **Python**: 3.8 or higher
-- **RAM**: 4GB minimum
-- **Storage**: 5-10GB free space
-- **Internet**: Required for initial setup only
-
-### Recommended
-- **OS**: Ubuntu 22.04 LTS or Debian 12
-- **Python**: 3.11+
-- **RAM**: 8GB or more
-- **Storage**: 20GB+ free
-- **CPU**: Modern multi-core preferred
-
----
-
-## 📊 Project Quality
-
-### ✅ What's Included
-- **2,627 lines** of production code
-- **128 tests** passing (100% coverage)
-- **0 flake8 errors** (fully formatted)
-- **0 mypy errors** (type-safe)
-- **1,000+ lines** of documentation
-- **6 comprehensive** guides
-- **Enterprise-grade** logging and recovery
-- **Automated** environment management
-
-### ✅ What's Tested
-- ✅ All backends (Ollama, llamafile, mock)
-- ✅ Chat system (messages, commands, history)
-- ✅ Configuration (persistence, validation)
-- ✅ Error recovery (retries, fallbacks)
-- ✅ CLI interface (all commands)
-- ✅ System checks (diagnostics)
-
-### ✅ Production Ready
-- ✅ Zero critical blockers
-- ✅ Zero security issues
-- ✅ 100% test passing rate
-- ✅ Comprehensive documentation
-- ✅ Professional error messages
-
----
-
-## 📚 Documentation
-
-| I Want To... | Read This |
-|---|---|
-| Get started in 5 minutes | [Contributing Guide](CONTRIBUTING.md) |
-| Understand configuration | [Configuration Guide](docs/CONFIGURATION.md) |
-| Troubleshoot issues | [Troubleshooting Guide](TROUBLESHOOTING.md) |
-| Learn about the code | [Architecture Guide](ARCHITECTURE.md) |
-| Contribute or modify | [Contributing Guide](CONTRIBUTING.md) |
-| See what's next | [Roadmap](ROADMAP.md) |
-
+- 🧪 **587 tests** (100% coverage)
+- 🔒 **100% private** (no cloud, no tracking)
+- ⚡ **Fast & lightweight** (<200ms startup)
+- 🔌 **8 production plugins**
+- 🔍 **RAG system** (semantic search)
+- 📦 **Batch processing**
+- 💾 **Session persistence**
+- 🌐 **Web UI** (optional)
 
 ---
 
 ## 🔐 Privacy & Security
 
-- **100% Local Processing**: Everything runs on your device
-- **No Cloud**: No internet required after initial setup
-- **No Telemetry**: We don't track anything
-- **No Subscriptions**: Completely free, forever
-- **Open Source**: You can review every line of code
-- **Your Data**: You own everything
+- **100% Local** - Everything runs on your device
+- **No Cloud** - No internet after setup
+- **No Telemetry** - Zero tracking
+- **Open Source** - MIT licensed
+- **Your Data** - You own it all
 
 ---
 
 ## 🗺️ Roadmap
 
-### v0.1.0 ✅ (Released)
-- Multi-backend support
-- Terminal chat interface
-- Configuration management
-- 100% test coverage
-- Comprehensive documentation
+**v0.3.0** (Current) - Production ready  
+**v0.4.0+** - Mobile/desktop apps, team features, enterprise tier
 
-### v0.2.0 (Q2 2026)
-- Chat history persistence
-- Performance optimization
-- LocalAI backend support
-- Enhanced error messages
-- Optional deployment automation
-
-### v0.3.0 (Q3 2026)
-- Web UI option (complement to CLI)
-- Multi-platform support (Fedora, macOS, Windows)
-- Advanced features (RAG, plugins)
-
-### v0.4.0+ (Future)
-- Mobile/Termux support
-- Enterprise features
-- Extended ecosystem
+---
 
 ## 🤝 Contributing
 
-**Want to help improve lmapp?**
+Help wanted! See [Contributing Guide](CONTRIBUTING.md) for code contributions, bug reports, or feature ideas.
 
-- [**Contributing Guide**](./CONTRIBUTING.md) - For developers who want to contribute code, fix bugs, or improve features
-- [**Code of Conduct**](./CODE_OF_CONDUCT.md) - Community standards
-- [**Architecture Guide**](./ARCHITECTURE.md) - Understand the codebase
+---
 
 All contributions welcome: bug fixes, features, documentation, tests, and ideas.
 
@@ -542,5 +275,28 @@ If lmapp helps you, please:
 pip install lmapp
 lmapp chat
 ```
+
+---
+
+## 📖 Documentation Map
+
+| Document | Purpose |
+|----------|---------|
+| **[QUICKSTART.md](QUICKSTART.md)** | 5-minute setup guide ⭐ Start here |
+| **[INSTALL.md](INSTALL.md)** | Installation methods for all platforms |
+| **[CONTRIBUTING.md](CONTRIBUTING.md)** | Developer guidelines and contribution workflow |
+| **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** | Solutions for common issues |
+| **[SECURITY.md](SECURITY.md)** | Security policy and vulnerability reporting |
+| **[API_REFERENCE.md](API_REFERENCE.md)** | REST API endpoint documentation |
+| **[CHANGELOG.md](CHANGELOG.md)** | Complete release history |
+| **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** | Community standards |
+| **[FILE_ORGANIZATION_GUIDE.md](FILE_ORGANIZATION_GUIDE.md)** | Where to find documentation |
+
+### Additional Resources
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Production deployment (Docker, Kubernetes, Nginx)
+- **[PLUGIN_DEVELOPER_GUIDE.md](src/lmapp/plugins/PLUGIN_DEVELOPER_GUIDE.md)** - Build your own plugins
+- **[ROADMAP.md](ROADMAP.md)** - Feature roadmap and future plans
+
+---
 
 **Welcome to the future of local AI.** 🚀
