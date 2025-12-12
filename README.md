@@ -5,7 +5,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/) [![Tests](https://img.shields.io/badge/Tests-587%2F587%20passing-brightgreen.svg)]() [![Status](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
 
-**v0.2.6** - Production Ready. Fully Featured. Always Free.
+**v0.2.6** - Production Ready. Fully Featured. Free.
 
 See [**Demo & Features**](DEMO.md) for examples and use cases.
 
@@ -251,7 +251,7 @@ lmapp status
 lmapp config show
 ```
 
-**Supported Backends:** Ollama, llamafile (auto-detected)
+**Supported Backends:** Ollama, llamafile (auto-detected). Extensible architecture supports custom backends.
 
 See [QUICKSTART.md](QUICKSTART.md) for complete usage guide.
 
