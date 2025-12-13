@@ -1,6 +1,7 @@
 # LMAPP
 
 > **Local LLM CLI** – Start your AI journey, right now.
+> 
 > AI made Simple, and Easy to use. Online or Offline. AI your way.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/) [![CI](https://github.com/nabaznyl/lmapp/actions/workflows/tests.yml/badge.svg)](https://github.com/nabaznyl/lmapp/actions/workflows/tests.yml) [![codecov](https://codecov.io/gh/nabaznyl/lmapp/branch/mother/graph/badge.svg)](https://codecov.io/gh/nabaznyl/lmapp) [![Status](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
