@@ -1,0 +1,24 @@
+name: "Game Help"
+description: "Get game tips, codes, and strategies offline"
+
+metadata:
+  target_user: "Gamer"
+  estimated_time: "1-3 minutes"
+  difficulty: "Easy"
+
+steps:
+  - prompt: "What game are you playing?"
+    action: "collect_input"
+    params:
+      var_name: "game_name"
+  
+  - prompt: "What do you need? (tips, codes, walkthrough)"
+    action: "collect_input"
+    params:
+      var_name: "help_type"
+  
+  - prompt: "Search game knowledge base for {game_name}"
+    action: "search_offline_db"
+  
+  - prompt: "Here's what I found:\n{help_content}"
+    action: "summarize"

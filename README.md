@@ -5,7 +5,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI](https://img.shields.io/pypi/v/lmapp.svg)](https://pypi.org/project/lmapp/) [![CI](https://github.com/nabaznyl/lmapp/actions/workflows/tests.yml/badge.svg)](https://github.com/nabaznyl/lmapp/actions/workflows/tests.yml) [![codecov](https://codecov.io/gh/nabaznyl/lmapp/branch/mother/graph/badge.svg)](https://codecov.io/gh/nabaznyl/lmapp) [![Status](https://img.shields.io/badge/Status-Production%20Ready-blue.svg)]()
 
-**v0.3.5** - Production Ready. Fully Featured. Free.
+**v0.4.0** - Agent Mode. Production Ready. Fully Featured. Free.
 
 See [**Demo & Features**](https://github.com/nabaznyl/lmapp/blob/mother/DEMO.md) for examples and use cases.
 
@@ -19,9 +19,16 @@ Customize your AI's behavior: see [Roles & Workflows Guide](https://github.com/n
 Everyday commands:
 ```bash
 lmapp chat          # Start chatting locally
-lmapp server start  # Start API server (for VS Code)
+lmapp chat --agent  # Start in auto-Agent Mode (Copilot-like)
+lmapp server start  # Start API server (Web App & VS Code)
 lmapp status        # Check backend/model status
 ```
+
+### 🌐 Web Interface (New in v0.4.0)
+Access lmapp from your browser without installing the desktop app.
+1. Start the server: `lmapp server start`
+2. Open `http://localhost:8000` in your browser.
+3. Chat, run workflows, and manage settings.
 
 ---
 
@@ -35,14 +42,23 @@ We offer two ways to explore lmapp:
 2. **[Interactive Tour (Run)](https://github.com/nabaznyl/lmapp/blob/mother/INTERACTIVE_TOUR.md)** - A script you can run on your own machine to experience lmapp firsthand.
 
 Explore real-world use cases including:
+- 🤖 **auto-Agent Mode** (Autonomous terminal & file operations)
 - 📝 **Content Generation** (Blogs, Emails, Code)
 - 🔍 **Document Analysis** (Summarization, Q&A)
-- 🤖 **Autonomous Agents** (Multi-step reasoning)
 - 📊 **Data Extraction** (JSON from text)
 
 ---
 
 ## 🎯 Features
+
+### 🤖 auto-Agent Mode (New in v0.4.0)
+Turn your terminal into an autonomous coding assistant.
+```bash
+$ lmapp chat --agent
+> Create a python script to calculate fibonacci
+[AGENT] Creating fib.py...
+[AGENT] Running fib.py...
+```
 
 ### 💬 Chat
 ```bash
@@ -191,9 +207,72 @@ Status Report:
 - **SysAdmins** - Command lookups, automation scripts, system analysis
 - **Professionals** - Writing, analysis, research, note-taking
 - **Privacy-Conscious Users** - Want AI without cloud dependencies
+- **Gamers** - Quick tips, cheat codes, game help without searching websites
+- **Travelers** - Offline knowledge access (camping, flights, road trips, deployment)
 - **Anyone** who values control over convenience
 
 ---
+
+## 🌟 Real-World Examples
+
+### Example 1: No Internet? No Problem!
+**Scenario:** Camping, road trip, flight, deployment - anywhere without internet  
+**Question:** "Why does the sky look blue?"
+
+```bash
+$ lmapp chat
+> AI: Hello, how may I help you?
+> You: Why does the sky look blue?
+
+> AI: Short answer: the sky is blue because air molecules scatter 
+     sunlight more strongly at short (blue) wavelengths than at long 
+     (red) wavelengths — a process called Rayleigh scattering.
+
+     A bit more detail:
+     • Sunlight contains all visible colors
+     • Rayleigh scattering scales as 1/λ^4
+     • Blue light (~450 nm) scattered many times more than red (~650 nm)
+     • At sunrise/sunset, blue light scattered out → sky looks red/orange
+     • Clouds look white (Mie scattering of larger water droplets)
+     
+     Extra neat fact: scattered sky light is partially polarized!
+
+> AI: Is there anything else I can help you with?
+```
+
+**Key Point:** Full scientific answers WITHOUT internet
+
+---
+
+### Example 2: Gaming Power User
+**Scenario:** Playing GTA San Andreas, need cheat codes and tips
+
+```bash
+$ lmapp chat
+> You: I'm playing GTA San Andreas, show me cheat codes and top 20 tips
+
+> AI: Nice! Which platform? (PC, PS2/3/4/5, Xbox)
+> You: PC
+
+> AI: Here are PC cheat codes (type during gameplay):
+     HESOYAM - Health, Armor, $250,000
+     AEZAKMI - Never Wanted
+     BAGUVIX - Infinite Health
+     FULLCLIP - Infinite Ammo
+     [20+ more codes...]
+
+     Top 20 Tips & Tricks:
+     1. Save often — use multiple save slots
+     2. Complete side jobs for cash/stat boosts (Ambulance, Firefighter)
+     3. Grind stats: stamina, muscle, driving/flying skill
+     4. Learn weapon ranges, aim for headshots
+     5. Keep Armor on you at all times
+     [15+ more detailed tips...]
+
+> AI: Need anything else? Specific mission help?
+```
+
+**Key Point:** Skip endless website searches, get comprehensive game help instantly
 
 ---
 

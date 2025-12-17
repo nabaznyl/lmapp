@@ -1,0 +1,24 @@
+name: "Email Automation"
+description: "Draft professional emails quickly"
+
+metadata:
+  target_user: "Professional"
+  estimated_time: "2-5 minutes"
+  difficulty: "Easy"
+
+steps:
+  - prompt: "What type of email? (request, response, follow-up, introduction)"
+    action: "collect_input"
+    params:
+      var_name: "email_type"
+  
+  - prompt: "Key points to include?"
+    action: "collect_input"
+    params:
+      var_name: "key_points"
+  
+  - prompt: "Generate {email_type} email with {key_points}"
+    action: "generate_email"
+  
+  - prompt: "Review and copy to clipboard?"
+    action: "copy_to_clipboard"

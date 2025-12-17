@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>lmapp - AI Everywhere</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <div class="sidebar">
+      <div class="logo">
+        <h1>lmapp</h1>
+        <p>AI Everywhere</p>
+      </div>
+      
+      <div class="model-selector">
+        <label>Model</label>
+        <select id="model-select">
+          <option value="">Select a model...</option>
+        </select>
+      </div>
+      
+      <div class="actions">
+        <button id="attach-file">📎 Attach File</button>
+        <button id="settings">⚙️ Settings</button>
+      </div>
+    </div>
+    
+    <div class="main">
+      <div class="chat-container" id="chat">
+        <div class="welcome">
+          <h2>Welcome to lmapp</h2>
+          <p>Your local AI assistant. Start chatting below!</p>
+        </div>
+      </div>
+      
+      <div class="input-container">
+        <textarea id="message-input" placeholder="Type your message..." rows="3"></textarea>
+        <button id="send-btn">Send</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="api_adapter.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

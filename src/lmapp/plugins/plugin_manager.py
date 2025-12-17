@@ -114,7 +114,6 @@ class BasePlugin(ABC):
 
 
 @dataclass
-@dataclass
 class PluginInfo:
     """Information about a loaded plugin."""
 

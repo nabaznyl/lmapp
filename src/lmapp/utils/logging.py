@@ -47,6 +47,27 @@ _logger.add(
 # Export configured logger
 logger = _logger
 
+# Failsafe Integration
+try:
+    # Try UAFT's failsafe first (preferred)
+    try:
+        from uaft.failsafe import FailsafeDB
+    except ImportError:
+        # Fallback to standalone failsafe
+        from failsafe.core import FailsafeDB
+
+    _fsdb = FailsafeDB()
+
+    def failsafe_sink(message):
+        """Loguru sink for Failsafe"""
+        record = message.record
+        if record["level"].no >= 40:  # ERROR or CRITICAL
+            _fsdb.log(tool="lmapp", error=record["message"], context=f"{record['name']}:{record['function']}", severity=record["level"].name.lower())
+
+    _logger.add(failsafe_sink, level="ERROR")
+except ImportError:
+    pass  # Failsafe not installed, skip integration
+
 
 def enable_debug():
     """Enable debug mode by lowering console log level to DEBUG"""

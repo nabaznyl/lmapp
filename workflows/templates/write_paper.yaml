@@ -1,0 +1,34 @@
+name: "Write Paper"
+description: "Help write an English paper with AI assistance"
+
+metadata:
+  target_user: "Student"
+  estimated_time: "15-30 minutes"
+  difficulty: "Easy"
+
+steps:
+  - prompt: "What is your paper topic and assignment requirements?"
+    action: "collect_input"
+    params:
+      var_name: "topic"
+  
+  - prompt: "Generate outline for: {topic}"
+    action: "generate_outline"
+  
+  - prompt: "Draft introduction based on outline"
+    action: "write_section"
+    params:
+      section_type: "introduction"
+  
+  - prompt: "Draft main body"
+    action: "write_section"
+    params:
+      section_type: "body"
+  
+  - prompt: "Draft conclusion"
+    action: "write_section"
+    params:
+      section_type: "conclusion"
+  
+  - prompt: "Review and suggest improvements"
+    action: "summarize"

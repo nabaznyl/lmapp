@@ -231,6 +231,8 @@ class MainMenu:
 
         try:
             session = ChatSession(backend, model=model)
+            if config.agent_mode:
+                session.enable_agent_mode()
             launch_chat(session)
         except Exception as e:
             console.print(f"[red]Error: {e}[/red]")
@@ -621,12 +623,14 @@ class MainMenu:
                     ]
                 )
             else:
+                agent_state = "ON" if config.agent_mode else "OFF"
                 choices.extend(
                     [
                         ("Dark Mode (Coming)", "dark-mode"),
                         ("Default Model", "default-model"),
                         ("Backend", "backend"),
                         ("Temperature", "temperature"),
+                        (f"auto-Agent Mode [{agent_state}]", "agent-mode"),
                         ("Disable Advanced Mode", "advanced-mode"),
                     ]
                 )
@@ -639,6 +643,13 @@ class MainMenu:
 
             if setting == "back":
                 break
+
+            elif setting == "agent-mode":
+                config.agent_mode = not config.agent_mode
+                self.config_manager.save(config)
+                state = "[green]ENABLED[/green]" if config.agent_mode else "[dim]DISABLED[/dim]"
+                console.print(f"\nauto-Agent Mode {state}")
+                console.input("[dim]Press Enter to continue...[/dim]")
 
             elif setting == "default-model":
                 backend = self.detector.get_best_backend()

@@ -18,6 +18,7 @@ from lmapp.ui.menu import MainMenu
 from lmapp.ui.chat_ui import launch_chat
 from lmapp.utils.system_check import SystemCheck
 from lmapp.utils.logging import logger, LOG_FILE, enable_debug
+from lmapp.cli_plugins import plugins
 from lmapp.backend.installer import BackendInstaller
 from lmapp.backend.detector import BackendDetector
 from lmapp.core.chat import ChatSession
@@ -151,9 +152,10 @@ def show_welcome():
 
 @main.command()
 @click.option("--model", default=None, help="Model to use for chat")
-def chat(model):
+@click.option("--agent", is_flag=True, help="Enable Agent Mode (Tools & Auto-Continue)")
+def chat(model, agent):
     """Start a new chat session"""
-    logger.debug(f"chat command started with model={model}")
+    logger.debug(f"chat command started with model={model}, agent={agent}")
 
     # Get detector to find best backend
     detector = BackendDetector()
@@ -187,23 +189,45 @@ def chat(model):
     # Determine model to use
     chat_model = model or "tinyllama"
 
-    # Check if model exists
+    # Check if model exists (with fuzzy matching)
     logger.debug(f"Checking for model: {chat_model}")
     models = backend.list_models()
-    if chat_model not in models:
-        logger.warning(f"Model '{chat_model}' not found. Available: {models}")
-        console.print("[yellow]⚠️  Model not found[/yellow]")
-        console.print("\nAvailable models:")
+
+    # Exact match
+    if chat_model in models:
+        pass
+    # Fuzzy match (e.g. "tinyllama" matches "tinyllama:latest")
+    else:
+        found = False
         for m in models:
-            console.print(f"  - {m}")
-        console.print("\nDownload a model with:")
-        console.print("  [bold]lmapp install[/bold]")
-        sys.exit(1)
+            if m.startswith(chat_model + ":") or m == chat_model + ":latest":
+                chat_model = m
+                found = True
+                break
+
+        if not found:
+            # If default model not found, but we have models, use the first one
+            if not model and models:
+                chat_model = models[0]
+                console.print(f"[yellow]Default model not found. Using: {chat_model}[/yellow]")
+            else:
+                logger.warning(f"Model '{chat_model}' not found. Available: {models}")
+                console.print("[yellow]⚠️  Model not found[/yellow]")
+                console.print("\nAvailable models:")
+                for m in models:
+                    console.print(f"  - {m}")
+                console.print("\nDownload a model with:")
+                console.print("  [bold]lmapp install[/bold]")
+                sys.exit(1)
 
     try:
         # Create and launch chat session
         logger.debug(f"Creating ChatSession with backend={backend.backend_name()}, model={chat_model}")
         session = ChatSession(backend, model=chat_model)
+        if agent:
+            session.enable_agent_mode()
+            console.print("[bold green]Agent Mode Enabled[/bold green]: Tools (Terminal, Editor) active.")
+
         logger.debug("ChatSession created, launching chat UI")
         launch_chat(session)
     except ValueError as e:
@@ -834,6 +858,10 @@ def types(args):
     cmd = [sys.executable, "-m", "mypy"] + target
     console.print(f"[dim]Running: {' '.join(cmd)}[/dim]")
     sys.exit(subprocess.call(cmd))
+
+
+# Register plugin commands
+main.add_command(plugins)
 
 
 if __name__ == "__main__":

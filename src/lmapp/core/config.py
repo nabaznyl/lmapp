@@ -52,6 +52,12 @@ class LMAppConfig(BaseModel):
         description="Default role to use (default, architect, custom)",
     )
 
+    # Agent Mode Settings
+    agent_mode: bool = Field(
+        default=True,
+        description="Enable auto-Agent Mode (autonomous tool use, Copilot-like behavior)",
+    )
+
     @field_validator("backend")
     @classmethod
     def validate_backend(cls, v):

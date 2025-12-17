@@ -25,30 +25,110 @@
   ],
   "test": {
     "command": ".venv/bin/pytest",
-    "args": ["-v"]
+    "args": [
+      "-v"
+    ]
   },
-  "systematic": {
-    "description": "Run systematic CLI tests",
+  "test:integration": {
+    "description": "Phase 2C: End-to-end integration tests",
+    "command": ".venv/bin/python",
+    "args": [
+      "tests/test_e2e_refactoring.py"
+    ]
+  },
+  "test:performance": {
+    "description": "Phase 2C: Performance benchmarks",
+    "command": ".venv/bin/python",
+    "args": [
+      "tests/test_performance_benchmark.py"
+    ]
+  },
+  "test:uat": {
+    "description": "Phase 2C: User acceptance tests",
+    "command": ".venv/bin/python",
+    "args": [
+      "tests/test_uat_scenarios.py"
+    ]
+  },
+  "test:phase2c": {
+    "description": "Phase 2C: All QA & integration tests (41 total)",
     "commands": [
-      ".venv/bin/python scripts/systematic_test.py"
+      "uaft test:integration",
+      "uaft test:performance",
+      "uaft test:uat"
+    ]
+  },
+  "test:phase5": {
+    "description": "Phase 5: All advanced capabilities tests (83 total)",
+    "command": ".venv/bin/pytest",
+    "args": [
+      "tests/test_plugins_unit.py",
+      "tests/test_plugins_integration.py",
+      "tests/test_rag_document_processor.py",
+      "tests/test_rag_embedding.py",
+      "tests/test_rag_hybrid_search.py",
+      "tests/test_workflows_engine.py",
+      "tests/test_workflows_safety.py",
+      "-v"
+    ]
+  },
+  "test:phase5d": {
+    "description": "Phase 5D: Performance optimization tests (15 total)",
+    "command": ".venv/bin/pytest",
+    "args": [
+      "tests/test_phase5d_performance.py",
+      "-v"
+    ]
+  },
+  "test:phase5b-vector": {
+    "description": "Phase 5B: Vector store & citation tracking tests (17 total)",
+    "command": ".venv/bin/pytest",
+    "args": [
+      "tests/test_vector_store.py",
+      "-v"
+    ]
+  },
+  "test:all-phases": {
+    "description": "All project tests (Phase 2C + Phase 5A-5D)",
+    "commands": [
+      "uaft test:phase2c",
+      "uaft test:phase5",
+      "uaft test:phase5d",
+      "uaft test:phase5b-vector"
     ]
   },
   "coverage": {
-    "command": ".venv/bin/pytest",
-    "args": ["--cov=lmapp", "tests/", "--cov-report=term-missing"]
+    "description": "Generate coverage reports",
+    "commands": [
+      "bash /home/anonmaly/scripts/uaft_coverage.sh . .venv"
+    ]
   },
   "install": {
     "command": ".venv/bin/pip",
-    "args": ["install", "-e", "."]
+    "args": [
+      "install",
+      "-e",
+      "."
+    ]
   },
   "dev": {
     "command": ".venv/bin/pip",
-    "args": ["install", "-e", ".[dev]"]
+    "args": [
+      "install",
+      "-e",
+      ".[dev]"
+    ]
   },
   "rebuild": {
     "commands": [
       "uaft cleanup",
       "uaft install"
+    ]
+  },
+  "context-update": {
+    "description": "Update copilot-instructions.md with latest project info",
+    "commands": [
+      "bash scripts/update-copilot-instructions"
     ]
   },
   "check": {
@@ -63,6 +143,120 @@
       "uaft install",
       "uaft fix",
       "uaft test"
+    ]
+  },
+  "review": {
+    "description": "Run code review",
+    "commands": [
+      "bash /home/anonmaly/scripts/uaft_code_review.sh ."
+    ]
+  },
+  "analyze": {
+    "description": "Analyze code quality",
+    "commands": [
+      "bash /home/anonmaly/scripts/uaft_code_analysis.sh ."
+    ]
+  },
+  "optimize": {
+    "description": "Analyze optimization opportunities",
+    "commands": [
+      "bash /home/anonmaly/scripts/uaft_optimization.sh ."
+    ]
+  },
+  "quality": {
+    "description": "Run full quality checks",
+    "commands": [
+      "bash /home/anonmaly/scripts/uaft_code_review.sh .",
+      "bash /home/anonmaly/scripts/uaft_code_analysis.sh .",
+      "bash /home/anonmaly/scripts/uaft_release_check.sh ."
+    ]
+  },
+  "env-check": {
+    "description": "Check environment setup",
+    "commands": [
+      "bash /home/anonmaly/scripts/uaft_env_check.sh ."
+    ]
+  },
+  "bootstrap": {
+    "description": "Setup venv and install dependencies",
+    "commands": [
+      "bash /home/anonmaly/scripts/uaft_bootstrap.sh . .venv python3"
+    ]
+  },
+  "version": {
+    "description": "Bump semantic version",
+    "commands": [
+      "bash /home/anonmaly/scripts/uaft_version.sh . patch VERSION"
+    ]
+  },
+  "changelog": {
+    "description": "Generate CHANGELOG from commits",
+    "commands": [
+      "bash /home/anonmaly/scripts/uaft_changelog.sh ."
+    ]
+  },
+  "deps": {
+    "description": "Audit dependencies",
+    "commands": [
+      "bash /home/anonmaly/scripts/uaft_deps.sh . .venv"
+    ]
+  },
+  "watch": {
+    "description": "Auto-run tests on file changes",
+    "commands": [
+      "bash /home/anonmaly/scripts/uaft_watch.sh src '*.py' '.venv/bin/pytest'"
+    ]
+  },
+  "tag": {
+    "description": "Create release tag",
+    "commands": [
+      "bash /home/anonmaly/scripts/uaft_tag.sh ."
+    ]
+  },
+  "logs": {
+    "description": "Manage logs",
+    "commands": [
+      "bash /home/anonmaly/scripts/uaft_logs.sh ."
+    ]
+  },
+  "security-audit": {
+    "description": "Comprehensive security scanning",
+    "commands": [
+      "bash /home/anonmaly/scripts/uaft_security_audit.sh ."
+    ]
+  },
+  "scan-secrets": {
+    "description": "Scan for exposed secrets in git history",
+    "commands": [
+      "bash /home/anonmaly/scripts/uaft_scan_secrets.sh ."
+    ]
+  },
+  "install-security-hooks": {
+    "description": "Install pre-commit/pre-push security hooks",
+    "commands": [
+      "bash /home/anonmaly/scripts/uaft_install_security_hooks.sh ."
+    ]
+  },
+  "privacy-report": {
+    "description": "Generate privacy and compliance report",
+    "commands": [
+      "bash /home/anonmaly/scripts/uaft_privacy_report.sh ."
+    ]
+  },
+  "qa": {
+    "description": "Quick quality assurance check",
+    "commands": [
+      ".venv/bin/pytest tests/test_vector_store.py tests/test_phase5d_performance.py -v --tb=short",
+      ".venv/bin/python -c 'import lmapp; print(f\"\u2705 lmapp {lmapp.__version__}\")'",
+      "git status --short | grep -E '(session_log|REPORT|PRIVACY)' && echo '\u26a0\ufe0f  Private files tracked' || echo '\u2705 Private files protected'"
+    ]
+  },
+  "verify-all": {
+    "description": "Comprehensive workspace verification",
+    "commands": [
+      "timeout 180 .venv/bin/pytest tests/ -v --tb=line",
+      ".venv/bin/lmapp --version",
+      "echo '\u2705 All tests passed and CLI functional'"
     ]
   }
 }

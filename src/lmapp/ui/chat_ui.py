@@ -139,7 +139,17 @@ class ChatUI:
 
                     # Send prompt to backend
                     console.print("[cyan]AI:[/cyan]", end=" ")
-                    response = self.session.send_prompt(result, temperature=self.temperature)
+
+                    def on_tool_start(tool_name, args):
+                        console.print(f"\n[dim]Executing {tool_name}...[/dim]")
+
+                    def on_tool_end(output):
+                        # Truncate output if too long
+                        display_out = output[:100] + "..." if len(output) > 100 else output
+                        console.print(f"[dim]Result: {display_out}[/dim]")
+                        console.print("[cyan]AI:[/cyan]", end=" ")
+
+                    response = self.session.send_prompt(result, temperature=self.temperature, on_tool_start=on_tool_start, on_tool_end=on_tool_end)
                     console.print(response)
 
                 except KeyboardInterrupt:

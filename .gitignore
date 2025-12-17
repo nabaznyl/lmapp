@@ -99,4 +99,24 @@ AUTOMATION*.md
 PHASE_*.md
 IMPLEMENTATION_PLAN.md
 # Internal documentation (trial/freemium system)
-docs/internal/
+docs/internal/# Environment & Secrets
+.env.*.local
+.env.vault
+secrets/
+credentials/
+*.key
+*.pem
+.aws/
+.ssh/
+.docker/config.json
+# IDE Secrets
+.vscode/settings.local.json
+.idea/vcs.xml
+
+# Session logs (added by audit)
+session_log.yaml
+session_log.md
+
+# Node.js
+node_modules/
+**/node_modules/

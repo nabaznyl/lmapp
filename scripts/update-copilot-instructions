@@ -27,8 +27,9 @@ set -euo pipefail
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-INSTRUCTIONS_FILE="${PROJECT_ROOT}/.github/copilot-instructions.md"
-PROJECTS_DIR="${PROJECT_ROOT}"
+WORKSPACE_ROOT="$(dirname "$PROJECT_ROOT")"
+INSTRUCTIONS_FILE="${WORKSPACE_ROOT}/.github/copilot-instructions.md"
+PROJECTS_DIR="${WORKSPACE_ROOT}"
 LOG_DIR="${HOME}/.local/share/copilot-update"
 DETECTED_PROJECT=""
 UPDATE_MODE="auto"  # auto, focused, full
@@ -221,7 +222,11 @@ extract_lmapp_info() {
     local version="unknown"
     
     # Extract version
-    if [[ -f "$lmapp_dir/setup.py" ]]; then
+    if [[ -f "$lmapp_dir/VERSION" ]]; then
+        version=$(head -1 "$lmapp_dir/VERSION" | tr -d '[:space:]' 2>/dev/null || echo "unknown")
+    elif [[ -f "$lmapp_dir/pyproject.toml" ]]; then
+        version=$(grep -m 1 "version =" "$lmapp_dir/pyproject.toml" | cut -d '"' -f 2 2>/dev/null || echo "unknown")
+    elif [[ -f "$lmapp_dir/setup.py" ]]; then
         version=$(grep -oP "version=['\"]?\K[^'\"]*" "$lmapp_dir/setup.py" 2>/dev/null || echo "unknown")
     fi
     

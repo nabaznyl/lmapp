@@ -6,9 +6,12 @@ Handles single conversation session with an LLM backend
 
 from typing import List, Optional, Dict
 from datetime import datetime
+import re
 from lmapp.backend.base import LLMBackend
 from lmapp.utils.logging import logger
 from lmapp.core.cache import ResponseCache
+from lmapp.plugins.terminal import TerminalPlugin
+from lmapp.plugins.editor import EditorPlugin
 
 
 class ChatMessage:
@@ -62,15 +65,95 @@ class ChatSession:
         self.history: List[ChatMessage] = []
         self.created_at = datetime.now()
         self.cache = ResponseCache()
+
+        # Agent capabilities
+        self.agent_mode = False
+        self.terminal_plugin = TerminalPlugin()
+        self.editor_plugin = EditorPlugin()
+        self.system_prompt = ""
+
         logger.debug("ChatSession initialized successfully")
 
-    def send_prompt(self, prompt: str, temperature: float = 0.7) -> str:
+    def enable_agent_mode(self):
+        """Enable agent capabilities (tools and loop)."""
+        self.agent_mode = True
+        self.system_prompt = """
+You are an advanced AI assistant with access to the following tools:
+
+1. Terminal: Execute shell commands.
+   Usage: [TOOL: terminal command="ls -la"]
+
+2. Editor: Read and write files.
+   Usage: [TOOL: editor action="read" file_path="src/main.py"]
+   Usage: [TOOL: editor action="write" file_path="src/main.py" content="..."]
+
+When you need to perform an action, output the tool command.
+The system will execute it and provide the result.
+You can chain multiple actions.
+"""
+        logger.info("Agent mode enabled")
+
+    def _build_prompt(self) -> str:
+        """Construct full prompt from history."""
+        full_prompt = ""
+        if self.system_prompt:
+            full_prompt += f"System: {self.system_prompt}\n\n"
+
+        for msg in self.history:
+            role = "User" if msg.role == "user" else "Assistant"
+            full_prompt += f"{role}: {msg.content}\n\n"
+
+        return full_prompt.strip()
+
+    def _has_tool_call(self, text: str) -> bool:
+        """Check if text contains a tool call."""
+        return "[TOOL:" in text
+
+    def _execute_tool(self, text: str) -> str:
+        """Parse and execute tool call."""
+        try:
+            match = re.search(r"\[TOOL:\s*(\w+)\s+(.*?)\]", text, re.DOTALL)
+            if not match:
+                return "Error: Invalid tool format"
+
+            tool_name = match.group(1).lower()
+            args_str = match.group(2)
+
+            # Parse args (simple key="value" parser)
+            args = {}
+            # Handle escaped quotes if possible, but simple regex for now
+            for arg_match in re.finditer(r'(\w+)="(.*?)"', args_str, re.DOTALL):
+                args[arg_match.group(1)] = arg_match.group(2)
+
+            if tool_name == "terminal":
+                cmd = args.get("command")
+                if not cmd:
+                    return "Error: Missing command argument"
+                return self.terminal_plugin.execute(cmd)
+
+            elif tool_name == "editor":
+                action = args.get("action")
+                path = args.get("file_path")
+                content = args.get("content")
+                if not action or not path:
+                    return "Error: Missing action or file_path"
+                return self.editor_plugin.execute(action, path, content)
+
+            else:
+                return f"Error: Unknown tool {tool_name}"
+
+        except Exception as e:
+            return f"Error executing tool: {str(e)}"
+
+    def send_prompt(self, prompt: str, temperature: float = 0.7, on_tool_start=None, on_tool_end=None) -> str:
         """
         Send a prompt and get a response
 
         Args:
             prompt: User prompt
             temperature: LLM temperature (0.0-1.0)
+            on_tool_start: Callback(tool_name, args)
+            on_tool_end: Callback(output)
 
         Returns:
             Response text
@@ -86,10 +169,10 @@ class ChatSession:
             raise ValueError("❌ Prompt cannot be empty")
 
         # Check cache for existing response
+        # Note: Cache might be tricky with agents/history, but keeping for now
         cached_response = self.cache.get(prompt, self.model, self.backend.backend_name(), temperature)
-        if cached_response:
+        if cached_response and not self.agent_mode:
             logger.debug(f"Cache hit for prompt (model={self.model}, temperature={temperature})")
-            # Add to history for consistency
             self.history.append(ChatMessage("user", prompt))
             self.history.append(ChatMessage("assistant", cached_response))
             return cached_response
@@ -98,22 +181,53 @@ class ChatSession:
         self.history.append(ChatMessage("user", prompt))
 
         try:
-            # Get response from backend
-            logger.debug("Requesting response from backend")
-            response = self.backend.chat(prompt=prompt, model=self.model, temperature=temperature)
+            # Loop for Agent Mode
+            max_turns = 10
+            current_turn = 0
 
-            if not response:
-                logger.error("Backend returned empty response")
-                raise RuntimeError("Backend returned empty response")
+            while current_turn < max_turns:
+                # Build full prompt with history
+                full_prompt = self._build_prompt()
 
-            # Add assistant message to history
-            self.history.append(ChatMessage("assistant", response))
+                # Get response from backend
+                logger.debug("Requesting response from backend")
+                response = self.backend.chat(prompt=full_prompt, model=self.model, temperature=temperature)
 
-            # Cache the response
-            self.cache.set(prompt, response, self.model, self.backend.backend_name(), temperature)
-            logger.debug(f"Response received: {len(response)} chars, cached for future use")
+                if not response:
+                    logger.error("Backend returned empty response")
+                    raise RuntimeError("Backend returned empty response")
 
-            return response
+                # Add assistant message to history
+                self.history.append(ChatMessage("assistant", response))
+
+                # Check for tools if in agent mode
+                if self.agent_mode and self._has_tool_call(response):
+                    logger.info("Tool call detected")
+
+                    # Notify start
+                    if on_tool_start:
+                        # Extract tool name for display
+                        match = re.search(r"\[TOOL:\s*(\w+)\s+(.*?)\]", response, re.DOTALL)
+                        if match:
+                            on_tool_start(match.group(1), match.group(2))
+
+                    tool_output = self._execute_tool(response)
+
+                    # Notify end
+                    if on_tool_end:
+                        on_tool_end(tool_output)
+
+                    # Add tool output as user message (simulating system feedback)
+                    self.history.append(ChatMessage("user", f"Tool Output:\n{tool_output}"))
+                    current_turn += 1
+                    continue
+
+                # If no tool call or not agent mode, we are done
+                # Cache the response (only the final one)
+                self.cache.set(prompt, response, self.model, self.backend.backend_name(), temperature)
+                return response
+
+            return response  # Return last response if max turns reached
 
         except Exception as e:
             # Remove the user message if we failed to get response

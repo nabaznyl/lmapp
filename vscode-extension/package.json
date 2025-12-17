@@ -28,6 +28,15 @@
       {
         "command": "lmapp.stopServer",
         "title": "lmapp: Stop API Server"
+      },
+      {
+        "command": "lmapp.refactorSelection",
+        "title": "lmapp: Refactor Selection",
+        "when": "editorHasSelection"
+      },
+      {
+        "command": "lmapp.quickFixOnFile",
+        "title": "lmapp: Quick Fix Current File"
       }
     ],
     "configuration": {
@@ -52,6 +61,41 @@
           "type": "number",
           "default": 50,
           "description": "Number of preceding lines to send as context"
+        },
+        "lmapp.debounceMs": {
+          "type": "number",
+          "default": 500,
+          "minimum": 100,
+          "maximum": 5000,
+          "description": "Debounce interval for completion requests in milliseconds (100-5000)"
+        },
+        "lmapp.requestTimeout": {
+          "type": "number",
+          "default": 2000,
+          "minimum": 1000,
+          "maximum": 10000,
+          "description": "Timeout for API requests in milliseconds (1000-10000)"
+        },
+        "lmapp.enableCompletionCache": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable caching of completion results to reduce API calls"
+        },
+        "lmapp.enableCodeAnalysis": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable real-time code analysis in completions"
+        },
+        "lmapp.analysisLanguage": {
+          "type": "string",
+          "default": "python",
+          "enum": ["python", "javascript", "typescript", "java", "cpp", "generic"],
+          "description": "Language for code analysis"
+        },
+        "lmapp.analyzeStrictMode": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable strict mode for code analysis (more issues detected)"
         }
       }
     }
@@ -62,9 +106,10 @@
     "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
-    "@types/vscode": "^1.85.0",
     "@types/node": "^18.0.0",
-    "typescript": "^5.3.0"
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0",
+    "vsce": "^2.15.0"
   },
   "dependencies": {
     "axios": "^1.6.0"

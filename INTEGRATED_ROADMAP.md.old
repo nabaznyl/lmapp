@@ -1,0 +1,407 @@
+# Integrated Roadmap & Developer Guide
+
+**Status:** Active Development
+**Version:** 0.3.5
+**Last Updated:** December 12, 2025
+
+This document serves as the central source of truth for `lmapp` development, roadmap, and maintenance. It is intended for local development use.
+
+---
+
+## 1. Current Status (v0.3.5 - In Development)
+
+**Production Release**: v0.3.2 (released Dec 11)
+**Current Development**: v0.3.5 (Phase 3 infrastructure complete)
+
+**Core Features:**
+- **CLI:** Robust Click-based interface with Rich UI.
+- **Backend:** Auto-detection and support for Ollama and llamafile.
+- **API:** Lightweight FastAPI server (`lmapp serve`) for integrations.
+- **Documentation:** Consolidated and version-aligned.
+- **CI/CD:** GitHub Actions for testing and publishing.
+- **Roles & Workflows:** Configurable behavior rules and "Architect" mode.
+- **Error Recovery:** Failsafe ErrorDB and intelligent suggestions.
+- **Web UI:** FastAPI + React streaming chat interface with dark/light themes.
+- **Plugins:** 8 production plugins (Auditor, Cache Manager, Document Chatbot, Code Refactor, Knowledge Base, Translator, Git Flow, Q&A Bot).
+- **REST API:** 17 endpoints documented.
+- **VS Code Extension Refactoring**: Backend API complete and tested (Phase 2B).
+
+**Quality Metrics:**
+- **Tests:** 100% pass rate (613 tests passing).
+- **Coverage:** >85% (Codecov configured).
+- **Linting:** Flake8 + Black + MyPy enforced via UAFT.
+- **Security:** 0 critical/high issues (audit passed).
+- **Performance:** 244ms startup, 46.63MB memory.
+
+---
+
+## 2. Phase 3: Infrastructure & Publishing (Completed Dec 14, 2025)
+
+**Status**: ✅ COMPLETE (GitHub Actions configured, PyPI publishing automated)
+
+**What Was Done**:
+- [x] GitHub Actions CI/CD (build-test.yml) - Tests on Python 3.8-3.11
+- [x] Automated PyPI publishing (publish-release.yml) - OIDC trusted, no token storage
+- [x] GitHub Release automation - Created on tag push
+- [x] Documentation consolidated to ONE master: INTEGRATED_ROADMAP.md
+- [x] Supporting guides: GITHUB_SECRETS_SETUP.md, VERSION_MANAGEMENT.md
+
+**Removed**:
+- ❌ VS Code Marketplace publishing (extension stays local per user request)
+- ❌ Redundant Phase 3 docs (consolidated into master roadmap)
+
+**Current Publishing Pipeline**:
+- Trigger: `git tag -a vX.Y.Z` on main branch
+- Automatic: Tests run → Publish to PyPI → Create GitHub Release
+- Time: ~5-10 minutes total
+
+**Next Release (v0.3.6)**: Ready anytime - just create a git tag
+
+---
+
+## 3. Roadmap
+
+### Phase 3: Ecosystem & Polish (Completed)
+- [x] **Documentation Overhaul:** Consolidate to root and `docs/`.
+- [x] **Version Alignment:** Unified `v0.3.5` across all files.
+- [x] **CI Enhancements:** Codecov, Dead-link checks.
+- [x] **Plugin System:** Community extensions enabled.
+- [x] **Roles & Workflows:** "Architect" role and rule persistence.
+- [x] **Hotfix v0.3.2:** Fixed CLI prompt blocking tests/automation.
+- [x] **RAG Improvements:** Implemented Smart Chunking and cleaned up deprecations.
+- [x] **Developer Experience:** Added `lmapp tests` and `lmapp src` aliases.
+- [x] **PyPI Prep:** Fixed relative links for PyPI compatibility.
+- [x] **Error Recovery:** Implemented ErrorDB and context-aware suggestions.
+- [x] **UAFT Integration:** Full linting/testing orchestration.
+
+### Phase 4: VS Code Extension - Refactoring Feature (Current)
+**Status:** Frontend Complete, Backend/QA Pending
+**Location:** `vscode-extension/`
+
+**2A. Refactoring Frontend** ✅ COMPLETE (Phase 2A)
+- [x] Quick Fix via lightbulb (Code Actions)
+- [x] Selection refactoring analysis
+- [x] File-wide quick fix application
+- [x] Type-safe TypeScript implementation
+- [x] 100% test coverage
+
+**2B. Refactoring Backend** ✅ COMPLETE (Phase 2B - Dec 13)
+- [x] POST `/v1/refactor/suggestions` endpoint
+- [x] POST `/v1/refactor/quick-fixes` endpoint
+- [x] POST `/v1/refactor/apply` endpoint
+- [x] Python code analyzer
+- [x] JS/TS code analyzer
+- [x] Error handling & validation
+- [x] Full test suite passing (7/7 categories, 30+ tests)
+
+**2C. QA & Integration Testing** ✅ COMPLETE (Phase 2C - Dec 14)
+- [x] End-to-end integration tests (18/18 passed)
+- [x] Performance benchmarking (14/14 passed)
+- [x] User acceptance testing (9/9 passed)
+- [x] Total: 41/41 tests passed, 100% success rate
+- [x] All performance targets met (<500ms for code analysis)
+- [x] Zero blocking issues identified
+
+**3. Infrastructure & Publishing** ✅ COMPLETE (Phase 3 - Dec 13)
+- [x] PyPI publishing setup (OIDC trusted)
+- [x] GitHub release automation
+- [x] Version management
+- [x] Release procedures documented
+
+**4. Marketplace Release** 📅 NOT SCHEDULED (per user request - extension stays local)
+
+**See:** `vscode-extension/INTEGRATED_ROADMAP.md` or `vscode-extension/INDEX.md` for detailed vscode-extension roadmap.
+
+---
+
+### Phase 5: Advanced Capabilities (Proposed Q1 2026)
+
+**Status:** 📅 PLANNED (scheduled post v0.3.5 release)
+**Detailed Planning:** See `PHASE_5_PLANNING.md` for comprehensive strategy
+
+**Phase 5A: Plugin Marketplace** (3-4 weeks)
+- Centralized registry for plugins
+- `lmapp plugin search/install` commands
+- Community plugin ecosystem
+
+**Phase 5B: Advanced RAG** (4-5 weeks)
+- Persistent vector store (ChromaDB or FAISS)
+- Hybrid search (Keyword + Semantic)
+- Support for more document types (PDF, DOCX, Code)
+
+**Phase 5C: Agentic Workflow** (4-5 weeks)
+- Multi-step reasoning loops
+- Autonomous tool usage (file editing, web search)
+- Workflow templates and safety guardrails
+
+**Phase 5D: Performance** (2-3 weeks, parallel)
+- Async I/O optimization for RAG and Chat
+- Startup time reduction (<100ms)
+- Caching layer and resource optimization
+
+---
+
+## 3. Developer Guide
+
+### Setup
+```bash
+# Clone and setup
+git clone <repo>
+cd lmapp
+pip install -e ".[dev]"
+
+# Run tests
+pytest tests/ -v
+
+# Run linting
+flake8 src/
+black --check src/
+```
+
+### Release Process
+1. **Update Version:** Bump version in `src/lmapp/__init__.py` and `setup.py`.
+2. **Update Changelog:** Add entry to `CHANGELOG.md`.
+3. **Tag:** Create a git tag (e.g., `v0.3.0`).
+4. **Push:** `git push origin v0.3.0`.
+5. **CI/CD:** GitHub Actions will build and publish to PyPI (requires `PYPI_API_TOKEN` secret).
+
+### Maintenance
+- **Dependencies:** Audit `requirements.txt` and `setup.py` regularly.
+- **Documentation:** Keep `API_REFERENCE.md` and `README.md` in sync with code.
+- **Tests:** Add tests for every new feature.
+
+---
+
+## Phase 2C: QA & Integration Testing Completion Report
+
+**Completed:** December 14, 2025
+**Status:** ✅ ALL TESTS PASSED
+
+### Test Execution Summary
+```
+Integration Tests:        18/18 PASSED (100%)
+Performance Benchmarks:   14/14 PASSED (100%)
+User Acceptance Tests:     9/9  PASSED (100%)
+─────────────────────────────────────
+TOTAL:                   41/41 PASSED (100%)
+```
+
+### Key Test Results
+
+**1. End-to-End Integration Testing** (18 tests)
+- Python workflows: Complete workflow, unused variables, multiple suggestions ✅
+- JavaScript/TypeScript: Complete workflow, var→const conversion, type safety ✅
+- Performance: All <500ms for code analysis ✅
+- Edge cases: Empty code, invalid syntax, unknown languages ✅
+- API contracts: Suggestions, quick fixes, idempotency ✅
+- User acceptance: Real-world scenarios ✅
+
+**2. Performance Benchmarking** (14 benchmarks)
+- Python analysis: 10 lines (0.12ms), 100 lines (2.32ms), 500 lines (40.67ms) ✅
+- JavaScript analysis: 10 lines (0.04ms), 100 lines (0.19ms), 500 lines (0.93ms) ✅
+- API response: Suggestions (0.44ms), Quick fixes (0.10ms), Apply (0.001ms) ✅
+- Stress tests: 1000 lines (144ms), Complex patterns (1.1ms), Suggestions (8.9ms) ✅
+- Language comparison: JavaScript 8.2x faster than Python ✅
+- Consistency: Deterministic results across runs ✅
+
+**3. User Acceptance Testing** (9 scenarios)
+- Python API endpoint: 4 improvements found ✅
+- Python data processing: 1 simplification identified ✅
+- React component: 2 best practices suggested ✅
+- Utility functions: 3 var→const conversions detected ✅
+- TypeScript class: 2 improvements identified ✅
+- Complex mixed issues: 2 improvements found ✅
+- Error handling patterns: 1 issue identified ✅
+- Production webserver code: 1 improvement found ✅
+- Production React code: 5 improvements identified ✅
+
+### Release Readiness Checklist
+- ✅ All unit tests passing (Phase 2B: 30+ tests)
+- ✅ All integration tests passing (Phase 2C: 18 tests)
+- ✅ All performance targets met (all <500ms SLA)
+- ✅ All UAT scenarios passing (9/9 real-world tests)
+- ✅ No blocking issues
+- ✅ No critical issues
+- ✅ Zero performance regressions
+- ✅ API contracts verified
+- ✅ Error handling robust
+- ✅ Documentation complete
+
+### Files Created for Phase 2C
+- `tests/test_e2e_refactoring.py` - 492 lines, 18 integration tests
+- `tests/test_performance_benchmark.py` - 444 lines, 14 performance benchmarks
+- `tests/test_uat_scenarios.py` - 456 lines, 9 UAT scenarios
+- `tests/PHASE_2C_QA_REPORT.md` - Comprehensive test report
+
+**Conclusion:** lmapp v0.3.5 is ready for production release. All quality gates passed.
+
+---
+
+## 4. Troubleshooting & FAQ
+
+**Q: How do I debug the CLI?**
+A: Set `LMAPP_DEBUG=1` or use `lmapp --debug <command>`.
+
+**Q: How do I add a new backend?**
+A: Implement `BackendBase` in `src/lmapp/backend/` and register it in `BackendDetector`.
+
+**Q: Where are logs?**
+A: `~/.local/share/lmapp/logs/lmapp.log`.
+
+---
+
+## 5. Audit Summary (Dec 14, 2025)
+
+- **Documentation:** Clean, consolidated, and accurate.
+- **Code:** Modular, typed, and tested.
+- **CI:** Robust with linting, testing, coverage, and link checking.
+- **Security:** No secrets in code. PyPI publishing via OIDC/Secrets.
+- **Status:** v0.3.2 Production Release. v0.3.5 Phase 4 Complete (Ready).
+
+**Recommendation:** v0.3.5 ready for release to PyPI. Phase 4 (VS Code Extension Refactoring) fully complete with 100% test pass rate.
+
+---
+
+## 6. Phase 5: Advanced Capabilities (⏳ IN PROGRESS)
+
+### Phase 5A: Plugin Marketplace - ✅ COMPLETE (Dec 14, 2025)
+**Status:** Plugin infrastructure fully implemented and tested
+
+**Components:**
+- Plugin registry with GitHub integration support
+- PluginManager with full lifecycle (discovery, loading, execution, cleanup)
+- DependencyResolver for dependency validation
+- CLI commands: search, install, list, uninstall, update, update-all
+- 22 unit + integration tests (100% passing)
+- Plugin developer template
+
+**Key Features:**
+- Local registry cache with JSON persistence
+- Search by name, description, tags
+- Versioned dependency specifiers
+- Plugin signature verification ready
+- Clean installation/uninstallation with resource management
+
+**Test Results:**
+```
+Unit Tests:              14 PASSED
+Integration Tests:        8 PASSED
+─────────────────────────────────
+Total:                   22 PASSED (100%)
+```
+
+**See [PHASE_5A_COMPLETION.md](PHASE_5A_COMPLETION.md) for detailed implementation notes.**
+
+### Phase 5B: Advanced RAG System - 📅 PLANNED (Week 5-9)
+- Persistent vector store (ChromaDB/FAISS)
+- Hybrid semantic + keyword search
+- Document parsing (PDF, DOCX, Markdown, Code)
+- Chunking strategies and metadata filtering
+- Citation tracking and versioning
+
+### Phase 5C: Agentic Workflows - 📅 PLANNED (Week 10-14)
+- State machine workflow engine
+- Multi-step reasoning with tool usage
+- Built-in tools: file ops, code execution, web search
+- Agent configuration and role definition
+- Safety guardrails and audit logging
+
+### Phase 5D: Performance Optimization - ✅ COMPLETE (Dec 14, 2025)
+**Timeline**: Completed in <6 hours | **Status**: All 15 tests passing (100%)
+
+**Components Completed:**
+- ✅ AsyncHybridSearcher with semaphore-based concurrency
+- ✅ MemoryCache and SQLiteCache backends with TTL support
+- ✅ AsyncLLMClient for batch LLM operations
+- ✅ BatchProcessingPool for async work queues
+- ✅ LazyModule and StartupOptimizer for lazy loading
+- ✅ ResourcePool for connection pooling
+- ✅ 15 performance tests (all passing)
+
+**Key Metrics:**
+- Async search: <1 second per query
+- Cached search: <10 milliseconds
+- Concurrent vs sequential: 1.5x faster
+- Batch processing: <100ms for 5 concurrent operations
+
+---
+
+## 7. Phase 5B & 5C: RAG + Agentic Workflows (⏳ IN PROGRESS)
+
+### Phase 5B: Advanced RAG System - ✅ VECTOR STORE COMPLETE (Dec 14, 18:55 UTC)
+**Status:** Complete with vector store backend + citation tracking
+
+**Core Components Completed (34 tests):**
+- Document processor (Markdown, Plain text, extensible registry)
+- Sliding window chunking with overlap
+- Embedding service with mock and Ollama integration
+- Caching layer for embeddings
+- BM25 keyword search implementation
+- Hybrid search fusion (weighted, reciprocal rank)
+
+**Vector Store Backend Completed (17 tests):**
+- InMemoryVectorStore: In-memory async storage with cosine similarity
+  - LRU cache management
+  - Metadata filtering
+  - Document lifecycle (add, search, update, delete, list, clear)
+  - Full async interface + legacy sync methods
+  
+- ChromaDBVectorStore: Persistent async storage
+  - ChromaDB backend for scalability
+  - Lazy initialization
+  - Async document management
+  - Statistics and monitoring
+  
+**Citation Tracking Completed (6 tests):**
+- Citation class with source attribution and similarity scoring
+- CitationChain for managing multiple citations
+- CitationTracker for pipeline integration
+- Multiple output formats (Markdown, HTML, plain text)
+- Citation statistics (weighted sources, averages)
+
+**Test Summary:** 51 total Phase 5B tests (34 RAG + 17 vector store, 100% passing)
+
+### Phase 5C: Agentic Workflows - ✅ COMPLETE (Dec 14, 2025)
+**Status:** Core workflow engine fully implemented and tested
+
+**Components Implemented:**
+- Workflow engine with state machine execution
+- Task/step definition and orchestration
+- Conditional step execution
+- Workflow context with variables and audit logs
+- File operations tool (read, write, list)
+- Code execution tool (safe sandbox)
+- Safety guardrails system
+  - System path access prevention
+  - Dangerous import blocking
+  - Shell execution prevention
+  - Configurable risk levels
+- Audit logging for all operations
+- 27 unit tests (100% passing)
+
+**Features:**
+- Multi-step workflow composition
+- Conditional branching
+- Error handling and failure states
+- Retry logic with configurable attempts
+- Safety rule enforcement
+- Comprehensive audit trail
+- Tool registration and extensibility
+
+**Test Results:**
+```
+Workflow Engine Tests:   13 PASSED
+Safety & Audit Tests:    14 PASSED
+─────────────────────────────────────
+Total:                   27 PASSED (100%)
+```
+
+### Phase 5D: Performance Optimization - 📅 PLANNED (Week 15-17)
+- Async I/O for RAG and LLM operations
+- Caching layer (Redis/SQLite)
+- Resource optimization (memory, pooling)
+- Startup time optimization
+- Load testing and benchmarks
+
+**All Phase 5 subphases now in active development with core infrastructure complete.**
+

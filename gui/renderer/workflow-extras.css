@@ -1,0 +1,219 @@
+/* Workflow Proficiency Features - Additional Styles */
+
+/* Recent Badge */
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-left: 0.5rem;
+}
+
+.recent-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Workflow Actions Container */
+.workflow-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Favorite Button */
+.favorite-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+  transition: transform 0.2s, filter 0.2s;
+  opacity: 0.6;
+}
+
+.favorite-btn:hover {
+  transform: scale(1.2);
+  opacity: 1;
+}
+
+.favorite-btn.active {
+  opacity: 1;
+  filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.6));
+  animation: star-pop 0.3s ease;
+}
+
+@keyframes star-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* Workflow Card States */
+.workflow-card.recent {
+  border-left: 3px solid #667eea;
+}
+
+.workflow-card.favorite {
+  border-left: 3px solid #ffd700;
+}
+
+.workflow-card.recent.favorite {
+  border-left: 3px solid;
+  border-image: linear-gradient(180deg, #667eea 0%, #ffd700 100%) 1;
+}
+
+/* Category Filter Buttons */
+.workflow-categories {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding: 0 1rem;
+  overflow-x: auto;
+}
+
+.category-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.category-btn:hover {
+  background: var(--bg-primary);
+  border-color: var(--accent-color);
+}
+
+.category-btn.active {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+}
+
+/* Empty Workflows State */
+.empty-workflows {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-tertiary);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-workflows h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+}
+
+.empty-workflows p {
+  margin: 0 0 1.5rem 0;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Keyboard Shortcut Hints */
+.shortcut-hint {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+  max-width: 250px;
+}
+
+.shortcut-hint h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.shortcut-hint ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.shortcut-hint li {
+  margin-bottom: 0.25rem;
+}
+
+.shortcut-hint kbd {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  padding: 0.1rem 0.3rem;
+  font-family: monospace;
+  font-size: 0.75rem;
+  margin-right: 0.25rem;
+}
+
+.close-hint {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 0;
+}
+
+.close-hint:hover {
+  color: var(--text-primary);
+}
+
+/* Loading Skeleton for Workflows */
+.workflow-skeleton {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 1.5rem;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% { opacity: 0.6; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.6; }
+}
+
+.skeleton-line {
+  height: 1rem;
+  background: var(--bg-primary);
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+.skeleton-line.long {
+  width: 100%;
+}

@@ -1,0 +1,28 @@
+# This file tracks patterns for vault/secret manager files
+# Ensure these are NEVER committed to git
+
+# AWS
+aws_access_key_id=
+aws_secret_access_key=
+
+# Azure
+AZURE_CLIENT_ID=
+AZURE_CLIENT_SECRET=
+
+# GCP
+GOOGLE_APPLICATION_CREDENTIALS=
+type = "service_account"
+
+# GitHub
+ghp_*
+gho_*
+ghu_*
+
+# GitLab
+glpat-*
+
+# NPM
+npm_*=
+
+# Docker
+auth=

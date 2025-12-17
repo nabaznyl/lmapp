@@ -1,0 +1,27 @@
+name: "Document Analysis"
+description: "Analyze and summarize documents"
+
+metadata:
+  target_user: "Professional"
+  estimated_time: "5-10 minutes"
+  difficulty: "Medium"
+
+steps:
+  - prompt: "Select document to analyze"
+    action: "select_file"
+    params:
+      var_name: "file_path"
+  
+  - prompt: "What should I analyze? (summary, key points, risks, numbers)"
+    action: "collect_input"
+    params:
+      var_name: "analysis_type"
+  
+  - prompt: "Analyze document for {analysis_type}"
+    action: "analyze_document"
+  
+  - prompt: "Generate report"
+    action: "format_report"
+  
+  - prompt: "Save or copy report?"
+    action: "copy_to_clipboard"

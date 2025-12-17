@@ -11,7 +11,7 @@ Features:
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import shutil
 import urllib.request
@@ -92,7 +92,7 @@ class PluginMarketplaceEntry:
     downloads: int = 0
     rating: float = 5.0  # 0.0 - 5.0
     reviews: int = 0
-    last_updated: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    last_updated: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     verified: bool = False  # LMAPP certification
     dependencies: List[str] = field(default_factory=list)
 
@@ -128,7 +128,7 @@ class PluginMarketplaceEntry:
             downloads=data.get("downloads", 0),
             rating=data.get("rating", 5.0),
             reviews=data.get("reviews", 0),
-            last_updated=data.get("last_updated", datetime.utcnow().isoformat()),
+            last_updated=data.get("last_updated", datetime.now(timezone.utc).isoformat()),
             verified=data.get("verified", False),
             dependencies=data.get("dependencies", []),
         )

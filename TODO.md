@@ -10,15 +10,15 @@
 - [ ] **Documentation:** Ensure all new features (ErrorDB) are fully documented in `docs/`.
 
 ## 1. Plugin Marketplace
-- [ ] Design centralized registry schema (JSON/YAML).
-- [ ] Implement `lmapp plugin search <query>` command.
-- [ ] Implement `lmapp plugin install <plugin_id>` command.
-- [ ] Create "Featured Plugins" list.
+- [x] Design centralized registry schema (JSON/YAML).
+- [x] Implement `lmapp plugin search <query>` command.
+- [x] Implement `lmapp plugin install <plugin_id>` command.
+- [x] Create "Featured Plugins" list.
 
 ## 2. Advanced RAG
-- [ ] Evaluate vector stores (ChromaDB vs FAISS).
-- [ ] Implement persistent vector store integration.
-- [ ] Add support for PDF and DOCX ingestion.
+- [x] Evaluate vector stores (ChromaDB vs FAISS).
+- [x] Implement persistent vector store integration (ChromaDBStore).
+- [x] Add support for PDF and DOCX ingestion (DocumentIngestor).
 - [ ] Implement hybrid search (Keyword + Semantic).
 
 ## 3. Agentic Workflow

@@ -15,79 +15,16 @@ Features:
 
 from pathlib import Path
 from typing import Optional, List, Dict, Any
-from dataclasses import dataclass
 import json
 import hashlib
-from datetime import datetime, timezone
+import logging
 
+from .models import Document, SearchResult
+from .vector_store import VectorStore
+from .chroma_store import ChromaDBStore
+from .ingestion import DocumentIngestor
 
-@dataclass
-class Document:
-    """Represents a searchable document or chunk."""
-
-    doc_id: str
-    title: str
-    content: str
-    file_path: Optional[str] = None
-    source_type: str = "text"  # text, markdown, code, url
-    metadata: Optional[Dict[str, Any]] = None
-    created_at: Optional[str] = None
-    parent_id: Optional[str] = None  # ID of the parent file if this is a chunk
-    chunk_index: int = 0  # Index of this chunk in the parent file
-
-    def __post_init__(self):
-        """Initialize derived fields."""
-        if not self.created_at:
-            self.created_at = datetime.now(timezone.utc).isoformat()
-        if not self.metadata:
-            self.metadata = {}
-
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary."""
-        return {
-            "doc_id": self.doc_id,
-            "title": self.title,
-            "content": self.content,
-            "file_path": self.file_path,
-            "source_type": self.source_type,
-            "metadata": self.metadata,
-            "created_at": self.created_at,
-            "parent_id": self.parent_id,
-            "chunk_index": self.chunk_index,
-        }
-
-    @staticmethod
-    def from_dict(data: Dict[str, Any]) -> "Document":
-        """Create Document from dictionary."""
-        doc = Document(
-            doc_id=data["doc_id"],
-            title=data["title"],
-            content=data["content"],
-            file_path=data.get("file_path"),
-            source_type=data.get("source_type", "text"),
-            metadata=data.get("metadata"),
-            created_at=data.get("created_at"),
-            parent_id=data.get("parent_id"),
-            chunk_index=data.get("chunk_index", 0),
-        )
-        return doc
-
-
-@dataclass
-class SearchResult:
-    """Represents a search result."""
-
-    document: Document
-    relevance_score: float
-    matched_text: Optional[str] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary."""
-        return {
-            "document": self.document.to_dict(),
-            "relevance_score": self.relevance_score,
-            "matched_text": self.matched_text,
-        }
+logger = logging.getLogger(__name__)
 
 
 class Chunker:
@@ -304,107 +241,135 @@ class DocumentIndex:
                 )
                 results.append(result)
 
-        # Sort by relevance and return top K
-        results.sort(key=lambda r: r.relevance_score, reverse=True)
+        # Sort by score descending
+        results.sort(key=lambda x: x.relevance_score, reverse=True)
         return results[:top_k]
 
-    def _extract_matched_text(self, query_tokens: List[str], content: str, context_chars: int = 100) -> Optional[str]:
-        """Extract a text excerpt showing matched terms."""
-        import re
-
+    def _extract_matched_text(self, query_tokens: List[str], content: str, window: int = 50) -> str:
+        """Extract a snippet of text around the first match."""
         content_lower = content.lower()
 
-        # Find first occurrence of query terms
-        for query_term in query_tokens:
-            match = re.search(query_term, content_lower)
-            if match:
-                start = max(0, match.start() - context_chars)
-                end = min(len(content), match.end() + context_chars)
-                excerpt = content[start:end]
+        # Find first occurrence of any query token
+        first_pos = -1
+        for token in query_tokens:
+            pos = content_lower.find(token)
+            if pos != -1:
+                if first_pos == -1 or pos < first_pos:
+                    first_pos = pos
 
-                if start > 0:
-                    excerpt = "..." + excerpt
-                if end < len(content):
-                    excerpt = excerpt + "..."
+        if first_pos == -1:
+            return content[:100] + "..."
 
-                return excerpt
+        start = max(0, first_pos - window)
+        end = min(len(content), first_pos + window)
 
-        # Fallback: return first context_chars*2
-        if len(content) > context_chars * 2:
-            return content[: context_chars * 2] + "..."
-        return content
+        snippet = content[start:end]
+        if start > 0:
+            snippet = "..." + snippet
+        if end < len(content):
+            snippet = snippet + "..."
+
+        return snippet
 
 
 class RAGSystem:
-    """Retrieval-Augmented Generation system for LMAPP."""
+    """Main RAG system controller."""
 
     def __init__(self, index_dir: Optional[Path] = None):
         """
-        Initialize RAGSystem.
+        Initialize RAG System.
 
         Args:
-            index_dir: Directory for document index
+            index_dir: Directory to store index
         """
-        self.index = DocumentIndex(index_dir)
-        self.chunker = Chunker(chunk_size=1000, overlap=100)
+        if index_dir is None:
+            home = Path.home()
+            index_dir = home / ".lmapp" / "index"
 
-    def index_file(self, file_path: Path, doc_title: Optional[str] = None) -> Optional[str]:
+        self.index_dir = Path(index_dir)
+        self.index_dir.mkdir(parents=True, exist_ok=True)
+
+        # Initialize components
+        self.chunker = Chunker()
+        self.ingestor = DocumentIngestor()
+
+        # Try to initialize VectorStore (ChromaDB), fallback to SimpleIndex
+        self.vector_store: Optional[VectorStore] = None
+        try:
+            self.vector_store = ChromaDBStore(str(self.index_dir / "chroma"))
+            logger.info("Initialized ChromaDB Vector Store")
+        except ImportError:
+            logger.warning("ChromaDB not available, falling back to SimpleIndex")
+        except Exception as e:
+            logger.error(f"Failed to initialize ChromaDB: {e}")
+
+        # Always keep SimpleIndex for fallback/hybrid
+        self.simple_index = DocumentIndex(self.index_dir)
+
+    @property
+    def index(self) -> DocumentIndex:
+        """Alias for simple_index for backward compatibility."""
+        return self.simple_index
+
+    def index_file(self, file_path: Path) -> Optional[str]:
         """
         Index a single file.
 
         Args:
             file_path: Path to file to index
-            doc_title: Optional document title (defaults to filename)
 
         Returns:
-            Document ID of the first chunk if successful, None otherwise
+            Document ID if successful, None otherwise
         """
-        if not file_path.exists():
-            return None
-
         try:
-            content = file_path.read_text(encoding="utf-8", errors="ignore")
-
-            # Skip very large files
-            if len(content) > 1_000_000:  # 1MB limit
+            # Use ingestor to load file
+            doc = self.ingestor.load_file(str(file_path))
+            if not doc:
                 return None
-
-            parent_id = self._generate_doc_id(file_path)
-            title = doc_title or file_path.name
-            source_type = self._detect_source_type(file_path)
 
             # Chunk the content
-            chunks = self.chunker.chunk_text(content)
-
-            if not chunks:
-                return None
-
+            chunks = self.chunker.chunk_text(doc.content)
             first_chunk_id = None
 
+            # Prepare documents for vector store
+            vector_docs = []
+
             for i, chunk_content in enumerate(chunks):
-                chunk_id = f"{parent_id}_{i}"
+                chunk_id = f"{doc.doc_id}_chunk_{i}"
                 if i == 0:
                     first_chunk_id = chunk_id
 
-                doc = Document(
+                chunk_doc = Document(
                     doc_id=chunk_id,
-                    title=f"{title} (Part {i+1})",
+                    title=f"{doc.title} (Part {i+1})",
                     content=chunk_content,
-                    file_path=str(file_path),
-                    source_type=source_type,
-                    metadata={
-                        "file_size": len(content),
-                        "chunk_size": len(chunk_content),
-                        "indexed_at": datetime.now(timezone.utc).isoformat(),
-                    },
-                    parent_id=parent_id,
+                    file_path=doc.file_path,
+                    source_type=doc.source_type,
+                    metadata=doc.metadata,
+                    parent_id=doc.doc_id,
                     chunk_index=i,
                 )
 
-                self.index.add_document(doc)
+                # Add to Simple Index
+                self.simple_index.add_document(chunk_doc)
+
+                # Prepare for Vector Store
+                vector_docs.append(
+                    {
+                        "doc_id": chunk_id,
+                        "content": chunk_content,
+                        "metadata": {"title": doc.title, "file_path": str(doc.file_path), "source_type": doc.source_type, "chunk_index": i},
+                    }
+                )
+
+            # Add to Vector Store if available
+            if self.vector_store and vector_docs:
+                self.vector_store.add_documents(vector_docs)
 
             return first_chunk_id
-        except (IOError, UnicodeDecodeError):
+
+        except Exception as e:
+            logger.error(f"Error indexing file {file_path}: {e}")
             return None
 
     def index_directory(self, directory: Path, extensions: Optional[List[str]] = None) -> int:
@@ -419,23 +384,7 @@ class RAGSystem:
             Number of files indexed
         """
         if extensions is None:
-            extensions = [
-                ".txt",
-                ".md",
-                ".py",
-                ".js",
-                ".ts",
-                ".java",
-                ".c",
-                ".cpp",
-                ".h",
-                ".json",
-                ".yaml",
-                ".yml",
-                ".xml",
-                ".html",
-                ".css",
-            ]
+            extensions = [".txt", ".md", ".py", ".js", ".ts", ".java", ".c", ".cpp", ".h", ".json", ".yaml", ".yml", ".xml", ".html", ".css", ".pdf", ".docx"]
 
         indexed_count = 0
 
@@ -448,7 +397,7 @@ class RAGSystem:
 
     def search(self, query: str, top_k: int = 5) -> List[SearchResult]:
         """
-        Search the document index.
+        Search the document index using Hybrid Search (Vector + Keyword).
 
         Args:
             query: Search query
@@ -457,7 +406,46 @@ class RAGSystem:
         Returns:
             List of SearchResult
         """
-        return self.index.search(query, top_k)
+        results = []
+        seen_ids = set()
+
+        # 1. Vector Search (Semantic)
+        if self.vector_store:
+            try:
+                vector_results = self.vector_store.search(query, limit=top_k)
+                for vr in vector_results:
+                    # Convert VectorSearchResult to SearchResult
+                    # We need to fetch the full document from simple_index to get full details if needed
+                    # But VectorSearchResult has content, so we can reconstruct a partial Document
+                    doc = Document(
+                        doc_id=vr.doc_id,
+                        title=vr.metadata.get("title", "Unknown"),
+                        content=vr.content or "",
+                        file_path=vr.metadata.get("file_path"),
+                        source_type=vr.metadata.get("source_type", "text"),
+                        metadata=vr.metadata,
+                    )
+
+                    snippet = vr.content[:200] + "..." if vr.content else "..."
+                    results.append(SearchResult(document=doc, relevance_score=vr.score, matched_text=snippet))  # Normalize if needed  # Simple snippet
+                    seen_ids.add(vr.doc_id)
+            except Exception as e:
+                logger.error(f"Vector search failed: {e}")
+
+        # 2. Keyword Search (Fallback/Hybrid)
+        # If we have enough results from vector search, we might skip this or mix them
+        # For now, let's fill up the remaining slots with keyword search
+        remaining = top_k - len(results)
+        if remaining > 0:
+            keyword_results = self.simple_index.search(query, top_k=top_k)
+            for kr in keyword_results:
+                if kr.document.doc_id not in seen_ids:
+                    results.append(kr)
+                    seen_ids.add(kr.document.doc_id)
+
+        # Re-sort combined results
+        results.sort(key=lambda x: x.relevance_score, reverse=True)
+        return results[:top_k]
 
     def get_context_for_prompt(self, query: str, max_context_length: int = 2000) -> str:
         """
@@ -495,18 +483,23 @@ class RAGSystem:
 
     def clear_index(self) -> None:
         """Clear all indexed documents."""
-        self.index.documents.clear()
-        self.index._save_index()
+        self.simple_index.documents.clear()
+        self.simple_index._save_index()
+        if self.vector_store:
+            # Chroma doesn't have a simple clear, usually delete collection
+            # For now, we just rely on simple index clearing or implement delete_all later
+            pass
 
     def get_index_stats(self) -> Dict[str, Any]:
         """Get statistics about the index."""
-        total_docs = len(self.index.documents)
-        total_content_size = sum(len(doc.content) for doc in self.index.documents.values())
+        total_docs = len(self.simple_index.documents)
+        total_content_size = sum(len(doc.content) for doc in self.simple_index.documents.values())
 
         return {
             "total_documents": total_docs,
             "total_content_size": total_content_size,
             "average_doc_size": (total_content_size // total_docs if total_docs > 0 else 0),
+            "vector_store_active": self.vector_store is not None,
         }
 
     @staticmethod

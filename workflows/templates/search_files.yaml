@@ -1,0 +1,22 @@
+name: "Search Files"
+description: "Search and summarize information from your documents"
+
+metadata:
+  target_user: "Anyone"
+  estimated_time: "2-5 minutes"
+  difficulty: "Easy"
+
+steps:
+  - prompt: "What are you looking for?"
+    action: "collect_input"
+    params:
+      var_name: "query"
+  
+  - prompt: "Searching files for: {query}"
+    action: "rag_search"
+  
+  - prompt: "Summarize findings from {num_results} documents"
+    action: "summarize"
+  
+  - prompt: "Copy summary to clipboard?"
+    action: "copy_to_clipboard"

@@ -1,14 +1,20 @@
 import os
 import signal
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse, FileResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
+from pathlib import Path
 import time
+import json
 
 from lmapp import __version__
 from lmapp.backend.detector import BackendDetector
 from lmapp.utils.logging import logger
+from lmapp.server.analysis_service import get_analysis_service
+from lmapp.server.refactoring_service import get_refactoring_service
+from lmapp.server.streaming import stream_chat, format_stream_event
 
 app = FastAPI(
     title="lmapp API",
@@ -25,6 +31,8 @@ class CompletionRequest(BaseModel):
     max_tokens: Optional[int] = 100
     temperature: Optional[float] = 0.7
     stop: Optional[List[str]] = None
+    include_analysis: Optional[bool] = False
+    language: Optional[str] = "python"
 
 
 class CompletionResponse(BaseModel):
@@ -40,6 +48,19 @@ class HealthResponse(BaseModel):
     version: str
     backend: Optional[str]
     models: List[str]
+
+
+class ChatRequest(BaseModel):
+    message: str
+    model: Optional[str] = None
+    stream: Optional[bool] = False
+    system_prompt: Optional[str] = None
+
+
+class ChatResponse(BaseModel):
+    response: str
+    model: str
+    error: Optional[str] = None
 
 
 # --- State ---
@@ -66,10 +87,23 @@ def get_backend():
 
 # --- Endpoints ---
 
+# Mount Web Interface (Phase 2C)
+# Try to find web directory in various locations (dev vs prod)
+WEB_DIR = Path(__file__).parent.parent.parent.parent / "web"
+if not WEB_DIR.exists():
+    # Try package location (if installed)
+    WEB_DIR = Path(__file__).parent.parent / "web"
+
+if WEB_DIR.exists():
+    app.mount("/ui", StaticFiles(directory=str(WEB_DIR), html=True), name="ui")
+
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
-    """Root endpoint with status dashboard and chat interface"""
+    """Root endpoint - Redirects to UI if available"""
+    if WEB_DIR.exists():
+        return RedirectResponse(url="/ui/")
+
     b = get_backend()
     status_color = "#4caf50" if b else "#f44336"
     status_text = "Online" if b else "Offline (No Backend)"
@@ -298,19 +332,216 @@ def create_completion(request: CompletionRequest):
         # We'll treat the prompt as a user message.
         response_text = b.chat(request.prompt, model=request.model)
 
+        # Optional: Perform code analysis
+        analysis_data = None
+        if request.include_analysis:
+            try:
+                analysis_service = get_analysis_service()
+                analysis_data = analysis_service.analyze_context(request.prompt, language=request.language or "python")
+            except Exception as e:
+                logger.warning(f"Analysis failed: {e}")
+                # Continue without analysis if it fails
+
+        choice = {
+            "text": response_text,
+            "index": 0,
+            "logprobs": None,
+            "finish_reason": "stop",
+        }
+
+        # Add analysis if available
+        if analysis_data:
+            choice["analysis"] = analysis_data
+
         return CompletionResponse(
             id=f"cmpl-{int(time.time())}",
             created=int(time.time()),
             model=request.model,
-            choices=[
-                {
-                    "text": response_text,
-                    "index": 0,
-                    "logprobs": None,
-                    "finish_reason": "stop",
-                }
-            ],
+            choices=[choice],
         )
     except Exception as e:
         logger.error(f"Completion failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/v1/analyze")
+def analyze_code(request: CompletionRequest):
+    """Direct code analysis endpoint (without completion)."""
+    try:
+        analysis_service = get_analysis_service()
+        result = analysis_service.analyze_context(request.prompt, language=request.language or "python", use_cache=True)
+        return {
+            "id": f"analysis-{int(time.time())}",
+            "result": result,
+        }
+    except Exception as e:
+        logger.error(f"Analysis failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/v1/chat")
+def chat(request: ChatRequest):
+    """Chat endpoint for GUI - simple request/response"""
+    b = get_backend()
+    if not b:
+        return ChatResponse(response="", model="none", error="No LLM backend available")
+    
+    try:
+        # Get model or use default
+        model = request.model
+        if not model:
+            models = b.list_models()
+            model = models[0] if models else "default"
+        
+        # Get response from backend (non-streaming)
+        response_text = b.chat(
+            prompt=request.message,
+            model=model,
+            system_prompt=request.system_prompt,
+            temperature=0.7,
+            stream=False
+        )
+        
+        return ChatResponse(response=response_text, model=model)
+    
+    except Exception as e:
+        logger.error(f"Chat failed: {e}")
+        return ChatResponse(response="", model=model or "unknown", error=str(e))
+
+
+@app.post("/v1/chat/stream")
+def chat_stream(request: ChatRequest):
+    """Streaming chat endpoint for GUI - real-time responses"""
+    b = get_backend()
+    if not b:
+        def error_stream():
+            yield format_stream_event("Error: No LLM backend available")
+        return StreamingResponse(error_stream(), media_type="text/event-stream")
+    
+    try:
+        # Get model or use default
+        model = request.model
+        if not model:
+            models = b.list_models()
+            model = models[0] if models else "default"
+        
+        # Create streaming generator
+        def generate():
+            try:
+                for chunk in stream_chat(b, model, request.message, request.system_prompt):
+                    yield format_stream_event(chunk)
+            except Exception as e:
+                yield format_stream_event(f"Error: {str(e)}")
+        
+        return StreamingResponse(generate(), media_type="text/event-stream")
+    
+    except Exception as e:
+        logger.error(f"Stream chat failed: {e}")
+        def error_stream():
+            yield format_stream_event(f"Error: {str(e)}")
+        return StreamingResponse(error_stream(), media_type="text/event-stream")
+
+
+@app.get("/v1/models")
+def list_models():
+    """List available models"""
+    b = get_backend()
+    if not b:
+        return {"models": [], "error": "No backend available"}
+    
+    try:
+        models = b.list_models()
+        return {"models": models}
+    except Exception as e:
+        return {"models": [], "error": str(e)}
+
+
+class FileAddRequest(BaseModel):
+    paths: List[str]
+
+
+@app.post("/v1/files/add")
+def add_file_to_context(request: FileAddRequest):
+    """Add file to context for RAG (placeholder for future)"""
+    # TODO: Integrate with RAG system
+    # For now, just log it
+    logger.info(f"Adding files to context: {request.paths}")
+    return {"status": "success", "message": f"Added {len(request.paths)} files to context", "paths": request.paths}
+
+
+# Include workflow routes
+from lmapp.server.workflow_routes import router as workflow_router
+app.include_router(workflow_router)
+
+
+@app.post("/v1/refactor/quick-fixes")
+def get_quick_fixes(request: CompletionRequest):
+    """Get quick-fix refactoring suggestions for code."""
+    try:
+        refactoring_service = get_refactoring_service()
+        fixes = refactoring_service.get_quick_fixes(request.prompt, language=request.language or "python")
+
+        return {
+            "id": f"refactor-{int(time.time())}",
+            "total_fixes": len(fixes),
+            "fixes": [f.to_dict() for f in fixes],
+            "language": request.language or "python",
+        }
+    except Exception as e:
+        logger.error(f"Refactoring failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/v1/refactor/apply")
+def apply_fix(body: Dict[str, Any]):
+    """Apply a quick fix to code."""
+    try:
+        code = body.get("code", "")
+        fix_id = body.get("fix_id", "")
+        language = body.get("language", "python")
+
+        refactoring_service = get_refactoring_service()
+        fixes = refactoring_service.get_quick_fixes(code, language)
+
+        # Find and apply the fix
+        for fix in fixes:
+            if fix.id == fix_id:
+                modified_code, success = refactoring_service.apply_fix(code, fix)
+                return {
+                    "id": fix_id,
+                    "success": success,
+                    "original_code": code,
+                    "modified_code": modified_code,
+                    "fix": fix.to_dict(),
+                }
+
+        raise HTTPException(status_code=404, detail="Fix not found")
+    except Exception as e:
+        logger.error(f"Apply fix failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/v1/refactor/suggestions")
+def get_refactoring_suggestions(request: CompletionRequest):
+    """Get comprehensive refactoring suggestions with analysis."""
+    try:
+        refactoring_service = get_refactoring_service()
+        analysis_service = get_analysis_service()
+
+        language = request.language or "python"
+
+        # Get analysis first
+        analysis = analysis_service.analyze_context(request.prompt, language)
+        complexity = analysis.get("complexity", 0)
+
+        # Get refactoring suggestions
+        suggestions = refactoring_service.get_refactoring_suggestions(request.prompt, language, complexity)
+
+        return {
+            "id": f"suggestions-{int(time.time())}",
+            "analysis": analysis,
+            "suggestions": suggestions,
+        }
+    except Exception as e:
+        logger.error(f"Get suggestions failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
