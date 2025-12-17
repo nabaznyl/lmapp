@@ -18,6 +18,8 @@ from pathlib import Path
 from typing import Optional, Dict, List, Any
 import uuid
 
+import aiofiles
+
 
 class Message:
     """Represents a single message in a conversation."""
@@ -171,26 +173,27 @@ class SessionManager:
         self.sessions_dir.mkdir(parents=True, exist_ok=True)
         self._current_session: Optional[Session] = None
 
-    def create_session(
+    async def create_session(
         self,
         name: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
     ) -> Session:
         """Create a new session."""
         session = Session(name=name, metadata=metadata)
-        self._save_session(session)
+        await self._save_session(session)
         self._current_session = session
         return session
 
-    def load_session(self, session_id: str) -> Optional[Session]:
+    async def load_session(self, session_id: str) -> Optional[Session]:
         """Load a session from disk."""
         session_file = self.sessions_dir / f"{session_id}.json"
         if not session_file.exists():
             return None
 
         try:
-            with open(session_file, "r") as f:
-                data = json.load(f)
+            async with aiofiles.open(session_file, "r") as f:
+                content = await f.read()
+                data = json.loads(content)
             session = Session.from_dict(data)
             self._current_session = session
             return session
@@ -205,14 +208,15 @@ class SessionManager:
         """Set the current active session."""
         self._current_session = session
 
-    def list_sessions(self) -> List[Dict[str, Any]]:
+    async def list_sessions(self) -> List[Dict[str, Any]]:
         """List all available sessions."""
         sessions_info = []
 
         for session_file in sorted(self.sessions_dir.glob("*.json")):
             try:
-                with open(session_file, "r") as f:
-                    data = json.load(f)
+                async with aiofiles.open(session_file, "r") as f:
+                    content = await f.read()
+                    data = json.loads(content)
                     session = Session.from_dict(data)
                     sessions_info.append(
                         {
@@ -240,15 +244,16 @@ class SessionManager:
         except FileNotFoundError:
             return False
 
-    def cleanup_old_sessions(self, days: int = 30) -> int:
+    async def cleanup_old_sessions(self, days: int = 30) -> int:
         """Delete sessions older than specified days. Returns count deleted."""
         cutoff = datetime.utcnow() - timedelta(days=days)
         deleted = 0
 
         for session_file in self.sessions_dir.glob("*.json"):
             try:
-                with open(session_file, "r") as f:
-                    data = json.load(f)
+                async with aiofiles.open(session_file, "r") as f:
+                    content = await f.read()
+                    data = json.loads(content)
                     created_at_str = data["created_at"].replace("Z", "")
                     created_at = datetime.fromisoformat(created_at_str)
 
@@ -260,16 +265,16 @@ class SessionManager:
 
         return deleted
 
-    def _save_session(self, session: Session) -> None:
+    async def _save_session(self, session: Session) -> None:
         """Save a session to disk."""
         session_file = self.sessions_dir / f"{session.session_id}.json"
-        with open(session_file, "w") as f:
-            json.dump(session.to_dict(), f, indent=2)
+        async with aiofiles.open(session_file, "w") as f:
+            await f.write(json.dumps(session.to_dict(), indent=2))
 
-    def save_current_session(self) -> None:
+    async def save_current_session(self) -> None:
         """Save the current session to disk."""
         if self._current_session:
-            self._save_session(self._current_session)
+            await self._save_session(self._current_session)
 
 
 # Global session manager instance

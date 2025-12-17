@@ -4,6 +4,7 @@ Workflow API endpoints for lmapp GUI
 from fastapi import APIRouter, HTTPException
 from pathlib import Path
 import yaml
+import aiofiles
 from typing import Dict, Any, List
 
 router = APIRouter(prefix="/v1/workflows", tags=["workflows"])
@@ -22,8 +23,9 @@ async def list_workflows() -> Dict[str, List[Dict[str, Any]]]:
     
     for yaml_file in WORKFLOW_DIR.glob("*.yaml"):
         try:
-            with open(yaml_file, 'r') as f:
-                workflow = yaml.safe_load(f)
+            async with aiofiles.open(yaml_file, 'r') as f:
+                content = await f.read()
+                workflow = yaml.safe_load(content)
                 
                 # Add metadata
                 workflow['id'] = yaml_file.stem
@@ -90,8 +92,9 @@ async def get_workflow(workflow_id: str) -> Dict[str, Any]:
         raise HTTPException(status_code=404, detail="Workflow not found")
     
     try:
-        with open(workflow_file, 'r') as f:
-            workflow = yaml.safe_load(f)
+        async with aiofiles.open(workflow_file, 'r') as f:
+            content = await f.read()
+            workflow = yaml.safe_load(content)
             workflow['id'] = workflow_id
             workflow['filename'] = workflow_file.name
             return workflow

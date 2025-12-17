@@ -11,6 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.1] - 2025-12-17
+
+### Added
+- **GUI**: Full Desktop Application (Electron + Vanilla JS) with dark theme, streaming responses, and settings persistence.
+- **Workflows**: New Workflow Engine with 5 default templates (Write Paper, Search Files, etc.).
+- **Sync**: Optional Encrypted Backup (`lmapp sync`) using GitHub Device Flow and client-side encryption.
+- **CLI**: New `sync` command group (`login`, `status`, `run`).
+
+### Changed
+- **Architecture**: Unified Frontend/Backend structure.
+- **Refactoring**: Major IOPS cleanup (async I/O, naming conventions).
+- **Security**: Integrated `keyring` for secure token storage.
+
 ## [0.3.5] - 2025-12-12
 
 ### Fixed

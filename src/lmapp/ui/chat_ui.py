@@ -113,7 +113,7 @@ class ChatUI:
         # Not a command, return input for processing
         return user_input
 
-    def run(self):
+    def start_chat_session(self):
         """Run interactive chat loop"""
         self.print_welcome()
 
@@ -180,4 +180,4 @@ def launch_chat(session: ChatSession):
         session: ChatSession instance
     """
     ui = ChatUI(session)
-    ui.run()
+    ui.start_chat_session()

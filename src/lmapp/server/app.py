@@ -89,10 +89,11 @@ def get_backend():
 
 # Mount Web Interface (Phase 2C)
 # Try to find web directory in various locations (dev vs prod)
-WEB_DIR = Path(__file__).parent.parent.parent.parent / "web"
+# We now serve the shared 'gui/renderer' directory
+WEB_DIR = Path(__file__).parent.parent.parent.parent / "gui" / "renderer"
 if not WEB_DIR.exists():
     # Try package location (if installed)
-    WEB_DIR = Path(__file__).parent.parent / "web"
+    WEB_DIR = Path(__file__).parent.parent / "gui" / "renderer"
 
 if WEB_DIR.exists():
     app.mount("/ui", StaticFiles(directory=str(WEB_DIR), html=True), name="ui")

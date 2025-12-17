@@ -1,6 +1,7 @@
 """Unit tests for workflow engine."""
 
 import pytest
+import asyncio
 from pathlib import Path
 
 from lmapp.workflows.engine import (
@@ -91,7 +92,7 @@ class TestWorkflowEngine:
             def name(self) -> str:
                 return "mock"
 
-            def execute(self, args, context):
+            async def execute(self, args, context):
                 return "mock_result"
 
             def validate_args(self, args):
@@ -103,7 +104,7 @@ class TestWorkflowEngine:
     def test_execute_empty_workflow(self):
         """Test executing empty workflow."""
         engine = WorkflowEngine()
-        context = engine.execute_workflow([])
+        context = asyncio.run(engine.execute_workflow([]))
 
         assert len(context.results) == 0
         assert "Workflow started" in context.audit_log
@@ -124,7 +125,7 @@ class TestWorkflowEngine:
             args={"operation": "read", "path": str(test_file)},
         )
 
-        context = engine.execute_workflow([step])
+        context = asyncio.run(engine.execute_workflow([step]))
 
         assert "step1" in context.results
         assert context.results["step1"].status == TaskStatus.SUCCESS
@@ -143,7 +144,7 @@ class TestWorkflowEngine:
             condition="${{should_run}}",
         )
 
-        result_context = engine.execute_workflow([step])
+        result_context = asyncio.run(engine.execute_workflow([step], context=context))
 
         # Step should execute (condition is true)
         assert "step1" in result_context.results
@@ -159,7 +160,7 @@ class TestWorkflowEngine:
             args={"operation": "invalid", "path": "/tmp"},
         )
 
-        context = engine.execute_workflow([step])
+        context = asyncio.run(engine.execute_workflow([step]))
 
         assert context.results["step1"].status == TaskStatus.FAILED
         assert context.results["step1"].error is not None

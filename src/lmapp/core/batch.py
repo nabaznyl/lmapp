@@ -51,7 +51,7 @@ class BatchProcessor:
         item = BatchItem(id=id, input_data=data, metadata=metadata or {})
         self.items.append(item)
 
-    def process(self) -> Dict[str, Any]:
+    def execute_batch(self) -> Dict[str, Any]:
         """Process all items in batch."""
         self.start_time = datetime.utcnow()
         self.results = {

@@ -1,5 +1,6 @@
 """Workflow engine for agentic multi-step tasks."""
 
+import aiofiles
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
@@ -71,7 +72,7 @@ class WorkflowTool(ABC):
         pass
 
     @abstractmethod
-    def execute(self, args: Dict[str, Any], context: WorkflowContext) -> Any:
+    async def execute(self, args: Dict[str, Any], context: WorkflowContext) -> Any:
         """Execute tool.
 
         Args:
@@ -103,7 +104,7 @@ class FileOperationsTool(WorkflowTool):
     def name(self) -> str:
         return "file_ops"
 
-    def execute(self, args: Dict[str, Any], context: WorkflowContext) -> Any:
+    async def execute(self, args: Dict[str, Any], context: WorkflowContext) -> Any:
         """Execute file operation.
 
         Args:
@@ -120,16 +121,16 @@ class FileOperationsTool(WorkflowTool):
 
         if operation == "read":
             try:
-                with open(path, "r") as f:
-                    return f.read()
+                async with aiofiles.open(path, "r") as f:
+                    return await f.read()
             except Exception as e:
                 raise ValueError(f"Failed to read {path}: {e}")
 
         elif operation == "write":
             content = args.get("content", "")
             try:
-                with open(path, "w") as f:
-                    f.write(content)
+                async with aiofiles.open(path, "w") as f:
+                    await f.write(content)
                 return f"Wrote {len(content)} bytes to {path}"
             except Exception as e:
                 raise ValueError(f"Failed to write {path}: {e}")
@@ -139,6 +140,8 @@ class FileOperationsTool(WorkflowTool):
                 from pathlib import Path
 
                 p = Path(path)
+                # iterdir is sync, but usually fast enough. 
+                # For strict async, we'd use run_in_executor, but let's keep it simple for now.
                 items = list(p.iterdir())
                 return [str(item) for item in items]
             except Exception as e:
@@ -159,7 +162,7 @@ class CodeExecutionTool(WorkflowTool):
     def name(self) -> str:
         return "code_exec"
 
-    def execute(self, args: Dict[str, Any], context: WorkflowContext) -> Any:
+    async def execute(self, args: Dict[str, Any], context: WorkflowContext) -> Any:
         """Execute Python code.
 
         Args:
@@ -189,6 +192,8 @@ class CodeExecutionTool(WorkflowTool):
             }
 
             # Execute code
+            # exec is blocking. For true async, we should use run_in_executor.
+            # But for now, we just match the async signature.
             exec(code, exec_globals)
 
             return "Code executed successfully"
@@ -221,16 +226,18 @@ class WorkflowEngine:
         """
         self.tools[tool.name] = tool
 
-    def execute_workflow(self, steps: List[WorkflowStep]) -> WorkflowContext:
+    async def execute_workflow(self, steps: List[WorkflowStep], context: Optional[WorkflowContext] = None) -> WorkflowContext:
         """Execute a workflow.
 
         Args:
             steps: List of workflow steps
+            context: Optional initial context
 
         Returns:
             Final workflow context with results
         """
-        context = WorkflowContext()
+        if context is None:
+            context = WorkflowContext()
         context.log_action("Workflow started")
 
         for step in steps:
@@ -246,7 +253,7 @@ class WorkflowEngine:
 
             # Execute step
             try:
-                result = self._execute_step(step, context)
+                result = await self._execute_step(step, context)
                 context.results[step.id] = result
                 context.log_action(f"Step {step.id} completed: {result.status.value}")
             except Exception as e:
@@ -265,7 +272,7 @@ class WorkflowEngine:
         context.log_action("Workflow completed")
         return context
 
-    def _execute_step(self, step: WorkflowStep, context: WorkflowContext) -> TaskResult:
+    async def _execute_step(self, step: WorkflowStep, context: WorkflowContext) -> TaskResult:
         """Execute a single step.
 
         Args:
@@ -288,7 +295,7 @@ class WorkflowEngine:
         last_error = None
         for attempt in range(step.retry_count + 1):
             try:
-                output = tool.execute(step.args, context)
+                output = await tool.execute(step.args, context)
                 return TaskResult(
                     task_id=step.id,
                     status=TaskStatus.SUCCESS,
@@ -296,6 +303,8 @@ class WorkflowEngine:
                 )
             except Exception as e:
                 last_error = e
+                if attempt < step.retry_count:
+                    context.log_action(f"Step {step.id} retry {attempt + 1}")
                 if attempt < step.retry_count:
                     context.log_action(f"Step {step.id} retry {attempt + 1}")
 

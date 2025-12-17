@@ -9,6 +9,8 @@ import time
 from pathlib import Path
 from typing import Optional, Dict, Any
 
+import aiofiles
+
 
 class WorkflowCache:
     """Cache for workflow LLM responses with TTL support."""
@@ -52,7 +54,7 @@ class WorkflowCache:
         content = json.dumps(cache_input, sort_keys=True)
         return hashlib.sha256(content.encode()).hexdigest()
     
-    def get(self, workflow_name: str, step: Dict[str, Any], variables: Dict[str, Any]) -> Optional[str]:
+    async def get(self, workflow_name: str, step: Dict[str, Any], variables: Dict[str, Any]) -> Optional[str]:
         """
         Retrieve cached response if available and not expired.
         
@@ -71,8 +73,9 @@ class WorkflowCache:
             return None
         
         try:
-            with open(cache_file, 'r') as f:
-                cache_data = json.load(f)
+            async with aiofiles.open(cache_file, 'r') as f:
+                content = await f.read()
+                cache_data = json.loads(content)
             
             # Check expiration
             age_seconds = time.time() - cache_data.get("timestamp", 0)
@@ -88,7 +91,7 @@ class WorkflowCache:
             cache_file.unlink(missing_ok=True)
             return None
     
-    def set(self, workflow_name: str, step: Dict[str, Any], variables: Dict[str, Any], response: str):
+    async def set(self, workflow_name: str, step: Dict[str, Any], variables: Dict[str, Any], response: str):
         """
         Store response in cache.
         
@@ -109,8 +112,8 @@ class WorkflowCache:
         }
         
         try:
-            with open(cache_file, 'w') as f:
-                json.dump(cache_data, f, indent=2)
+            async with aiofiles.open(cache_file, 'w') as f:
+                await f.write(json.dumps(cache_data, indent=2))
         except IOError as e:
             # Cache write failed, log but don't crash
             print(f"Warning: Failed to write cache: {e}")

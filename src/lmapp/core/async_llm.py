@@ -149,7 +149,7 @@ class BatchProcessingPool:
         await self._queue.put((job_id, item))
         return job_id
 
-    async def process(
+    async def process_queue(
         self,
         processor: Callable[[Any], Awaitable[Any]],
         timeout_seconds: float = 300.0,

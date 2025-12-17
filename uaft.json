@@ -29,6 +29,12 @@
       "-v"
     ]
   },
+  "verify-system": {
+    "description": "Run full system verification (Backend + Frontend)",
+    "commands": [
+      ".venv/bin/python scripts/verify_system.py"
+    ]
+  },
   "test:integration": {
     "description": "Phase 2C: End-to-end integration tests",
     "command": ".venv/bin/python",

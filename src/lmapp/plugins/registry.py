@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
+import aiofiles
 import requests
 
 from .base import PluginMetadata
@@ -53,15 +54,14 @@ class PluginRegistry:
                 data = json.load(f)
                 self._registry = {name: PluginEntry(**entry) for name, entry in data.items()}
 
-    def _save_local_registry(self) -> None:
+    async def _save_local_registry(self) -> None:
         """Save registry to local cache."""
         registry_file = self.local_registry_path / "registry.json"
-        with open(registry_file, "w") as f:
-            json.dump(
+        async with aiofiles.open(registry_file, "w") as f:
+            await f.write(json.dumps(
                 {name: asdict(entry) for name, entry in self._registry.items()},
-                f,
                 indent=2,
-            )
+            ))
 
     def refresh(self) -> None:
         """Refresh registry from remote source."""
@@ -110,7 +110,7 @@ class PluginRegistry:
         """
         return sorted(self._registry.values(), key=lambda x: -x.rating)
 
-    def register(self, metadata: PluginMetadata, repository: str) -> None:
+    async def register(self, metadata: PluginMetadata, repository: str) -> None:
         """Register a new plugin in the registry.
 
         Args:
@@ -129,9 +129,9 @@ class PluginRegistry:
             tags=metadata.tags or [],
         )
         self._registry[metadata.name] = entry
-        self._save_local_registry()
+        await self._save_local_registry()
 
-    def update_stats(self, name: str, downloads: int = 0, rating: float = 0.0) -> None:
+    async def update_stats(self, name: str, downloads: int = 0, rating: float = 0.0) -> None:
         """Update plugin statistics.
 
         Args:
@@ -144,4 +144,4 @@ class PluginRegistry:
                 self._registry[name].downloads = downloads
             if rating > 0.0:
                 self._registry[name].rating = min(rating, 5.0)
-            self._save_local_registry()
+            await self._save_local_registry()

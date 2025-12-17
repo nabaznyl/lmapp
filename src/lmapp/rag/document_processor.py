@@ -21,7 +21,7 @@ class DocumentProcessor(ABC):
     """Abstract base for document processors."""
 
     @abstractmethod
-    def process(self, file_path: str) -> List[Chunk]:
+    def extract_chunks(self, file_path: str) -> List[Chunk]:
         """Process document file.
 
         Args:
@@ -138,7 +138,7 @@ class MarkdownProcessor(DocumentProcessor):
     def supports(self, file_path: str) -> bool:
         return file_path.lower().endswith((".md", ".markdown"))
 
-    def process(self, file_path: str) -> List[Chunk]:
+    def extract_chunks(self, file_path: str) -> List[Chunk]:
         """Process Markdown file."""
         try:
             with open(file_path, "r", encoding="utf-8") as f:
@@ -182,7 +182,7 @@ class PlainTextProcessor(DocumentProcessor):
     def supports(self, file_path: str) -> bool:
         return file_path.lower().endswith((".txt", ".text"))
 
-    def process(self, file_path: str) -> List[Chunk]:
+    def extract_chunks(self, file_path: str) -> List[Chunk]:
         """Process plain text file."""
         try:
             with open(file_path, "r", encoding="utf-8") as f:
@@ -210,7 +210,7 @@ class DocumentProcessorRegistry:
             PlainTextProcessor(),
         ]
 
-    def process(self, file_path: str) -> List[Chunk]:
+    def process_document(self, file_path: str) -> List[Chunk]:
         """Process document with appropriate processor.
 
         Args:
@@ -221,7 +221,7 @@ class DocumentProcessorRegistry:
         """
         for processor in self.processors:
             if processor.supports(file_path):
-                return processor.process(file_path)
+                return processor.extract_chunks(file_path)
 
         print(f"No processor found for: {file_path}")
         return []

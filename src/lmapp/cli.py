@@ -24,6 +24,8 @@ from lmapp.backend.detector import BackendDetector
 from lmapp.core.chat import ChatSession
 from lmapp.core.nux import check_first_run, run_user_mode_setup
 from lmapp.core.config import get_config_manager
+from lmapp.core.auth import GitHubAuth
+from lmapp.core.sync_manager import SyncManager
 
 console = Console()
 
@@ -858,6 +860,71 @@ def types(args):
     cmd = [sys.executable, "-m", "mypy"] + target
     console.print(f"[dim]Running: {' '.join(cmd)}[/dim]")
     sys.exit(subprocess.call(cmd))
+
+
+@main.group()
+def sync():
+    """Manage optional encrypted backup."""
+    pass
+
+@sync.command()
+def login():
+    """Authenticate with GitHub for backup."""
+    config_dir = Path(click.get_app_dir("lmapp"))
+    auth = GitHubAuth(config_dir)
+    
+    if auth.is_authenticated():
+        console.print("[green]Already authenticated![/green]")
+        return
+
+    try:
+        data = auth.request_device_code()
+        console.print(f"\n[bold yellow]Please visit:[/bold yellow] {data['verification_uri']}")
+        console.print(f"[bold cyan]Enter Code:[/bold cyan] {data['user_code']}")
+        
+        console.print("\nWaiting for authorization...", end="")
+        token = auth.poll_for_token(data['device_code'], data['interval'], data['expires_in'])
+        
+        if token:
+            console.print("\n[bold green]Successfully authenticated![/bold green]")
+        else:
+            console.print("\n[bold red]Authentication failed.[/bold red]")
+            
+    except Exception as e:
+        console.print(f"\n[bold red]Error:[/bold red] {e}")
+
+@sync.command()
+def status():
+    """Check sync status."""
+    config_dir = Path(click.get_app_dir("lmapp"))
+    auth = GitHubAuth(config_dir)
+    
+    if auth.is_authenticated():
+        console.print("[green]Authenticated: Yes[/green]")
+    else:
+        console.print("[yellow]Authenticated: No[/yellow]")
+
+@sync.command()
+@click.argument("action", type=click.Choice(["up", "down"]))
+def run(action):
+    """Run manual sync (up/down)."""
+    config_dir = Path(click.get_app_dir("lmapp"))
+    auth = GitHubAuth(config_dir)
+    manager = SyncManager(config_dir, auth)
+    
+    # For now, we just sync the main config file as a test
+    target_file = config_dir / "config.yaml"
+    
+    if action == "up":
+        if manager.sync_up(target_file):
+            console.print("[green]Upload successful![/green]")
+        else:
+            console.print("[red]Upload failed.[/red]")
+    elif action == "down":
+        if manager.sync_down(target_file):
+            console.print("[green]Download successful![/green]")
+        else:
+            console.print("[red]Download failed.[/red]")
 
 
 # Register plugin commands
