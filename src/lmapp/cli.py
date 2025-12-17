@@ -927,6 +927,52 @@ def run(action):
             console.print("[red]Download failed.[/red]")
 
 
+# RAG Commands
+@main.group()
+def rag():
+    """Manage RAG (Retrieval Augmented Generation) memory."""
+    pass
+
+@rag.command()
+@click.argument("path", type=click.Path(exists=True))
+def learn(path):
+    """Ingest documents from a file or directory."""
+    from lmapp.rag.rag_system import RAGSystem
+    
+    console.print(f"[bold blue]Ingesting documents from:[/bold blue] {path}")
+    rag = RAGSystem()
+    path_obj = Path(path)
+    
+    if path_obj.is_file():
+        if rag.index_file(path_obj):
+            console.print("[green]Successfully indexed file.[/green]")
+        else:
+            console.print("[red]Failed to index file.[/red]")
+    elif path_obj.is_dir():
+        count = rag.index_directory(path_obj)
+        console.print(f"[green]Successfully indexed {count} files.[/green]")
+
+@rag.command()
+@click.argument("query")
+def query(query):
+    """Search the knowledge base."""
+    from lmapp.rag.rag_system import RAGSystem
+    
+    rag = RAGSystem()
+    results = rag.search(query)
+    
+    if not results:
+        console.print("[yellow]No results found.[/yellow]")
+        return
+        
+    console.print(f"\n[bold]Found {len(results)} results:[/bold]\n")
+    for i, res in enumerate(results, 1):
+        score = f"{res.relevance_score:.2f}" if res.relevance_score else "N/A"
+        console.print(f"{i}. [bold cyan]{res.document.title}[/bold cyan] (Score: {score})")
+        console.print(f"   [dim]{res.document.file_path}[/dim]")
+        console.print(f"   {res.matched_text}\n")
+
+
 # Register plugin commands
 main.add_command(plugins)
 

@@ -17,7 +17,7 @@ from .vector_store import VectorStore, VectorSearchResult
 logger = logging.getLogger(__name__)
 
 
-class ChromaDBStore(VectorStore):
+class ChromaDBStore:
     """ChromaDB implementation of VectorStore."""
 
     def __init__(self, persist_path: str, collection_name: str = "lmapp_docs"):

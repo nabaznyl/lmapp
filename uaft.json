@@ -257,6 +257,16 @@
       "git status --short | grep -E '(session_log|REPORT|PRIVACY)' && echo '\u26a0\ufe0f  Private files tracked' || echo '\u2705 Private files protected'"
     ]
   },
+  "rag:learn": {
+    "description": "Ingest documents into RAG memory",
+    "command": ".venv/bin/lmapp",
+    "args": ["rag", "learn", "${1}"]
+  },
+  "rag:query": {
+    "description": "Query RAG memory",
+    "command": ".venv/bin/lmapp",
+    "args": ["rag", "query", "${1}"]
+  },
   "verify-all": {
     "description": "Comprehensive workspace verification",
     "commands": [
